@@ -76,48 +76,41 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Header & Navigation -->
+    <!-- Header (મોબાઇલ અને લેપટોપ બંનેમાં સરખું હેડર) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
             
             <!-- Logo & Brand Name -->
             <div onclick="showPage('welcome')" class="flex items-center space-x-3 cursor-pointer">
                 <img src="./logo.png" alt="DEVI GROUPS Logo" class="h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block" onerror="this.onerror=null; this.src='logo.jpg';">
-                <span class="text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
+                <span class="text-xl sm:text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
             </div>
 
-            <!-- Desktop Menu -->
-            <nav class="hidden lg:flex space-x-1 text-sm font-semibold">
-                <button onclick="showPage('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Home</button>
-                <button onclick="showPage('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">About Us</button>
-                <button onclick="showPage('company')" id="nav-company" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Company</button>
-                <button onclick="showPage('products')" id="nav-products" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Products</button>
-                <button onclick="showPage('sister-brand')" id="nav-sister-brand" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Our Sister Brand</button>
-                <button onclick="showPage('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Contact Us</button>
-            </nav>
-
+            <!-- Right Controls (WhatsApp + 3-Lines Hamburger Menu for All Screens) -->
             <div class="flex items-center gap-3">
-                <!-- Direct WhatsApp Button -->
                 <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-4 sm:px-5 py-2 rounded-full font-bold shadow-md transition flex items-center gap-2 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-lg"></i>
                     <span>WhatsApp</span>
                 </a>
 
-                <!-- 3-Lines Mobile Hamburger Button -->
-                <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl px-2 py-1 text-slate-200 hover:text-white focus:outline-none">
+                <!-- 3-Lines Menu Icon -->
+                <button onclick="toggleMenu()" class="text-2xl px-2.5 py-1 text-slate-200 hover:text-white focus:outline-none bg-white/10 rounded-lg hover:bg-white/20 transition">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
         </div>
 
-        <!-- 3-Lines Dropdown Menu -->
-        <div id="mobile-menu" class="hidden lg:hidden bg-slate-900 border-t border-slate-700 px-4 py-3 space-y-1 text-sm font-semibold">
-            <button onclick="showPage('home'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">Home</button>
-            <button onclick="showPage('about'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">About Us</button>
-            <button onclick="showPage('company'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">Company</button>
-            <button onclick="showPage('products'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">Products</button>
-            <button onclick="showPage('sister-brand'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">Our Sister Brand</button>
-            <button onclick="showPage('contact'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded hover:bg-white/10">Contact Us</button>
+        <!-- Dropdown Menu for Laptop & Mobile -->
+        <div id="unified-menu" class="hidden bg-slate-900 border-t border-slate-700 px-6 py-4 transition-all">
+            <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-sm font-semibold">
+                <button onclick="showPage('welcome'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Welcome</button>
+                <button onclick="showPage('home'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Home</button>
+                <button onclick="showPage('about'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">About Us</button>
+                <button onclick="showPage('company'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Company</button>
+                <button onclick="showPage('products'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Products</button>
+                <button onclick="showPage('sister-brand'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Our Sister Brand</button>
+                <button onclick="showPage('contact'); toggleMenu();" class="col-span-2 sm:col-span-3 lg:col-span-6 py-2 px-3 rounded-lg bg-accent hover:bg-orange-600 text-white font-bold transition mt-1">Contact Us</button>
+            </div>
         </div>
     </header>
 
@@ -813,16 +806,11 @@
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active-page');
-
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-amber-400', 'bg-white/10'));
-            const activeBtn = document.getElementById('nav-' + pageId);
-            if (activeBtn) activeBtn.classList.add('text-amber-400', 'bg-white/10');
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
+        function toggleMenu() {
+            const menu = document.getElementById('unified-menu');
             menu.classList.toggle('hidden');
         }
 
