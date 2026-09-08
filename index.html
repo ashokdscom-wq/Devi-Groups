@@ -24,21 +24,17 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
 
-    <!-- ૧. હેડર અને નેવિગેશન (લોગો સાથે) -->
+    <!-- ૧. હેડર અને નેવિગેશન (લોગો સેટિંગ સાથે) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
             
-            <!-- લોગો એરિયા: ફોલ્ડરમાં logo.png ફાઇલ મૂકવી -->
+            <!-- લોગો એરિયા -->
             <a href="#home" class="flex items-center space-x-3">
-                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-12 w-auto object-contain bg-white rounded p-1" onerror="this.style.display='none'; document.getElementById('alt-logo').style.display='flex';">
-                <!-- જો ઈમેજ ન મળે તો બેકઅપ ટેક્સ્ટ લોગો -->
-                <div id="alt-logo" class="hidden items-center space-x-2">
-                    <span class="bg-white text-primary px-2.5 py-1 rounded font-black text-xl">DG</span>
-                    <span class="text-2xl font-bold tracking-wide">DEVI GROUPS</span>
-                </div>
+                <img src="logo.jpg" alt="DEVI GROUPS Logo" class="h-14 w-auto object-contain bg-white rounded p-1 shadow-sm" onerror="this.src='logo.png'; this.onerror=null;">
+                <span class="text-2xl font-bold tracking-wide">DEVI GROUPS</span>
             </a>
 
-            <!-- ડેસ્કટોપ નેવિગેશન મેનુ -->
+            <!-- નેવિગેશન મેનુ -->
             <nav class="hidden md:flex space-x-6 text-sm uppercase tracking-wider font-semibold">
                 <a href="#home" class="hover:text-amber-400 transition">Home</a>
                 <a href="#about" class="hover:text-amber-400 transition">About Us</a>
@@ -66,7 +62,7 @@
                 <div class="text-center p-6">
                     <i class="fa-solid fa-circle-play text-6xl text-accent group-hover:scale-110 transition duration-300"></i>
                     <p class="mt-4 font-semibold text-slate-200">Company Video Display</p>
-                    <span class="text-xs text-slate-400">(તમારો વિડીયો અહીં એમ્બેડ કરી શકાય છે)</span>
+                    <span class="text-xs text-slate-400">(કંપની વીડિયો અહીં દેખાશે)</span>
                 </div>
             </div>
         </div>
@@ -94,7 +90,7 @@
     <section id="companies" class="py-20 bg-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="text-accent font-bold uppercase tracking-widest text-sm">Our Divisions</span>
+                <span class="text-accent font-bold uppercase tracking-widest text-sm">Our Businesses</span>
                 <h2 class="text-3xl font-bold text-primary mt-2">Company Name & Product Name</h2>
             </div>
 
@@ -284,7 +280,7 @@
         </div>
     </section>
 
-    <!-- ૭. Footer & Terms & Conditions -->
+    <!-- ૭. Footer -->
     <footer class="bg-black text-slate-400 py-8 border-t border-slate-800 text-center text-sm">
         <p>© 2026 DEVI GROUPS. All Rights Reserved.</p>
         <p class="mt-1 text-xs text-slate-500">Terms & Conditions Apply</p>
@@ -292,3 +288,4 @@
 
 </body>
 </html>
+
