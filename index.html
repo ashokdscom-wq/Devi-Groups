@@ -47,7 +47,7 @@
                 <span class="text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
             </div>
 
-            <!-- નેવિગેશન મેનુ લિંક્સ (ટેબ્સ) -->
+            <!-- નેવિગેશન મેનુ લિંક્સ -->
             <nav class="hidden md:flex space-x-2 text-sm font-semibold">
                 <button onclick="showPage('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg transition text-amber-400 bg-white/10">Home</button>
                 <button onclick="showPage('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">About Us</button>
@@ -73,7 +73,7 @@
         </div>
     </header>
 
-    <!-- મુખ્ય કન્ટેન્ટ એરિયા (જ્યાં ફક્ત સિલેક્ટ કરેલું પેજ જ દેખાશે) -->
+    <!-- મુખ્ય કન્ટેન્ટ એરિયા -->
     <main class="flex-grow">
 
         <!-- ==================== ૧. HOME PAGE ==================== -->
@@ -114,37 +114,51 @@
             </div>
         </section>
 
-        <!-- ==================== ૨. ABOUT US PAGE ==================== -->
+        <!-- ==================== ૨. ABOUT US PAGE (અપડેટેડ ૫ આંકડા સાથે) ==================== -->
         <section id="page-about" class="page-content py-16 px-4">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-10">
                     <span class="text-accent font-bold uppercase tracking-widest text-sm">About Us</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">કંપની વિશે સંપૂર્ણ માહિતી</h2>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">અમારા વિશે</h2>
                 </div>
 
-                <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-lg text-center">
+                <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-lg text-center mb-10">
                     <div class="inline-block p-4 bg-blue-50 rounded-full mb-6">
                         <i class="fa-solid fa-building-columns text-4xl text-primary"></i>
                     </div>
                     <p class="text-2xl md:text-3xl text-slate-800 font-semibold leading-relaxed mb-6">
                         "૧૯૮૪ થી ચાલતી કંપની એક ખૂબ મોટી ઉછેર ની નામના મેળવી છે."
                     </p>
-                    <p class="text-slate-600 max-w-2xl mx-auto text-sm leading-relaxed mb-8">
-                        DEVI GROUPS ઉદ્યોગોને શ્રેષ્ઠ ગુણવત્તાયુક્ત કેમિકલ્સ, આધુનિક પેકેજિંગ મટિરિયલ્સ અને કસ્ટમાઇઝ્ડ સોલ્યુશન્સ પૂરા પાડવામાં ૪ દાયકાથી અગ્રેસર સ્થાન ધરાવે છે.
+                    <p class="text-slate-600 max-w-3xl mx-auto text-sm leading-relaxed mb-10">
+                        DEVI GROUPS ઉદ્યોગોને શ્રેષ્ઠ ગુણવત્તાયુક્ત કેમિકલ્સ, આધુનિક પેકેજિંગ મટિરિયલ્સ અને કસ્ટમાઇઝ્ડ સોલ્યુશન્સ પૂરા પાડવામાં દાયકાઓથી અગ્રેસર સ્થાન ધરાવે છે.
                     </p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
-                        <div>
-                            <div class="text-3xl font-black text-secondary">1984</div>
-                            <div class="text-xs uppercase font-bold text-slate-400 mt-1">સ્થાપના વર્ષ</div>
+                    <!-- નવો અપડેટેડ કાઉન્ટર સેક્શન (Years 37+, Quality 100%, Product 500+, Country 6+, Client ++) -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 pt-8 border-t border-slate-100">
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl text-secondary mb-2"></i>
+                            <div class="text-3xl font-black text-primary">37+</div>
+                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Years Experience</div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-black text-secondary">100%</div>
-                            <div class="text-xs uppercase font-bold text-slate-400 mt-1">ક્વોલિટી ટ્રસ્ટ</div>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-award text-2xl text-secondary mb-2"></i>
+                            <div class="text-3xl font-black text-primary">100%</div>
+                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Quality Assurance</div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-black text-secondary">B2B</div>
-                            <div class="text-xs uppercase font-bold text-slate-400 mt-1">ઇન્ડસ્ટ્રિયલ લીડર</div>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-cubes text-2xl text-secondary mb-2"></i>
+                            <div class="text-3xl font-black text-primary">500+</div>
+                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Products Range</div>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-globe text-2xl text-secondary mb-2"></i>
+                            <div class="text-3xl font-black text-primary">6+</div>
+                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Countries Export</div>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm col-span-2 md:col-span-1">
+                            <i class="fa-solid fa-users text-2xl text-secondary mb-2"></i>
+                            <div class="text-3xl font-black text-primary">1000+</div>
+                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Happy Clients</div>
                         </div>
                     </div>
                 </div>
@@ -381,10 +395,10 @@
         <p class="mt-1 text-slate-500">Terms & Conditions Apply</p>
     </footer>
 
-    <!-- પેજ બદલવા માટેનું JavaScript લોજિક -->
+    <!-- પેજ સ્વિચિંગ JavaScript -->
     <script>
         function showPage(pageId) {
-            // ૧. બધા પેજ છુપાવો
+            // ૧. બધા પેજ હાઇડ કરો
             const pages = document.querySelectorAll('.page-content');
             pages.forEach(page => page.classList.remove('active-page'));
 
@@ -394,7 +408,7 @@
                 activeTarget.classList.add('active-page');
             }
 
-            // ૩. બટન હાઇલાઇટ કલર અપડેટ
+            // ૩. નેવિગેશન બટન્સ હાઇલાઇટ અપડેટ
             const buttons = document.querySelectorAll('.nav-btn');
             buttons.forEach(btn => {
                 btn.classList.remove('text-amber-400', 'bg-white/10');
@@ -405,7 +419,7 @@
                 currentBtn.classList.add('text-amber-400', 'bg-white/10');
             }
 
-            // પેજ ટોપ પર સ્ક્રોલ કરવું
+            // સ્મૂથ સ્ક્રોલ ટુ ટોપ
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
