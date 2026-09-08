@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEVI GROUPS</title>
+    <title>DEVI GROUPS | Global Industrial Solutions</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS (For Maps) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#092c4c',
-                        secondary: '#127475',
+                        primary: '#0b2b48',
+                        secondary: '#13678A',
                         accent: '#e67e22'
                     }
                 }
@@ -30,40 +32,44 @@
             display: block;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        #world-map, #india-map {
+            z-index: 10;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- ૧. હેડર અને નેવિગેશન બાર -->
+    <!-- ૧. હેડર અને નેવિગેશન -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
             
-            <!-- લોગો -->
+            <!-- લોગો એરિયા -->
             <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer">
-                <img src="logo.jpg" alt="DEVI GROUPS" class="h-12 w-auto object-contain bg-white rounded p-1 shadow-sm" onerror="this.src='logo.png'; this.onerror=null;">
+                <img src="logo.png" alt="DEVI GROUPS" class="h-12 w-auto object-contain bg-white rounded p-1 shadow-sm" onerror="this.src='logo.jpg'; this.onerror=null;">
                 <span class="text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
             </div>
 
             <!-- નેવિગેશન મેનુ લિંક્સ -->
-            <nav class="hidden md:flex space-x-2 text-sm font-semibold">
-                <button onclick="showPage('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg transition text-amber-400 bg-white/10">Home</button>
-                <button onclick="showPage('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">About Us</button>
-                <button onclick="showPage('company')" id="nav-company" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Company</button>
-                <button onclick="showPage('products')" id="nav-products" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Products</button>
-                <button onclick="showPage('sister-brand')" id="nav-sister-brand" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Our Sister Brand</button>
-                <button onclick="showPage('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Contact Us</button>
+            <nav class="hidden lg:flex space-x-1 text-sm font-semibold">
+                <button onclick="showPage('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg transition text-amber-400 bg-white/10">Home</button>
+                <button onclick="showPage('about')" id="nav-about" class="nav-btn px-3 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">About Us</button>
+                <button onclick="showPage('company')" id="nav-company" class="nav-btn px-3 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Company</button>
+                <button onclick="showPage('products')" id="nav-products" class="nav-btn px-3 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Products</button>
+                <button onclick="showPage('sister-brand')" id="nav-sister-brand" class="nav-btn px-3 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Our Sister Brand</button>
+                <button onclick="showPage('contact')" id="nav-contact" class="nav-btn px-3 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Contact Us</button>
             </nav>
 
-            <button onclick="showPage('contact')" class="bg-accent hover:bg-orange-600 text-white px-5 py-2 rounded-full font-bold shadow-md transition text-sm">
-                Inquiry
-            </button>
+            <!-- WhatsApp Quick Connect -->
+            <a href="https://wa.me/919727726216" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-full font-bold shadow-md transition text-xs flex items-center gap-2">
+                <i class="fa-brands fa-whatsapp text-base"></i> +91 97277 26216
+            </a>
         </div>
 
-        <!-- મોબાઈલ મેનુ બાર -->
-        <div class="md:hidden flex overflow-x-auto bg-slate-900 px-2 py-2 space-x-2 text-xs font-semibold scrollbar-none">
+        <!-- મોબાઈલ મેનુ -->
+        <div class="lg:hidden flex overflow-x-auto bg-slate-900 px-2 py-2 space-x-2 text-xs font-semibold scrollbar-none">
             <button onclick="showPage('home')" class="nav-btn px-3 py-1.5 rounded whitespace-nowrap text-amber-400 bg-white/10">Home</button>
             <button onclick="showPage('about')" class="nav-btn px-3 py-1.5 rounded whitespace-nowrap">About Us</button>
             <button onclick="showPage('company')" class="nav-btn px-3 py-1.5 rounded whitespace-nowrap">Company</button>
@@ -73,148 +79,171 @@
         </div>
     </header>
 
-    <!-- મુખ્ય કન્ટેન્ટ એરિયા -->
+    <!-- મુખ્ય કન્ટેન્ટ કન્ટેનર -->
     <main class="flex-grow">
 
         <!-- ==================== ૧. HOME PAGE ==================== -->
-        <section id="page-home" class="page-content active-page py-16 px-4">
-            <div class="max-w-5xl mx-auto text-center">
-                <span class="text-accent font-bold uppercase tracking-widest text-sm bg-orange-100 px-3 py-1 rounded-full">Industrial Chemical Leaders</span>
-                <h1 class="text-4xl md:text-6xl font-black text-primary mt-4 mb-6 tracking-tight">Welcome to DEVI GROUPS</h1>
-                <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-                    અદ્યતન ટેકનોલોજી અને ગ્લોબલ ક્વોલિટી સ્ટાન્ડર્ડ સાથે કેમિકલ, પેકેજિંગ, ફૂડ પ્રોડક્ટ્સ અને પાવર સોલ્યુશન્સમાં વિશ્વસનીય નામ.
-                </p>
+        <section id="page-home" class="page-content active-page py-12 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-10">
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs bg-orange-100 px-3 py-1 rounded-full">Global Industrial & Chemical Leader</span>
+                    <h1 class="text-4xl md:text-6xl font-black text-primary mt-4 mb-4 tracking-tight">Welcome to DEVI GROUPS</h1>
+                    <p class="text-slate-600 max-w-2xl mx-auto text-base">
+                        Excellence in Dyes, Packaging, FMCG, Beverages & Solar Solutions since 1984.
+                    </p>
+                </div>
 
-                <!-- Company Video Display Frame -->
-                <div class="relative max-w-3xl mx-auto aspect-video bg-slate-900 rounded-3xl overflow-hidden border-4 border-slate-200 shadow-2xl flex items-center justify-center group mb-12">
+                <!-- Video Frame -->
+                <div class="relative max-w-4xl mx-auto aspect-video bg-slate-900 rounded-3xl overflow-hidden border-4 border-slate-200 shadow-2xl flex items-center justify-center group mb-16">
                     <div class="text-center p-6 text-white">
                         <i class="fa-solid fa-circle-play text-6xl text-accent group-hover:scale-110 transition duration-300"></i>
-                        <p class="mt-4 font-bold text-lg">Company Video Display</p>
-                        <span class="text-xs text-slate-400">ઇન્ડસ્ટ્રિયલ પ્રોસેસ અને કંપની ઓવરવ્યૂ વિડીયો</span>
+                        <p class="mt-4 font-bold text-lg">Corporate Video Display</p>
+                        <span class="text-xs text-slate-400">Plant Tour & Manufacturing Facility Overview</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <i class="fa-solid fa-industry text-3xl text-secondary mb-3"></i>
-                        <h4 class="font-bold text-slate-800">આધુનિક ઇન્ફ્રાસ્ટ્રક્ચર</h4>
-                        <p class="text-xs text-slate-500 mt-1">હાઈ-ટેક મેન્યુફેક્ચરિંગ અને પ્લાન્ટ ફેસિલિટી</p>
+                <!-- Global Export Presence (World Map) -->
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg mb-8">
+                    <div class="text-center mb-6">
+                        <span class="text-secondary font-bold uppercase tracking-widest text-xs">Global Footprint</span>
+                        <h3 class="text-2xl font-black text-primary mt-1">Our Export Network (6+ Countries)</h3>
+                        <p class="text-xs text-slate-500 mt-1">Click on the country markers to explore our international destinations</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <i class="fa-solid fa-vial-circle-check text-3xl text-secondary mb-3"></i>
-                        <h4 class="font-bold text-slate-800">ક્વોલિટી કંટ્રોલ</h4>
-                        <p class="text-xs text-slate-500 mt-1">૧૦૦% શુદ્ધતા અને લેબ ટેસ્ટેડ પ્રોડક્ટ્સ</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <i class="fa-solid fa-earth-americas text-3xl text-secondary mb-3"></i>
-                        <h4 class="font-bold text-slate-800">ગ્લોબલ રીચ</h4>
-                        <p class="text-xs text-slate-500 mt-1">સમગ્ર ભારતમાં તેમજ વિદેશમાં સપ્લાય નેટવર્ક</p>
+
+                    <!-- Leaflet World Map Container -->
+                    <div id="world-map" class="h-96 w-full rounded-2xl border border-slate-200 shadow-inner"></div>
+
+                    <div class="mt-6 flex flex-wrap justify-center gap-3 text-xs font-bold text-slate-700">
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇺🇸 USA</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇦🇪 UAE (Dubai)</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇩🇪 Germany</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇬🇧 UK</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇸🇦 Saudi Arabia</span>
+                        <span class="bg-slate-100 px-3 py-1.5 rounded-lg border">🇧🇩 Bangladesh</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ==================== ૨. ABOUT US PAGE (અપડેટેડ ૫ આંકડા સાથે) ==================== -->
-        <section id="page-about" class="page-content py-16 px-4">
+        <!-- ==================== ૨. ABOUT US PAGE ==================== -->
+        <section id="page-about" class="page-content py-12 px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-10">
-                    <span class="text-accent font-bold uppercase tracking-widest text-sm">About Us</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">અમારા વિશે</h2>
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs">About Us</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Corporate Profile & Leadership</h2>
                 </div>
 
+                <!-- About Container -->
                 <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-lg text-center mb-10">
-                    <div class="inline-block p-4 bg-blue-50 rounded-full mb-6">
-                        <i class="fa-solid fa-building-columns text-4xl text-primary"></i>
+                    <div class="inline-block p-4 bg-blue-50 rounded-full mb-4">
+                        <i class="fa-solid fa-building-shield text-4xl text-primary"></i>
                     </div>
                     <p class="text-2xl md:text-3xl text-slate-800 font-semibold leading-relaxed mb-6">
                         "૧૯૮૪ થી ચાલતી કંપની એક ખૂબ મોટી ઉછેર ની નામના મેળવી છે."
                     </p>
                     <p class="text-slate-600 max-w-3xl mx-auto text-sm leading-relaxed mb-10">
-                        DEVI GROUPS ઉદ્યોગોને શ્રેષ્ઠ ગુણવત્તાયુક્ત કેમિકલ્સ, આધુનિક પેકેજિંગ મટિરિયલ્સ અને કસ્ટમાઇઝ્ડ સોલ્યુશન્સ પૂરા પાડવામાં દાયકાઓથી અગ્રેસર સ્થાન ધરાવે છે.
+                        DEVI GROUPS operates as a proprietary industrial group with extensive expertise in chemicals, high-grade packaging materials, premium consumer FMCG items, and green solar infrastructure.
                     </p>
 
-                    <!-- નવો અપડેટેડ કાઉન્ટર સેક્શન (Years 37+, Quality 100%, Product 500+, Country 6+, Client ++) -->
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 pt-8 border-t border-slate-100">
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                            <i class="fa-solid fa-clock-rotate-left text-2xl text-secondary mb-2"></i>
-                            <div class="text-3xl font-black text-primary">37+</div>
-                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Years Experience</div>
+                    <!-- 5 Counters (Years 37+, Quality 100%, Products 500+, Countries 6+, Clients 1000+) -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-8 border-t border-slate-100">
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-clock-rotate-left text-xl text-secondary mb-1"></i>
+                            <div class="text-2xl font-black text-primary">37+</div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Years Exp.</div>
                         </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                            <i class="fa-solid fa-award text-2xl text-secondary mb-2"></i>
-                            <div class="text-3xl font-black text-primary">100%</div>
-                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Quality Assurance</div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-award text-xl text-secondary mb-1"></i>
+                            <div class="text-2xl font-black text-primary">100%</div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Quality Trust</div>
                         </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                            <i class="fa-solid fa-cubes text-2xl text-secondary mb-2"></i>
-                            <div class="text-3xl font-black text-primary">500+</div>
-                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Products Range</div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-cubes text-xl text-secondary mb-1"></i>
+                            <div class="text-2xl font-black text-primary">500+</div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Products</div>
                         </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
-                            <i class="fa-solid fa-globe text-2xl text-secondary mb-2"></i>
-                            <div class="text-3xl font-black text-primary">6+</div>
-                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Countries Export</div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <i class="fa-solid fa-globe text-xl text-secondary mb-1"></i>
+                            <div class="text-2xl font-black text-primary">6+</div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Countries</div>
                         </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm col-span-2 md:col-span-1">
-                            <i class="fa-solid fa-users text-2xl text-secondary mb-2"></i>
-                            <div class="text-3xl font-black text-primary">1000+</div>
-                            <div class="text-xs uppercase font-bold text-slate-500 mt-1">Happy Clients</div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-sm col-span-2 md:col-span-1">
+                            <i class="fa-solid fa-users text-xl text-secondary mb-1"></i>
+                            <div class="text-2xl font-black text-primary">1000+</div>
+                            <div class="text-xs font-bold text-slate-500 uppercase">Clients ++</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Single Owner / Leadership Spotlight -->
+                <div class="bg-gradient-to-r from-primary to-slate-900 text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <span class="text-accent text-xs font-bold uppercase tracking-widest">Leadership & Governance</span>
+                        <h3 class="text-2xl font-bold mt-1">SHAH NIRAV</h3>
+                        <p class="text-slate-300 text-sm mt-1">Founder & Managing Director (Sole Owner)</p>
+                        <p class="text-slate-400 text-xs mt-3 max-w-xl">
+                            Direct leadership ensuring prompt decisions, global supply integrity, and tailored customer fulfillment for domestic and international B2B buyers.
+                        </p>
+                    </div>
+                    <div class="shrink-0">
+                        <a href="https://wa.me/919727726216" target="_blank" class="bg-accent hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-handshake"></i> Connect with Owner
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ==================== ૩. COMPANY PAGE ==================== -->
-        <section id="page-company" class="page-content py-16 px-4">
+        <section id="page-company" class="page-content py-12 px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-12">
-                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Divisions</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Our Company Divisions</h2>
-                    <p class="text-slate-500 text-sm mt-2">DEVI GROUPS હેઠળ આવતા મુખ્ય એકમો</p>
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs">Divisions</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Our Operating Divisions</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Devi Chemical -->
-                    <div class="bg-white rounded-2xl p-6 border-t-4 border-primary shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl p-6 border-t-4 border-primary shadow-md flex flex-col justify-between">
                         <div>
                             <i class="fa-solid fa-flask-vial text-3xl text-secondary mb-4"></i>
                             <h3 class="text-xl font-bold text-primary mb-2">1. Devi Chemical</h3>
                             <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                ઔદ્યોગિક ડાઈઝ, ફૂડ કલર્સ, ઈન્ટરમીડિયેટ્સ અને સ્પેશિયાલિટી કેમિકલ્સનું વિશાળ ઉત્પાદન.
+                                Manufacturing Dyes, Intermediates, Master Batches, Food Colours, Paper Dyes, Toys & FMCG Flavours.
                             </p>
                         </div>
                         <button onclick="showPage('products')" class="text-secondary font-bold text-xs flex items-center gap-1 hover:underline">
-                            View Products <i class="fa-solid fa-arrow-right"></i>
+                            View Products & Brochure <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
 
                     <!-- Devi Packaging -->
-                    <div class="bg-white rounded-2xl p-6 border-t-4 border-secondary shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl p-6 border-t-4 border-secondary shadow-md flex flex-col justify-between">
                         <div>
                             <i class="fa-solid fa-boxes-stacked text-3xl text-secondary mb-4"></i>
                             <h3 class="text-xl font-bold text-primary mb-2">2. Devi Packaging</h3>
                             <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                કોરુગેટેડ બોક્સ, બબલ એન્વલપ, એલ્યુમિનિયમ ફોઈલ અને બાયોડિગ્રેડેબલ પેકેજિંગ ઉત્પાદનો.
+                                Corrugated Boxes, Bubble Envelopes, Aluminium Foils, Hing Boxes, Biodegradable Bags & Plastic Containers.
                             </p>
                         </div>
                         <button onclick="showPage('products')" class="text-secondary font-bold text-xs flex items-center gap-1 hover:underline">
-                            View Products <i class="fa-solid fa-arrow-right"></i>
+                            View Products & Brochure <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
 
                     <!-- Devi Coffee Shop -->
-                    <div class="bg-white rounded-2xl p-6 border-t-4 border-accent shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl p-6 border-t-4 border-accent shadow-md flex flex-col justify-between">
                         <div>
                             <i class="fa-solid fa-mug-hot text-3xl text-accent mb-4"></i>
                             <h3 class="text-xl font-bold text-primary mb-2">Devi Coffee Shop</h3>
                             <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                પ્રીમિયમ બેવરેજિસ અને કેફે ચેઈન સોલ્યુશન્સ.
+                                Premium coffee, beverages and modern cafe outlet chain.
                             </p>
                         </div>
                         <div class="flex gap-2">
-                            <a href="#" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-brands fa-instagram text-pink-600"></i> Insta</a>
-                            <a href="#" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-utensils"></i> Menu</a>
+                            <a href="#" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-brands fa-instagram text-pink-600"></i> Insta</a>
+                            <a href="#" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-utensils"></i> Menu</a>
+                            <a href="#" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-globe"></i> Web</a>
                         </div>
                     </div>
                 </div>
@@ -222,38 +251,38 @@
         </section>
 
         <!-- ==================== ૪. PRODUCTS PAGE ==================== -->
-        <section id="page-products" class="page-content py-16 px-4">
+        <section id="page-products" class="page-content py-12 px-4">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
-                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Product Catalogue</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">બધી પ્રોડક્ટ્સ અને બ્રોશર</h2>
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs">Catalogue</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Products & Direct Brochure Access</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    <!-- Devi Chemical Products -->
-                    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
+                    <!-- Chemical Products -->
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                         <div>
                             <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
                                 <i class="fa-solid fa-flask text-secondary"></i> Devi Chemical Products
                             </h3>
                             <div class="grid grid-cols-2 gap-2 text-sm text-slate-700 font-medium mb-8">
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Dyes</div>
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Intermediates</div>
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Food Colours</div>
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Master Batches</div>
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Paper Dyes</div>
-                                <div><i class="fa-solid fa-check text-emerald-600 mr-2"></i>Toys</div>
-                                <div class="col-span-2"><i class="fa-solid fa-check text-emerald-600 mr-2"></i>FMCG Products (Spices, Seasoning, Flavours)</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Dyes</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Intermediates</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Food Colours</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Master Batches</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Paper Dyes</div>
+                                <div><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Toys</div>
+                                <div class="col-span-2"><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>FMCG Products (Spices, Seasoning, Flavours)</div>
                             </div>
                         </div>
-                        <a href="chemical-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                        <a href="chemical-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
                             <i class="fa-solid fa-file-pdf"></i> Download Chemical Brochure
                         </a>
                     </div>
 
-                    <!-- Devi Packaging Products -->
-                    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
+                    <!-- Packaging Products -->
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                         <div>
                             <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
                                 <i class="fa-solid fa-box-open text-secondary"></i> Devi Packaging Products
@@ -270,7 +299,7 @@
                                 <div class="col-span-2"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Bubble Roll, Sheet & Biodegradable Bags</div>
                             </div>
                         </div>
-                        <a href="packaging-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                        <a href="packaging-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
                             <i class="fa-solid fa-file-pdf"></i> Download Packaging Brochure
                         </a>
                     </div>
@@ -280,20 +309,20 @@
         </section>
 
         <!-- ==================== ૫. OUR SISTER BRAND PAGE ==================== -->
-        <section id="page-sister-brand" class="page-content py-16 px-4">
+        <section id="page-sister-brand" class="page-content py-12 px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-12">
-                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Affiliated Ventures</span>
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs">Sister Concern</span>
                     <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Creative Impex Ltd / Sister Concern (ccm/yer)</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    <!-- FMCG Brand -->
+                    <!-- FMCG Concern -->
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                         <div>
                             <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-basket-shopping text-accent"></i> 1. FMCG Brand Name
+                                <i class="fa-solid fa-basket-shopping text-accent"></i> 1. FMCG Brand Division
                             </h3>
                             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl mb-6">
                                 <div>
@@ -305,7 +334,7 @@
                                     </ul>
                                 </div>
                                 <div>
-                                    <h5 class="font-bold text-slate-800 text-xs uppercase border-b pb-1 mb-2">Product List:</h5>
+                                    <h5 class="font-bold text-slate-800 text-xs uppercase border-b pb-1 mb-2">Products:</h5>
                                     <ul class="text-sm text-slate-700 space-y-1">
                                         <li>• Tomato Sauce</li>
                                         <li>• Chilli Sauce</li>
@@ -315,16 +344,16 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="fmcg-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                        <a href="fmcg-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
                             <i class="fa-solid fa-file-pdf"></i> Brochure Download
                         </a>
                     </div>
 
-                    <!-- Category: Solar -->
+                    <!-- Solar Concern -->
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                         <div>
                             <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-solar-panel text-accent"></i> 2. Category: Solar & Power Backup
+                                <i class="fa-solid fa-solar-panel text-accent"></i> 2. Solar & Power Services
                             </h3>
                             <div class="bg-slate-50 p-4 rounded-2xl mb-6">
                                 <ul class="space-y-3 text-sm font-medium text-slate-700">
@@ -334,7 +363,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                        <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
                             <i class="fa-solid fa-file-pdf"></i> Brochure Download
                         </a>
                     </div>
@@ -343,47 +372,93 @@
             </div>
         </section>
 
-        <!-- ==================== ૬. CONTACT US PAGE ==================== -->
-        <section id="page-contact" class="page-content py-16 px-4">
-            <div class="max-w-3xl mx-auto">
+        <!-- ==================== ૬. CONTACT US PAGE (with Interactive India Map) ==================== -->
+        <section id="page-contact" class="page-content py-12 px-4">
+            <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-10">
-                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Get In Touch</span>
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Contact Us - Gmail Form</h2>
-                    <p class="text-slate-500 text-sm mt-1">અમને પૂછપરછ અથવા ડીલ માટે સીધો સંદેશ મોકલો</p>
+                    <span class="text-accent font-bold uppercase tracking-widest text-xs">Direct Contact</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-primary mt-2">Get In Touch & Location Finder</h2>
                 </div>
 
-                <form action="mailto:your-email@gmail.com" method="POST" enctype="text/plain" class="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-slate-200 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    
+                    <!-- Contact Form -->
+                    <form action="mailto:your-email@gmail.com" method="POST" enctype="text/plain" class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 space-y-4">
                         <div>
-                            <label class="block text-xs uppercase font-bold text-slate-700 mb-2">તમારું નામ</label>
-                            <input type="text" name="Name" required placeholder="દા.ત. રમેશભાઈ પટેલ" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-secondary">
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Your Name</label>
+                            <input type="text" name="Name" required placeholder="દા.ત. Nirav Shah" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 text-sm focus:border-secondary focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase font-bold text-slate-700 mb-2">ઈમેલ આઈડી (Gmail)</label>
-                            <input type="email" name="Email" required placeholder="name@gmail.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-secondary">
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Email / Gmail</label>
+                            <input type="email" name="Email" required placeholder="contact@domain.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 text-sm focus:border-secondary focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Business Concern</label>
+                            <select name="Business Unit" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 text-sm focus:border-secondary focus:outline-none">
+                                <option>Devi Chemical</option>
+                                <option>Devi Packaging</option>
+                                <option>Devi Coffee Shop</option>
+                                <option>Creative Impex FMCG</option>
+                                <option>Solar Power Backup Services</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Message</label>
+                            <textarea name="Message" rows="3" required placeholder="તમારી જરૂરિયાત લખો..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 text-sm focus:border-secondary focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> Send Inquiry
+                        </button>
+                    </form>
+
+                    <!-- Contact Details Info -->
+                    <div class="bg-primary text-white p-8 rounded-3xl shadow-xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4">Direct Communication</h3>
+                            <div class="space-y-4 text-sm text-slate-300">
+                                <p><strong class="text-white">Owner:</strong> SHAH NIRAV</p>
+                                <p><strong class="text-white">WhatsApp / Phone:</strong> +91 97277 26216</p>
+                                <p><strong class="text-white">Email:</strong> exports@devigroups.com / info@devigroups.com</p>
+                                <p><strong class="text-white">HQ:</strong> Gujarat, India</p>
+                            </div>
+                        </div>
+                        <div class="pt-6 border-t border-slate-700">
+                            <a href="https://wa.me/919727726216" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Direct WhatsApp Chat
+                            </a>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-700 mb-2">બિઝનેસ યુનિટ પસંદ કરો</label>
-                        <select name="Business Unit" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-secondary">
-                            <option value="Devi Chemical">Devi Chemical</option>
-                            <option value="Devi Packaging">Devi Packaging</option>
-                            <option value="Devi Coffee Shop">Devi Coffee Shop</option>
-                            <option value="Creative Impex FMCG">Creative Impex FMCG</option>
-                            <option value="Solar Power Backup">Solar Power Backup</option>
-                        </select>
+                </div>
+
+                <!-- Interactive India Map with 4 Location Buttons -->
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg">
+                    <div class="text-center mb-6">
+                        <span class="text-secondary font-bold uppercase tracking-widest text-xs">Domestic Presence</span>
+                        <h3 class="text-2xl font-black text-primary mt-1">India Facility Locations</h3>
+                        <p class="text-xs text-slate-500">બટન પર ક્લિક કરો જેથી નકશા પર સંબંધિત એકમનું લોકેશન જોઈ શકાય</p>
                     </div>
 
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-700 mb-2">તમારો સંદેશ</label>
-                        <textarea name="Message" rows="4" required placeholder="તમારી જરૂરિયાત અહીં લખો..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-secondary"></textarea>
+                    <!-- Location Selector Buttons -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <button onclick="focusLocation(23.0225, 72.5714, 'Devi Chemical Main Plant')" class="loc-btn bg-slate-100 hover:bg-secondary hover:text-white p-3 rounded-xl text-xs font-bold transition border text-slate-700">
+                            🏢 Devi Chemical
+                        </button>
+                        <button onclick="focusLocation(22.3072, 73.1812, 'Devi Packaging Manufacturing')" class="loc-btn bg-slate-100 hover:bg-secondary hover:text-white p-3 rounded-xl text-xs font-bold transition border text-slate-700">
+                            📦 Devi Packaging
+                        </button>
+                        <button onclick="focusLocation(23.0330, 72.5250, 'Devi Coffee Shop Flagship')" class="loc-btn bg-slate-100 hover:bg-secondary hover:text-white p-3 rounded-xl text-xs font-bold transition border text-slate-700">
+                            ☕ Devi Coffee Shop
+                        </button>
+                        <button onclick="focusLocation(21.1702, 72.8311, 'Creative Impex & Solar Division')" class="loc-btn bg-slate-100 hover:bg-secondary hover:text-white p-3 rounded-xl text-xs font-bold transition border text-slate-700">
+                            ⚡ Creative Impex / Solar
+                        </button>
                     </div>
 
-                    <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> Submit Inquiry
-                    </button>
-                </form>
+                    <!-- Leaflet India Map -->
+                    <div id="india-map" class="h-96 w-full rounded-2xl border border-slate-200 shadow-inner"></div>
+                </div>
+
             </div>
         </section>
 
@@ -391,36 +466,79 @@
 
     <!-- ફૂટર -->
     <footer class="bg-primary text-slate-400 py-6 border-t border-slate-700 text-center text-xs">
-        <p>© 2026 DEVI GROUPS. All Rights Reserved.</p>
+        <p>© 2026 DEVI GROUPS (Owner: SHAH NIRAV). All Rights Reserved.</p>
         <p class="mt-1 text-slate-500">Terms & Conditions Apply</p>
     </footer>
 
-    <!-- પેજ સ્વિચિંગ JavaScript -->
+    <!-- Leaflet JS for Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ૧. પેજ સ્વિચિંગ લોજિક
         function showPage(pageId) {
-            // ૧. બધા પેજ હાઇડ કરો
             const pages = document.querySelectorAll('.page-content');
             pages.forEach(page => page.classList.remove('active-page'));
 
-            // ૨. સિલેક્ટ કરેલું પેજ બતાવો
             const activeTarget = document.getElementById('page-' + pageId);
             if (activeTarget) {
                 activeTarget.classList.add('active-page');
             }
 
-            // ૩. નેવિગેશન બટન્સ હાઇલાઇટ અપડેટ
             const buttons = document.querySelectorAll('.nav-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('text-amber-400', 'bg-white/10');
-            });
+            buttons.forEach(btn => btn.classList.remove('text-amber-400', 'bg-white/10'));
 
             const currentBtn = document.getElementById('nav-' + pageId);
             if (currentBtn) {
                 currentBtn.classList.add('text-amber-400', 'bg-white/10');
             }
 
-            // સ્મૂથ સ્ક્રોલ ટુ ટોપ
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // નકશા સાઈઝ રીફ્રેશ
+            if(pageId === 'home' && worldMap) {
+                setTimeout(() => { worldMap.invalidateSize(); }, 300);
+            }
+            if(pageId === 'contact' && indiaMap) {
+                setTimeout(() => { indiaMap.invalidateSize(); }, 300);
+            }
+        }
+
+        // ૨. વર્લ્ડ મેપ ઇનિશિયલાઇઝેશન (Home Page - 6 Export Countries)
+        let worldMap = L.map('world-map').setView([25, 20], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(worldMap);
+
+        const exportCountries = [
+            { name: "United States (USA)", lat: 37.0902, lng: -95.7129 },
+            { name: "United Arab Emirates (UAE)", lat: 23.4241, lng: 53.8478 },
+            { name: "Germany", lat: 51.1657, lng: 10.4515 },
+            { name: "United Kingdom (UK)", lat: 55.3781, lng: -3.4360 },
+            { name: "Saudi Arabia", lat: 23.8859, lng: 45.0792 },
+            { name: "Bangladesh", lat: 23.6850, lng: 90.3563 }
+        ];
+
+        exportCountries.forEach(country => {
+            L.circleMarker([country.lat, country.lng], {
+                color: '#e67e22',
+                fillColor: '#f39c12',
+                fillOpacity: 0.8,
+                radius: 8
+            }).addTo(worldMap).bindPopup(`<b>${country.name}</b><br>DEVI GROUPS Export Partner`);
+        });
+
+        // ૩. ઇન્ડિયા મેપ ઇનિશિયલાઇઝેશન (Contact Page - 4 Facilities)
+        let indiaMap = L.map('india-map').setView([22.5, 73.0], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(indiaMap);
+
+        let activeMarker;
+        function focusLocation(lat, lng, title) {
+            indiaMap.setView([lat, lng], 13);
+            if(activeMarker) indiaMap.removeLayer(activeMarker);
+            activeMarker = L.marker([lat, lng]).addTo(indiaMap)
+                .bindPopup(`<b>${title}</b><br><a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:blue;text-decoration:underline;">Open Google Maps</a>`)
+                .openPopup();
         }
     </script>
 
