@@ -34,6 +34,44 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .map-pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .ping-dot {
+            position: relative;
+            display: flex;
+            height: 14px;
+            width: 14px;
+        }
+        .ping-dot span:first-child {
+            position: absolute;
+            display: inline-flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 9999px;
+            background-color: #f97316;
+            opacity: 0.75;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .ping-dot span:last-child {
+            position: relative;
+            display: inline-flex;
+            border-radius: 9999px;
+            height: 14px;
+            width: 14px;
+            background-color: #ea580c;
+        }
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
@@ -58,7 +96,7 @@
                 <button onclick="showPage('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-lg transition hover:text-amber-400 hover:bg-white/5">Contact Us</button>
             </nav>
 
-            <!-- Direct WhatsApp Button (No Number Displayed) -->
+            <!-- Direct WhatsApp Button -->
             <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-5 py-2.5 rounded-full font-bold shadow-md transition flex items-center gap-2 text-sm">
                 <i class="fa-brands fa-whatsapp text-lg"></i>
                 <span>WhatsApp</span>
@@ -101,55 +139,71 @@
                     </div>
                 </div>
 
-                <!-- World Export Presence Map Section -->
+                <!-- World Export Presence Visual Map -->
                 <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-8">
                         <span class="text-accent font-bold uppercase tracking-widest text-xs">Global Footprint</span>
                         <h2 class="text-3xl font-black text-primary mt-2">Our International Export Reach (6+ Countries)</h2>
-                        <p class="text-slate-500 text-sm mt-1">Exporting precision chemical compounds and packaging materials across continents</p>
+                        <p class="text-slate-500 text-sm mt-1">Supplying across North America, Europe, Middle East, Asia & Australia</p>
                     </div>
 
-                    <!-- Visual World Map Canvas -->
-                    <div class="relative bg-slate-900 rounded-2xl p-8 text-white overflow-hidden shadow-inner">
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">United States</h4>
-                                <span class="text-xs text-slate-400">Chemicals & Dyes</span>
-                            </div>
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">UAE (Dubai)</h4>
-                                <span class="text-xs text-slate-400">Packaging & FMCG</span>
-                            </div>
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">Germany</h4>
-                                <span class="text-xs text-slate-400">Specialty Chem</span>
-                            </div>
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">United Kingdom</h4>
-                                <span class="text-xs text-slate-400">Paper & Packaging</span>
-                            </div>
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">Saudi Arabia</h4>
-                                <span class="text-xs text-slate-400">Industrial Goods</span>
-                            </div>
-                            <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                                <i class="fa-solid fa-location-dot text-accent mb-2 text-xl"></i>
-                                <h4 class="font-bold text-sm">Australia</h4>
-                                <span class="text-xs text-slate-400">Specialty Dyes</span>
-                            </div>
+                    <!-- Interactive World Map with Pins -->
+                    <div class="relative w-full aspect-[2/1] bg-slate-900 rounded-2xl overflow-hidden shadow-inner border border-slate-700">
+                        <!-- High Quality World Map Background -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map" class="w-full h-full object-cover opacity-30 filter invert">
+
+                        <!-- 1. USA Pin -->
+                        <div class="map-pin" style="top: 36%; left: 22%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇺🇸 USA</span>
                         </div>
+
+                        <!-- 2. UK Pin -->
+                        <div class="map-pin" style="top: 26%; left: 47%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇬🇧 UK</span>
+                        </div>
+
+                        <!-- 3. Germany Pin -->
+                        <div class="map-pin" style="top: 28%; left: 51%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇩🇪 Germany</span>
+                        </div>
+
+                        <!-- 4. UAE (Dubai) Pin -->
+                        <div class="map-pin" style="top: 45%; left: 63%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
+                        </div>
+
+                        <!-- 5. Saudi Arabia Pin -->
+                        <div class="map-pin" style="top: 48%; left: 59%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
+                        </div>
+
+                        <!-- 6. Australia Pin -->
+                        <div class="map-pin" style="top: 75%; left: 86%;">
+                            <div class="ping-dot"><span></span><span></span></div>
+                            <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
+                        </div>
+                    </div>
+
+                    <!-- 6 Country Badges -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 text-center">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇺🇸 United States</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇬🇧 United Kingdom</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇩🇪 Germany</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇦🇪 UAE (Dubai)</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇸🇦 Saudi Arabia</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇦🇺 Australia</div>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <!-- ==================== PAGE 2: ABOUT US (Leadership & Stats) ==================== -->
+        <!-- ==================== PAGE 2: ABOUT US ==================== -->
         <section id="page-about" class="page-content py-16 px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-12">
@@ -157,7 +211,6 @@
                     <h2 class="text-3xl md:text-4xl font-black text-primary mt-2">About DEVI GROUPS</h2>
                 </div>
 
-                <!-- History & Vision -->
                 <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-md text-center mb-12">
                     <p class="text-2xl md:text-3xl text-slate-800 font-bold leading-relaxed mb-6">
                         "Established in 1984, expanding across four decades of unmatched manufacturing integrity and market reputation."
@@ -282,7 +335,7 @@
                                 <h3 class="text-xl font-bold text-primary">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
                             <p class="text-slate-600 text-sm mb-6">
-                                Industrial and residential solar backup installations, Felicity Solar systems, and authorized Couth company distribution.
+                                Industrial solar solutions, Felicity Solar systems, and authorized Couth company distribution based in Kenya.
                             </p>
                         </div>
                         <button onclick="showPage('sister-brand')" class="text-amber-600 font-bold text-sm flex items-center gap-2 hover:underline">
@@ -336,7 +389,7 @@
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Aluminium Foil</div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Hing Box</div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Bubble Envelope</div>
-                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Hard Board Envelope</div>
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Hard Board Env.</div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Paper Bubble Env.</div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Plastic Bubble Env.</div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-solid fa-box text-blue-500 mr-2"></i>Bubble Roll & Sheet</div>
@@ -394,16 +447,19 @@
                         </a>
                     </div>
 
-                    <!-- Solar Power Backup -->
+                    <!-- Solar Power Backup (Kenya Operations) -->
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                         <div>
-                            <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-solar-panel text-accent"></i> 2. SOLAR POWER BACKUP SERVICES
-                            </h3>
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-primary flex items-center gap-2">
+                                    <i class="fa-solid fa-solar-panel text-accent"></i> 2. SOLAR POWER BACKUP
+                                </h3>
+                                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Kenya Office</span>
+                            </div>
                             <div class="bg-slate-50 p-5 rounded-2xl mb-6 space-y-2.5 text-sm font-semibold text-slate-700">
                                 <div class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Solar Power Backup Services</div>
                                 <div class="flex items-center gap-2"><i class="fa-solid fa-sun text-amber-500"></i> Felicity Solar Equipment</div>
-                                <div class="flex items-center gap-2"><i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Couth Company Distributor</div>
+                                <div class="flex items-center gap-2"><i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Couth Company Distributor (Kenya)</div>
                             </div>
                         </div>
                         <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow">
@@ -415,7 +471,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 6: CONTACT & INTERACTIVE INDIA MAP ==================== -->
+        <!-- ==================== PAGE 6: CONTACT & LOCATIONS (KENYA UPDATED) ==================== -->
         <section id="page-contact" class="page-content py-16 px-4">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-12">
@@ -428,16 +484,17 @@
                     <!-- Quick Contact Details & WhatsApp Button -->
                     <div class="lg:col-span-5 bg-primary text-white p-8 rounded-3xl shadow-xl flex flex-col justify-between">
                         <div>
-                            <h3 class="text-2xl font-bold mb-6">Corporate Office</h3>
+                            <h3 class="text-2xl font-bold mb-6">Headquarters & Offices</h3>
                             <div class="space-y-4 text-sm text-slate-300">
                                 <p><i class="fa-solid fa-user text-accent mr-3"></i> <strong>Shah Nirav</strong> (Owner & MD)</p>
-                                <p><i class="fa-solid fa-location-dot text-accent mr-3"></i> Gujarat, India</p>
-                                <p><i class="fa-solid fa-globe text-accent mr-3"></i> Global Exports: FOB / CIF</p>
+                                <p><i class="fa-solid fa-location-dot text-accent mr-3"></i> India: Gujarat (Manufacturing & Coffee Day)</p>
+                                <p><i class="fa-solid fa-location-dot text-accent mr-3"></i> Kenya: Nairobi (Solar & Power Backup)</p>
+                                <p><i class="fa-solid fa-globe text-accent mr-3"></i> Global Exports: FOB / CIF Worldwide</p>
                             </div>
                         </div>
 
                         <div class="mt-8 pt-8 border-t border-slate-700">
-                            <p class="text-xs uppercase font-bold text-slate-400 mb-3">Quick Chat Support</p>
+                            <p class="text-xs uppercase font-bold text-slate-400 mb-3">Instant Communication</p>
                             <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-lg text-sm">
                                 <i class="fa-brands fa-whatsapp text-xl"></i> Chat on WhatsApp
                             </a>
@@ -460,16 +517,16 @@
                             <div>
                                 <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Select Division</label>
                                 <select name="Division" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-secondary">
-                                    <option value="Devi Chemical">Devi Chemical</option>
-                                    <option value="Devi Packaging">Devi Packaging</option>
-                                    <option value="Devi Coffee Day">Devi Coffee Day</option>
+                                    <option value="Devi Chemical">Devi Chemical (India)</option>
+                                    <option value="Devi Packaging">Devi Packaging (India)</option>
+                                    <option value="Devi Coffee Day">Devi Coffee Day (India)</option>
                                     <option value="Creative Impex FMCG">Creative Impex FMCG</option>
-                                    <option value="SOLAR POWER BACKUP SERVICES">SOLAR POWER BACKUP SERVICES</option>
+                                    <option value="SOLAR POWER BACKUP SERVICES (Kenya)">SOLAR POWER BACKUP SERVICES (Kenya)</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs uppercase font-bold text-slate-700 mb-1">Inquiry Details</label>
-                                <textarea name="Message" rows="3" required placeholder="Product specifications, quantity, port of destination..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-secondary"></textarea>
+                                <textarea name="Message" rows="3" required placeholder="Product specifications, destination port, requirements..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:border-secondary"></textarea>
                             </div>
                             <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">
                                 <i class="fa-solid fa-paper-plane mr-2"></i> Submit Inquiry
@@ -479,34 +536,34 @@
 
                 </div>
 
-                <!-- Interactive 4-Location India Map Hub -->
+                <!-- Interactive Multi-Location Map Hub (Kenya Location Included) -->
                 <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-6">
-                        <span class="text-accent font-bold uppercase tracking-widest text-xs">Our Infrastructure</span>
-                        <h3 class="text-2xl font-black text-primary mt-1">India Office & Plant Locations</h3>
-                        <p class="text-slate-500 text-xs mt-1">Click on any unit to view its map location and address</p>
+                        <span class="text-accent font-bold uppercase tracking-widest text-xs">Global & National Infrastructure</span>
+                        <h3 class="text-2xl font-black text-primary mt-1">Operational Centers & Plant Locations</h3>
+                        <p class="text-slate-500 text-xs mt-1">Select any location below to view its pinpoint map</p>
                     </div>
 
                     <!-- Location Selector Tabs -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
                         <button onclick="changeMap('chemical')" id="btn-loc-chemical" class="loc-btn p-3 rounded-xl bg-primary text-white font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-flask block mb-1 text-sm"></i> Devi Chemical Plant
+                            <i class="fa-solid fa-flask block mb-1 text-sm"></i> Devi Chemical (India)
                         </button>
                         <button onclick="changeMap('packaging')" id="btn-loc-packaging" class="loc-btn p-3 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-box block mb-1 text-sm"></i> Devi Packaging Unit
+                            <i class="fa-solid fa-box block mb-1 text-sm"></i> Devi Packaging (India)
                         </button>
                         <button onclick="changeMap('coffee')" id="btn-loc-coffee" class="loc-btn p-3 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-mug-hot block mb-1 text-sm"></i> Devi Coffee Day Shop
+                            <i class="fa-solid fa-mug-hot block mb-1 text-sm"></i> Devi Coffee Day (India)
                         </button>
                         <button onclick="changeMap('creative')" id="btn-loc-creative" class="loc-btn p-3 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-solar-panel block mb-1 text-sm"></i> Creative / Solar Office
+                            <i class="fa-solid fa-solar-panel block mb-1 text-sm"></i> Creative Solar (Kenya)
                         </button>
                     </div>
 
                     <!-- Dynamic Map Display Frame -->
                     <div class="relative w-full h-80 rounded-2xl overflow-hidden border border-slate-300 shadow-inner">
-                        <iframe id="india-map-frame" class="w-full h-full border-0" 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                        <iframe id="location-map-frame" class="w-full h-full border-0" 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000" 
                             allowfullscreen="" loading="lazy">
                         </iframe>
                     </div>
@@ -542,7 +599,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ૨. Dynamic Location Map Switcher
+        // ૨. Dynamic Location Map Switcher (Kenya Added)
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
@@ -557,13 +614,13 @@
                 url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58756.24151243169!2d72.50742459999999!3d23.033833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000002'
             },
             'creative': {
-                name: 'Creative Impex Ltd & SOLAR POWER BACKUP Corporate Office',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000003'
+                name: 'Creative Impex Ltd & SOLAR POWER BACKUP SERVICES (Nairobi, Kenya)',
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004'
             }
         };
 
         function changeMap(key) {
-            const mapFrame = document.getElementById('india-map-frame');
+            const mapFrame = document.getElementById('location-map-frame');
             const label = document.getElementById('active-location-name');
             
             if (locationData[key]) {
