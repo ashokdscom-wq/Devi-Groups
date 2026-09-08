@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="gu" class="scroll-smooth">
+<html lang="gu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEVI GROUPS</title>
+    <title>Dynamic Chemicals - DEVI GROUPS</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -21,270 +21,387 @@
             }
         }
     </script>
+    <style>
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- ૧. હેડર અને નેવિગેશન (લોગો સેટિંગ સાથે) -->
+    <!-- ૧. હેડર અને નેવિગેશન બાર -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
             
-            <!-- લોગો એરિયા -->
-            <a href="#home" class="flex items-center space-x-3">
-                <img src="logo.jpg" alt="DEVI GROUPS Logo" class="h-14 w-auto object-contain bg-white rounded p-1 shadow-sm" onerror="this.src='logo.png'; this.onerror=null;">
-                <span class="text-2xl font-bold tracking-wide">DEVI GROUPS</span>
-            </a>
+            <!-- લોગો અને કંપની નામ -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <img src="logo.jpg" alt="Logo" class="h-12 w-auto object-contain bg-white rounded p-1" onerror="this.style.display='none'; document.getElementById('alt-logo').style.display='flex';">
+                <div id="alt-logo" class="hidden items-center space-x-2">
+                    <span class="bg-white text-primary px-2 py-1 rounded font-black text-xl">DC</span>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-wide block leading-tight">DYNAMIC CHEMICALS</span>
+                    <span class="text-xs text-amber-400 font-medium tracking-wider">A DEVI GROUPS COMPANY</span>
+                </div>
+            </div>
 
-            <!-- નેવિગેશન મેનુ -->
-            <nav class="hidden md:flex space-x-6 text-sm uppercase tracking-wider font-semibold">
-                <a href="#home" class="hover:text-amber-400 transition">Home</a>
-                <a href="#about" class="hover:text-amber-400 transition">About Us</a>
-                <a href="#companies" class="hover:text-amber-400 transition">Company & Products</a>
-                <a href="#sister-brand" class="hover:text-amber-400 transition">Our Sister Brand</a>
-                <a href="#contact" class="hover:text-amber-400 transition">Contact Us</a>
+            <!-- નેવિગેશન બટન્સ (જે ક્લિક કરશો તે જ પેજ ખૂલશે) -->
+            <nav class="hidden md:flex space-x-1 lg:space-x-2 text-sm font-semibold">
+                <button onclick="showPage('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg bg-accent text-white transition">Home</button>
+                <button onclick="showPage('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-lg hover:bg-slate-800 text-slate-200 transition">About Us</button>
+                <button onclick="showPage('company')" id="nav-company" class="nav-btn px-4 py-2 rounded-lg hover:bg-slate-800 text-slate-200 transition">Company</button>
+                <button onclick="showPage('products')" id="nav-products" class="nav-btn px-4 py-2 rounded-lg hover:bg-slate-800 text-slate-200 transition">Products</button>
+                <button onclick="showPage('sister-brand')" id="nav-sister-brand" class="nav-btn px-4 py-2 rounded-lg hover:bg-slate-800 text-slate-200 transition">Our Sister Brand</button>
+                <button onclick="showPage('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-lg hover:bg-slate-800 text-slate-200 transition">Contact Us</button>
             </nav>
 
-            <a href="#contact" class="bg-accent hover:bg-orange-600 text-white px-5 py-2 rounded-full font-semibold shadow-md transition text-sm">
-                Inquiry
-            </a>
+            <!-- મોબાઈલ મેનુ બટન -->
+            <div class="md:hidden">
+                <select onchange="showPage(this.value)" class="bg-slate-800 text-white p-2 rounded border border-slate-600 text-sm">
+                    <option value="home">Home</option>
+                    <option value="about">About Us</option>
+                    <option value="company">Company</option>
+                    <option value="products">Products</option>
+                    <option value="sister-brand">Our Sister Brand</option>
+                    <option value="contact">Contact Us</option>
+                </select>
+            </div>
         </div>
     </header>
 
-    <!-- ૨. હોમ પેજ (Hero Section & Video Display) -->
-    <section id="home" class="relative bg-slate-900 text-white py-20 px-4 text-center">
-        <div class="max-w-5xl mx-auto">
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">DEVI GROUPS</h1>
-            <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
-                Pioneering Excellence Across Chemical, Packaging, Beverage, FMCG & Power Solutions.
-            </p>
-            
-            <!-- Video Display Container -->
-            <div class="relative max-w-3xl mx-auto aspect-video bg-black/60 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl flex items-center justify-center group">
-                <div class="text-center p-6">
-                    <i class="fa-solid fa-circle-play text-6xl text-accent group-hover:scale-110 transition duration-300"></i>
-                    <p class="mt-4 font-semibold text-slate-200">Company Video Display</p>
-                    <span class="text-xs text-slate-400">(કંપની વીડિયો અહીં દેખાશે)</span>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- મુખ્ય કન્ટેન્ટ એરિયા -->
+    <main class="flex-grow">
 
-    <!-- ૩. About Us (અમારા વિશે) -->
-    <section id="about" class="py-20 bg-white border-b">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <span class="text-accent font-bold uppercase tracking-widest text-sm">About Us</span>
-            <h2 class="text-3xl font-bold text-primary mt-2 mb-6">અમારા વિશે</h2>
-            <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 shadow-sm">
-                <p class="text-xl md:text-2xl text-slate-700 font-medium leading-relaxed">
-                    "૧૯૮૪ થી ચાલતી કંપની એક ખૂબ મોટી ઉછેર ની નામના મેળવી છે."
-                </p>
-                <div class="mt-8 flex justify-center flex-wrap gap-8 text-slate-600 font-medium text-sm">
-                    <div class="flex items-center"><i class="fa-solid fa-calendar-check text-secondary text-lg mr-2"></i> Established 1984</div>
-                    <div class="flex items-center"><i class="fa-solid fa-award text-secondary text-lg mr-2"></i> High Quality Standards</div>
-                    <div class="flex items-center"><i class="fa-solid fa-handshake text-secondary text-lg mr-2"></i> Trusted Industrial Partner</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ૪. Company Name & Products -->
-    <section id="companies" class="py-20 bg-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-accent font-bold uppercase tracking-widest text-sm">Our Businesses</span>
-                <h2 class="text-3xl font-bold text-primary mt-2">Company Name & Product Name</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- 1. Devi Chemical -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-primary flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-4">
-                            <i class="fa-solid fa-flask-vial text-2xl text-secondary"></i>
-                            <h3 class="text-xl font-bold text-primary">1. Devi Chemical</h3>
+        <!-- ૧. HOME PAGE -->
+        <section id="page-home" class="page-section active">
+            <div class="bg-slate-900 text-white py-20 px-4 text-center">
+                <div class="max-w-5xl mx-auto">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Welcome to</span>
+                    <h1 class="text-4xl md:text-6xl font-extrabold mt-2 mb-4 tracking-tight">Dynamic Chemicals</h1>
+                    <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+                        Leading manufacturer of high-grade industrial dyes, intermediates, and specialty chemicals.
+                    </p>
+                    
+                    <!-- Video Display -->
+                    <div class="relative max-w-3xl mx-auto aspect-video bg-black/70 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-2xl flex items-center justify-center group">
+                        <div class="text-center p-6">
+                            <i class="fa-solid fa-circle-play text-6xl text-accent group-hover:scale-110 transition duration-300"></i>
+                            <p class="mt-4 font-semibold text-slate-200">Company Video Display</p>
                         </div>
-                        <h4 class="font-semibold text-slate-600 mb-3 border-b pb-1 text-sm uppercase">Product Name:</h4>
-                        <ul class="space-y-2 text-slate-700 text-sm mb-6">
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Dyes</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Intermediates</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Food Colours</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Master Batches</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Paper Dyes</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Toys</li>
-                            <li><i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>FMCG Products (Spices, Seasoning, Flavours)</li>
-                        </ul>
                     </div>
-                    <a href="chemical-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
-                        <i class="fa-solid fa-file-pdf"></i> Download Brochure
-                    </a>
-                </div>
 
-                <!-- 2. Devi Packaging -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-secondary flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-4">
-                            <i class="fa-solid fa-boxes-stacked text-2xl text-secondary"></i>
-                            <h3 class="text-xl font-bold text-primary">2. Devi Packaging</h3>
-                        </div>
-                        <h4 class="font-semibold text-slate-600 mb-3 border-b pb-1 text-sm uppercase">Product Name:</h4>
-                        <ul class="space-y-1.5 text-slate-700 text-sm mb-6">
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Corrugated Box</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Paper Cup & Paper Bags</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Aluminium Foil</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Hing Box</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Bubble Envelope</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Hard Board Envelope</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Paper Bubble Envelope</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Plastic Bubble Envelope</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Bubble Roll & Sheet</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Biodegradable Bags</li>
-                            <li><i class="fa-solid fa-box text-blue-500 mr-2"></i>Plastic Container</li>
-                        </ul>
+                    <div class="mt-10 flex justify-center gap-4">
+                        <button onclick="showPage('products')" class="bg-accent hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">View Products</button>
+                        <button onclick="showPage('contact')" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-6 py-3 rounded-xl font-bold transition">Contact Us</button>
                     </div>
-                    <a href="packaging-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
-                        <i class="fa-solid fa-file-pdf"></i> Download Brochure
-                    </a>
                 </div>
+            </div>
+        </section>
 
-                <!-- Devi Coffee Shop -->
-                <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-accent flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-4">
-                            <i class="fa-solid fa-mug-hot text-2xl text-accent"></i>
-                            <h3 class="text-xl font-bold text-primary">Devi Coffee Shop</h3>
+        <!-- ૨. ABOUT US PAGE -->
+        <section id="page-about" class="page-section">
+            <div class="py-16 max-w-5xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Our Legacy</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">અમારા વિશે</h2>
+                </div>
+                <div class="bg-white p-8 md:p-12 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <p class="text-2xl md:text-3xl text-slate-700 font-medium leading-relaxed mb-8">
+                        "૧૯૮૪ થી ચાલતી કંપની એક ખૂબ મોટી ઉછેર ની નામના મેળવી છે."
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-600 font-medium text-sm mt-8 border-t pt-8">
+                        <div class="p-4 bg-slate-50 rounded-xl">
+                            <i class="fa-solid fa-calendar-check text-secondary text-2xl mb-2 block"></i>
+                            <span class="font-bold text-slate-800 text-base">Established 1984</span>
+                            <p class="text-xs text-slate-500 mt-1">Decades of industrial expertise</p>
                         </div>
-                        <h4 class="font-semibold text-slate-600 mb-2 border-b pb-1 text-sm uppercase">Product:</h4>
-                        <p class="text-slate-700 font-medium mb-6">Devi Coffee Shop (Beverages & Cafe)</p>
-                        
-                        <div class="space-y-3 mb-6">
-                            <a href="https://instagram.com" target="_blank" class="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:opacity-90 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow">
-                                <i class="fa-brands fa-instagram text-lg"></i> Instagram
-                            </a>
-                            <a href="#" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow">
-                                <i class="fa-solid fa-utensils"></i> Menu
-                            </a>
-                            <a href="#" class="w-full bg-slate-800 hover:bg-black text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow">
-                                <i class="fa-solid fa-globe"></i> Web Link
-                            </a>
+                        <div class="p-4 bg-slate-50 rounded-xl">
+                            <i class="fa-solid fa-award text-secondary text-2xl mb-2 block"></i>
+                            <span class="font-bold text-slate-800 text-base">High Quality Standards</span>
+                            <p class="text-xs text-slate-500 mt-1">Rigorous lab & process testing</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl">
+                            <i class="fa-solid fa-handshake text-secondary text-2xl mb-2 block"></i>
+                            <span class="font-bold text-slate-800 text-base">Reliable Partner</span>
+                            <p class="text-xs text-slate-500 mt-1">Trusted across global markets</p>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ૫. Our Sister Concern / Brand -->
-    <section id="sister-brand" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="text-accent font-bold uppercase tracking-widest text-sm">Associated Brands</span>
-                <h2 class="text-3xl font-bold text-primary mt-2">Creative Impex Ltd / Our Sister Concern (ccm/yer)</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                
-                <!-- FMCG Brand Name -->
-                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-basket-shopping text-accent"></i> 1. FMCG Brand Name
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                            <div class="bg-white p-4 rounded-xl border border-slate-100">
-                                <h4 class="font-bold text-slate-800 mb-2 border-b pb-1 text-sm uppercase">Brands:</h4>
-                                <ul class="space-y-1 text-slate-700 text-sm font-medium">
-                                    <li>• Tikara</li>
-                                    <li>• Anmol</li>
-                                    <li>• Yummy Yummy</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white p-4 rounded-xl border border-slate-100">
-                                <h4 class="font-bold text-slate-800 mb-2 border-b pb-1 text-sm uppercase">Product List:</h4>
-                                <ul class="space-y-1 text-slate-700 text-sm">
-                                    <li>• Tomato Sauce</li>
-                                    <li>• Chilli Sauce</li>
-                                    <li>• Spices</li>
-                                    <li>• Vinegar</li>
-                                </ul>
-                            </div>
+        <!-- ૩. COMPANY PAGE -->
+        <section id="page-company" class="page-section">
+            <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Corporate Profile</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">Our Company Divisions</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Devi Chemical -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-primary">
+                        <div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-flask-vial"></i>
                         </div>
+                        <h3 class="text-xl font-bold text-primary mb-2">1. Devi Chemical</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                            સ્પેશિયાલિટી રસાયણો, ડાઈઝ અને ફૂડ કલર્સના ઉત્પાદનમાં અગ્રેસર.
+                        </p>
+                        <button onclick="showPage('products')" class="text-secondary font-bold text-sm hover:underline">View Chemical Products →</button>
                     </div>
-                    <a href="fmcg-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
-                        <i class="fa-solid fa-file-pdf"></i> Brochure Download
-                    </a>
+
+                    <!-- Devi Packaging -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-secondary">
+                        <div class="w-12 h-12 bg-cyan-50 text-secondary rounded-xl flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-primary mb-2">2. Devi Packaging</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                            કોરુગેટેડ બોક્સ, બબલ એન્વલપ્સ અને પેપર બેગ્સ સોલ્યુશન્સ.
+                        </p>
+                        <button onclick="showPage('products')" class="text-secondary font-bold text-sm hover:underline">View Packaging Items →</button>
+                    </div>
+
+                    <!-- Devi Coffee Shop -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-accent">
+                        <div class="w-12 h-12 bg-orange-50 text-accent rounded-xl flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-primary mb-2">Devi Coffee Shop</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                            પ્રીમિયમ બેવરેજીસ અને કાફે સર્વિસ ચેઇન.
+                        </p>
+                        <button onclick="showPage('products')" class="text-secondary font-bold text-sm hover:underline">View Details →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ૪. PRODUCTS PAGE -->
+        <section id="page-products" class="page-section">
+            <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Catalogue</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">Products & Brochures</h2>
                 </div>
 
-                <!-- Category: Solar Services -->
-                <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-solar-panel text-accent"></i> 2. Category: Solar & Backup
-                        </h3>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 mb-6">
-                            <ul class="space-y-3 text-slate-700 font-medium">
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Solar Power Backup Services</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-sun text-amber-500"></i> Felicity Solar</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Couth Company Distributor</li>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Chemical Products -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-primary mb-4 pb-2 border-b flex items-center gap-2">
+                                <i class="fa-solid fa-flask text-secondary"></i> Devi Chemical
+                            </h3>
+                            <ul class="space-y-2 text-slate-700 text-sm mb-6">
+                                <li>• Dyes</li>
+                                <li>• Intermediates</li>
+                                <li>• Food Colours</li>
+                                <li>• Master Batches</li>
+                                <li>• Paper Dyes</li>
+                                <li>• Toys</li>
+                                <li>• FMCG Products (Spices, Seasoning, Flavours)</li>
                             </ul>
                         </div>
+                        <a href="chemical-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Download Brochure
+                        </a>
                     </div>
-                    <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
-                        <i class="fa-solid fa-file-pdf"></i> Brochure Download
-                    </a>
-                </div>
 
+                    <!-- Packaging Products -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-primary mb-4 pb-2 border-b flex items-center gap-2">
+                                <i class="fa-solid fa-box-open text-secondary"></i> Devi Packaging
+                            </h3>
+                            <ul class="space-y-1.5 text-slate-700 text-sm mb-6">
+                                <li>• Corrugated Box</li>
+                                <li>• Paper Cup & Paper Bags</li>
+                                <li>• Aluminium Foil</li>
+                                <li>• Hing Box</li>
+                                <li>• Bubble Envelope & Hard Board Envelope</li>
+                                <li>• Paper & Plastic Bubble Envelope</li>
+                                <li>• Bubble Roll & Sheet</li>
+                                <li>• Biodegradable Bags & Plastic Container</li>
+                            </ul>
+                        </div>
+                        <a href="packaging-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Download Brochure
+                        </a>
+                    </div>
+
+                    <!-- Coffee Shop Links -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-primary mb-4 pb-2 border-b flex items-center gap-2">
+                                <i class="fa-solid fa-mug-hot text-accent"></i> Devi Coffee Shop
+                            </h3>
+                            <p class="text-slate-700 text-sm mb-6">Explore our special coffee blends, menu, and cafe updates online.</p>
+                            <div class="space-y-3 mb-6">
+                                <a href="https://instagram.com" target="_blank" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm shadow">
+                                    <i class="fa-brands fa-instagram"></i> Instagram
+                                </a>
+                                <a href="#" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm shadow">
+                                    <i class="fa-solid fa-utensils"></i> Menu
+                                </a>
+                                <a href="#" class="w-full bg-slate-800 hover:bg-black text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm shadow">
+                                    <i class="fa-solid fa-globe"></i> Web Link
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ૬. Contact Us (Gmail Form) -->
-    <section id="contact" class="py-20 bg-slate-900 text-white">
-        <div class="max-w-4xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <span class="text-accent font-bold uppercase tracking-widest text-sm">Get In Touch</span>
-                <h2 class="text-3xl font-bold mt-2">Contact Us - Gmail Form</h2>
-                <p class="text-slate-400 mt-2 text-sm">Send us an inquiry directly to our official email</p>
+        <!-- ૫. OUR SISTER BRAND PAGE -->
+        <section id="page-sister-brand" class="page-section">
+            <div class="py-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Affiliations</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">Creative Impex Ltd / Sister Concerns</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- FMCG -->
+                    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-basket-shopping text-accent"></i> FMCG Brand Name
+                            </h3>
+                            <div class="grid grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-xl">
+                                <div>
+                                    <h4 class="font-bold text-slate-800 mb-2 border-b pb-1 text-sm">Brands:</h4>
+                                    <ul class="space-y-1 text-slate-700 text-sm">
+                                        <li>• Tikara</li>
+                                        <li>• Anmol</li>
+                                        <li>• Yummy Yummy</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 mb-2 border-b pb-1 text-sm">Product List:</h4>
+                                    <ul class="space-y-1 text-slate-700 text-sm">
+                                        <li>• Tomato Sauce</li>
+                                        <li>• Chilli Sauce</li>
+                                        <li>• Spices</li>
+                                        <li>• Vinegar</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="fmcg-brochure.pdf" download class="w-full bg-primary hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Brochure Download
+                        </a>
+                    </div>
+
+                    <!-- Solar -->
+                    <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-md flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-solar-panel text-accent"></i> Solar & Power Category
+                            </h3>
+                            <div class="bg-slate-50 p-4 rounded-xl mb-6">
+                                <ul class="space-y-3 text-slate-700 font-medium">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Solar Power Backup Services</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-sun text-amber-500"></i> Felicity Solar</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-truck-ramp-box text-amber-500"></i> Couth Company Distributor</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow">
+                            <i class="fa-solid fa-file-pdf"></i> Brochure Download
+                        </a>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <!-- Form -->
-            <form action="mailto:your-email@gmail.com" method="POST" enctype="text/plain" class="bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-700 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Your Name</label>
-                        <input type="text" name="Name" required placeholder="તમારું નામ" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-accent">
+        <!-- ૬. CONTACT US PAGE -->
+        <section id="page-contact" class="page-section">
+            <div class="py-16 max-w-4xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <span class="text-accent font-bold uppercase tracking-widest text-sm">Get In Touch</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-primary mt-2">Contact Us - Gmail Form</h2>
+                </div>
+
+                <form action="mailto:your-email@gmail.com" method="POST" enctype="text/plain" class="bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-slate-200 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Your Name</label>
+                            <input type="text" name="Name" required placeholder="તમારું નામ" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Your Email</label>
+                            <input type="email" name="Email" required placeholder="તમારો ઈમેલ" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-accent">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Your Email (Gmail)</label>
-                        <input type="email" name="Email" required placeholder="તમારો ઈમેલ" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-accent">
+                        <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Select Company Division</label>
+                        <select name="Division" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-accent">
+                            <option value="Dynamic Chemical">Dynamic Chemical</option>
+                            <option value="Devi Packaging">Devi Packaging</option>
+                            <option value="Devi Coffee Shop">Devi Coffee Shop</option>
+                            <option value="Creative Impex FMCG">Creative Impex FMCG</option>
+                            <option value="Solar Power Backup">Solar Power Backup</option>
+                        </select>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Select Business Unit</label>
-                    <select name="Business Unit" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-accent">
-                        <option value="Devi Chemical">Devi Chemical</option>
-                        <option value="Devi Packaging">Devi Packaging</option>
-                        <option value="Devi Coffee Shop">Devi Coffee Shop</option>
-                        <option value="Creative Impex FMCG">Creative Impex FMCG</option>
-                        <option value="Solar Power Backup">Solar Power Backup</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase font-bold text-slate-300 mb-2">Message</label>
-                    <textarea name="Message" rows="4" required placeholder="તમારો સંદેશ લખો..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-accent"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-accent hover:bg-orange-600 font-bold py-3 rounded-lg transition duration-200 shadow-lg text-white">
-                    <i class="fa-solid fa-paper-plane mr-2"></i> Send Message
-                </button>
-            </form>
-        </div>
-    </section>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-slate-700 mb-2">Message</label>
+                        <textarea name="Message" rows="4" required placeholder="તમારો સંદેશ લખો..." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-slate-800 focus:outline-none focus:border-accent"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-accent hover:bg-orange-600 font-bold py-3.5 rounded-lg transition duration-200 shadow-lg text-white">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Submit Inquiry
+                    </button>
+                </form>
+            </div>
+        </section>
 
-    <!-- ૭. Footer -->
-    <footer class="bg-black text-slate-400 py-8 border-t border-slate-800 text-center text-sm">
-        <p>© 2026 DEVI GROUPS. All Rights Reserved.</p>
-        <p class="mt-1 text-xs text-slate-500">Terms & Conditions Apply</p>
+    </main>
+
+    <!-- ફૂટર -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-sm border-t border-slate-800">
+        <p>© 2026 Dynamic Chemicals (DEVI GROUPS). All Rights Reserved.</p>
     </footer>
+
+    <!-- પેજ બદલવા માટેનું JavaScript લોજિક -->
+    <script>
+        function showPage(pageId) {
+            // બધા સેક્શન્સ હાઇડ કરો
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // સિલેક્ટ કરેલું સેક્શન શો કરો
+            const activeSec = document.getElementById('page-' + pageId);
+            if (activeSec) {
+                activeSec.classList.add('active');
+            }
+
+            // નેવિગેશન બટન એક્ટિવ સ્ટાઇલ અપડેટ કરો
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('bg-accent', 'text-white');
+                btn.classList.add('text-slate-200');
+            });
+
+            const activeBtn = document.getElementById('nav-' + pageId);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-accent', 'text-white');
+                activeBtn.classList.remove('text-slate-200');
+            }
+
+            // પેજ ટોપ પર સ્ક્રોલ કરો
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 
 </body>
 </html>
