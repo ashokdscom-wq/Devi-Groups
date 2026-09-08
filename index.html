@@ -103,7 +103,7 @@
             </a>
         </div>
 
-        <!-- Mobile Scrollable Bar -->
+        <!-- Mobile Navigation Bar -->
         <div class="lg:hidden flex overflow-x-auto bg-slate-900 px-2 py-2 space-x-2 text-xs font-semibold scrollbar-none">
             <button onclick="showPage('home')" class="nav-btn px-3 py-1.5 rounded whitespace-nowrap text-amber-400 bg-white/10">Home</button>
             <button onclick="showPage('about')" class="nav-btn px-3 py-1.5 rounded whitespace-nowrap">About Us</button>
@@ -114,7 +114,7 @@
         </div>
     </header>
 
-    <!-- Main Content Dynamic Container -->
+    <!-- Main Content Container -->
     <main class="flex-grow">
 
         <!-- ==================== PAGE 1: HOME ==================== -->
@@ -139,7 +139,7 @@
                     </div>
                 </div>
 
-                <!-- World Export Presence Visual Map -->
+                <!-- World Export Presence Map -->
                 <div class="bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-8">
                         <span class="text-accent font-bold uppercase tracking-widest text-xs">Global Footprint</span>
@@ -147,49 +147,37 @@
                         <p class="text-slate-500 text-sm mt-1">Supplying across North America, Europe, Middle East, Asia & Australia</p>
                     </div>
 
-                    <!-- Interactive World Map with Pins -->
+                    <!-- World Map Visual Canvas -->
                     <div class="relative w-full aspect-[2/1] bg-slate-900 rounded-2xl overflow-hidden shadow-inner border border-slate-700">
-                        <!-- High Quality World Map Background -->
                         <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map" class="w-full h-full object-cover opacity-30 filter invert">
 
-                        <!-- 1. USA Pin -->
+                        <!-- Pins -->
                         <div class="map-pin" style="top: 36%; left: 22%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇺🇸 USA</span>
                         </div>
-
-                        <!-- 2. UK Pin -->
                         <div class="map-pin" style="top: 26%; left: 47%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇬🇧 UK</span>
                         </div>
-
-                        <!-- 3. Germany Pin -->
                         <div class="map-pin" style="top: 28%; left: 51%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇩🇪 Germany</span>
                         </div>
-
-                        <!-- 4. UAE (Dubai) Pin -->
                         <div class="map-pin" style="top: 45%; left: 63%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
                         </div>
-
-                        <!-- 5. Saudi Arabia Pin -->
                         <div class="map-pin" style="top: 48%; left: 59%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
                         </div>
-
-                        <!-- 6. Australia Pin -->
                         <div class="map-pin" style="top: 75%; left: 86%;">
                             <div class="ping-dot"><span></span><span></span></div>
                             <span class="bg-slate-900/90 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
                         </div>
                     </div>
 
-                    <!-- 6 Country Badges -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 text-center">
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇺🇸 United States</div>
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700">🇬🇧 United Kingdom</div>
@@ -219,7 +207,7 @@
                         Operating as a fully independent single-owner corporation, DEVI GROUPS delivers robust reliability, rapid decision making, and high-standard chemical & packaging solutions tailored to international clients.
                     </p>
 
-                    <!-- Stats Counter (37+ Years, 100% Quality, 500+ Products, 6+ Countries, 1000+ Clients) -->
+                    <!-- Stats Counter -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-10 mt-10 border-t border-slate-100">
                         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-sm">
                             <div class="text-3xl font-black text-primary">37+</div>
@@ -244,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- Sole Ownership & Leadership Profile -->
+                <!-- Sole Leadership Profile -->
                 <div class="bg-slate-900 text-white p-8 md:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-8">
                     <div class="w-32 h-32 rounded-full bg-slate-800 border-4 border-accent flex items-center justify-center flex-shrink-0">
                         <i class="fa-solid fa-user-tie text-5xl text-slate-300"></i>
@@ -271,6 +259,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
                     <!-- 1. Devi Chemical -->
                     <div class="bg-white rounded-3xl p-8 border-t-4 border-primary shadow-md flex flex-col justify-between">
                         <div>
@@ -303,24 +292,32 @@
                         </button>
                     </div>
 
-                    <!-- 3. Devi Coffee Day -->
+                    <!-- 3. Devi Coffee Day (All Links Updated) -->
                     <div class="bg-white rounded-3xl p-8 border-t-4 border-accent shadow-md flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-3 mb-4">
                                 <i class="fa-solid fa-mug-hot text-3xl text-accent"></i>
                                 <h3 class="text-xl font-bold text-primary">3. Devi Coffee Day</h3>
                             </div>
-                            <p class="text-slate-600 text-sm mb-6">
+                            <p class="text-slate-600 text-sm mb-4">
                                 Premium handcrafted coffee blends, cafe hospitality, and specialty beverage operations.
                             </p>
+                            
+                            <!-- Links: Insta, FB, Google, Menu, Website -->
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <a href="https://instagram.com/devicoffeeday" target="_blank" class="bg-pink-50 text-pink-700 hover:bg-pink-100 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-pink-200">
-                                    <i class="fa-brands fa-instagram"></i> @devicoffeeday
+                                <a href="https://instagram.com/devicoffeeday" target="_blank" class="bg-pink-50 text-pink-700 hover:bg-pink-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-pink-200">
+                                    <i class="fa-brands fa-instagram"></i> Instagram
                                 </a>
-                                <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="bg-amber-50 text-amber-800 hover:bg-amber-100 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-amber-200">
-                                    <i class="fa-solid fa-book-open"></i> Live Menu
+                                <a href="https://facebook.com/devicoffeeday" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-blue-200">
+                                    <i class="fa-brands fa-facebook"></i> Facebook
                                 </a>
-                                <a href="https://www.devicoffeeday.com" target="_blank" class="bg-slate-100 text-slate-800 hover:bg-slate-200 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-slate-300">
+                                <a href="https://www.google.com/search?q=Devi+Coffee+Day" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-emerald-200">
+                                    <i class="fa-brands fa-google"></i> Google Page
+                                </a>
+                                <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-amber-200">
+                                    <i class="fa-solid fa-book-open"></i> Menu
+                                </a>
+                                <a href="https://www.devicoffeeday.com" target="_blank" class="bg-slate-100 text-slate-800 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-slate-300">
                                     <i class="fa-solid fa-globe"></i> Website
                                 </a>
                             </div>
@@ -536,7 +533,7 @@
 
                 </div>
 
-                <!-- Interactive Multi-Location Map Hub (Kenya Location Included) -->
+                <!-- Interactive Location Map Hub (Kenya Location Included) -->
                 <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-xs">Global & National Infrastructure</span>
