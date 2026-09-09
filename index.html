@@ -201,7 +201,7 @@
             <!-- Direct Contact Actions + Real Flag Language Dropdown -->
             <div class="flex items-center gap-2 sm:gap-4">
                 
-                <!-- HD Flag Image Custom Dropdown (Works 100% on Windows/Mac/Android/iOS) -->
+                <!-- HD Flag Image Custom Dropdown -->
                 <div class="relative inline-block text-left" id="lang-picker-container">
                     <button type="button" onclick="toggleLangDropdown(event)" id="selected-lang-btn" class="flex items-center gap-2 bg-slate-800/95 hover:bg-slate-700 text-amber-300 font-bold text-xs py-1.5 px-3 rounded-xl border border-slate-600 focus:outline-none focus:border-amber-400 shadow-md transition">
                         <img id="current-flag-img" src="https://flagcdn.com/w40/gb.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Flag">
@@ -283,7 +283,7 @@
             </div>
         </div>
 
-        <!-- Full Horizontal Menu Line (આખી આડી લાઈન) -->
+        <!-- Full Horizontal Menu Line -->
         <div class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800">
             <nav class="max-w-6xl mx-auto px-2 sm:px-6 flex items-center justify-start md:justify-center overflow-x-auto no-scrollbar py-1.5 gap-1 sm:gap-2">
                 
@@ -375,7 +375,7 @@
                     </div>
                 </div>
 
-                <!-- World Export Presence Map Card -->
+                <!-- World Export Presence Map Card (WITH VIBRANT HIGH-CONTRAST COUNTRY BADGES) -->
                 <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Footprint</span>
@@ -413,13 +413,32 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 mt-5 text-center">
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇺🇸 United States</div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇬🇧 United Kingdom</div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇩🇪 Germany</div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇦🇪 UAE (Dubai)</div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇸🇦 Saudi Arabia</div>
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-semibold text-[11px] sm:text-xs text-slate-700">🇦🇺 Australia</div>
+                    <!-- Highlighted High-Visibility Country Badges (HD Flag + Bold Text + 3D Hover) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 text-center">
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/us.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="USA">
+                            <span>United States</span>
+                        </div>
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/gb.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="UK">
+                            <span>United Kingdom</span>
+                        </div>
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/de.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Germany">
+                            <span>Germany</span>
+                        </div>
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/ae.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="UAE">
+                            <span>UAE (Dubai)</span>
+                        </div>
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/sa.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Saudi Arabia">
+                            <span>Saudi Arabia</span>
+                        </div>
+                        <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
+                            <img src="https://flagcdn.com/w40/au.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Australia">
+                            <span>Australia</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1020,38 +1039,45 @@
 
                 </div>
 
-                <!-- Multi-Location Map Hub -->
-                <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-lg">
-                    <div class="text-center mb-5">
-                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global & National Infrastructure</span>
-                        <h3 class="text-xl sm:text-2xl font-black text-primary mt-1">Operational Centers & Plant Locations</h3>
-                        <p class="text-slate-500 text-[11px] sm:text-xs mt-1">Select any location below to view its pinpoint map</p>
+                <!-- Multi-Location Map Hub (WITH HIGH-CONTRAST HIGHLIGHTED 4 DIVISION BUTTONS) -->
+                <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl">
+                    <div class="text-center mb-6">
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 px-3 py-1 rounded-full border border-orange-200">Global & National Infrastructure</span>
+                        <h3 class="text-xl sm:text-2xl font-black text-primary mt-2">Operational Centers & Plant Locations</h3>
+                        <p class="text-slate-500 text-[11px] sm:text-xs mt-1">Click on any division below to view its accurate interactive map</p>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-                        <button onclick="changeMap('chemical')" id="btn-loc-chemical" class="loc-btn p-2.5 rounded-xl bg-primary text-white font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-flask block mb-1 text-sm"></i> Devi Chemical
+                    <!-- 4 High-Contrast Highlighted Company Buttons -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                        <button onclick="changeMap('chemical')" id="btn-loc-chemical" class="loc-btn p-3.5 rounded-2xl bg-primary text-amber-300 border-2 border-amber-400 shadow-lg font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5 scale-[1.02]">
+                            <i class="fa-solid fa-flask text-lg text-amber-300"></i>
+                            <span>1. Devi Chemical</span>
                         </button>
-                        <button onclick="changeMap('packaging')" id="btn-loc-packaging" class="loc-btn p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-box block mb-1 text-sm"></i> Devi Packaging
+                        <button onclick="changeMap('packaging')" id="btn-loc-packaging" class="loc-btn p-3.5 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 border-2 border-slate-300 hover:border-primary shadow-sm font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-box text-lg text-secondary"></i>
+                            <span>2. Devi Packaging</span>
                         </button>
-                        <button onclick="changeMap('coffee')" id="btn-loc-coffee" class="loc-btn p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-mug-hot block mb-1 text-sm"></i> Devi Coffee Day
+                        <button onclick="changeMap('coffee')" id="btn-loc-coffee" class="loc-btn p-3.5 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 border-2 border-slate-300 hover:border-primary shadow-sm font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-mug-hot text-lg text-accent"></i>
+                            <span>3. Devi Coffee Day</span>
                         </button>
-                        <button onclick="changeMap('creative')" id="btn-loc-creative" class="loc-btn p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition">
-                            <i class="fa-solid fa-solar-panel block mb-1 text-sm"></i> Creative Solar (Kenya)
+                        <button onclick="changeMap('creative')" id="btn-loc-creative" class="loc-btn p-3.5 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 border-2 border-slate-300 hover:border-primary shadow-sm font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-solar-panel text-lg text-amber-500"></i>
+                            <span>4. Creative Solar (Kenya)</span>
                         </button>
                     </div>
 
-                    <div class="relative w-full h-72 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-300 shadow-inner">
+                    <div class="relative w-full h-80 rounded-2xl overflow-hidden border-2 border-slate-300 shadow-inner">
                         <iframe id="location-map-frame" class="w-full h-full border-0" 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000" 
                             allowfullscreen="" loading="lazy">
                         </iframe>
                     </div>
                     
-                    <div class="mt-3 text-center">
-                        <span id="active-location-name" class="text-xs font-bold text-primary">Active Location: Devi Chemical Plant (Gujarat, India)</span>
+                    <div class="mt-4 text-center">
+                        <span id="active-location-name" class="inline-block bg-primary/10 text-primary border border-primary/20 text-xs sm:text-sm font-black px-4 py-1.5 rounded-full shadow-sm">
+                            📍 Active Location: Devi Chemical Plant (Gujarat, India)
+                        </span>
                     </div>
                 </div>
 
@@ -1186,7 +1212,7 @@
             status.classList.remove('hidden');
         }
 
-        // Multi-Location Map Switcher
+        // Multi-Location Map Switcher with High-Contrast Styles
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
@@ -1212,16 +1238,16 @@
             
             if (locationData[key]) {
                 mapFrame.src = locationData[key].url;
-                label.innerText = 'Active Location: ' + locationData[key].name;
+                label.innerHTML = '📍 Active Location: ' + locationData[key].name;
             }
 
             document.querySelectorAll('.loc-btn').forEach(btn => {
-                btn.className = 'loc-btn p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold text-xs text-center transition';
+                btn.className = 'loc-btn p-3.5 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 border-2 border-slate-300 hover:border-primary shadow-sm font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5';
             });
 
             const activeBtn = document.getElementById('btn-loc-' + key);
             if (activeBtn) {
-                activeBtn.className = 'loc-btn p-2.5 rounded-xl bg-primary text-white font-bold text-xs text-center transition shadow';
+                activeBtn.className = 'loc-btn p-3.5 rounded-2xl bg-primary text-amber-300 border-2 border-amber-400 shadow-lg font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5 scale-[1.02]';
             }
         }
     </script>
