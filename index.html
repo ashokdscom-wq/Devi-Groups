@@ -171,6 +171,15 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Custom Flag Dropdown Scrollbar */
+        #lang-dropdown-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+        #lang-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #e67e22;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
@@ -178,7 +187,7 @@
     <!-- Hidden Default Google Translate Hook -->
     <div id="google_translate_element"></div>
 
-    <!-- Header (Main Brand Bar + Language Selector + Full Horizontal Navigation Bar) -->
+    <!-- Header (Main Brand Bar + Real Image Flag Language Selector + Full Horizontal Navigation Bar) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         
         <!-- Top Branding Row -->
@@ -189,33 +198,82 @@
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
-            <!-- Direct Contact Actions + Flag Language Selector -->
+            <!-- Direct Contact Actions + Real Flag Language Dropdown -->
             <div class="flex items-center gap-2 sm:gap-4">
                 
-                <!-- Flag-based Global Language Selector -->
-                <div class="relative inline-block text-left">
-                    <select onchange="translatePage(this.value)" class="bg-slate-800/90 text-amber-300 font-bold text-xs py-1.5 px-2.5 rounded-lg border border-slate-600 focus:outline-none focus:border-amber-400 cursor-pointer shadow-inner">
-                        <option value="en">🌐 🇬🇧 English</option>
-                        <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
-                        <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
-                        <option value="ar">🇦🇪 / 🇸🇦 العربية (Arabic)</option>
-                        <option value="es">🇪🇸 Español (Spanish)</option>
-                        <option value="fr">🇫🇷 Français (French)</option>
-                        <option value="de">🇩🇪 Deutsch (German)</option>
-                        <option value="zh-CN">🇨🇳 中文 (Chinese)</option>
-                        <option value="ru">🇷🇺 Русский (Russian)</option>
-                        <option value="ja">🇯🇵 日本語 (Japanese)</option>
-                        <option value="pt">🇵🇹 Português (Portuguese)</option>
-                        <option value="it">🇮🇹 Italiano (Italian)</option>
-                        <option value="sw">🇰🇪 Kiswahili (Swahili - Kenya)</option>
-                        <option value="tr">🇹🇷 Türkçe (Turkish)</option>
-                        <option value="vi">🇻🇳 Tiếng Việt (Vietnamese)</option>
-                        <option value="ko">🇰🇷 한국어 (Korean)</option>
-                        <option value="nl">🇳🇱 Nederlands (Dutch)</option>
-                        <option value="pl">🇵🇱 Polski (Polish)</option>
-                        <option value="id">🇮🇩 Bahasa Indonesia</option>
-                        <option value="th">🇹🇭 ไทย (Thai)</option>
-                    </select>
+                <!-- HD Flag Image Custom Dropdown (Works 100% on Windows/Mac/Android/iOS) -->
+                <div class="relative inline-block text-left" id="lang-picker-container">
+                    <button type="button" onclick="toggleLangDropdown(event)" id="selected-lang-btn" class="flex items-center gap-2 bg-slate-800/95 hover:bg-slate-700 text-amber-300 font-bold text-xs py-1.5 px-3 rounded-xl border border-slate-600 focus:outline-none focus:border-amber-400 shadow-md transition">
+                        <img id="current-flag-img" src="https://flagcdn.com/w40/gb.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Flag">
+                        <span id="current-lang-text">English</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1 text-slate-400"></i>
+                    </button>
+
+                    <!-- Dropdown List with Real Flags -->
+                    <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 max-h-80 overflow-y-auto bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl py-2 z-[150] backdrop-blur-md">
+                        <div class="px-3 py-1.5 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800 tracking-wider">Select Global Language</div>
+                        
+                        <button onclick="selectLanguage('en', 'https://flagcdn.com/w40/gb.png', 'English')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/gb.png" class="w-5 h-3.5 object-cover rounded shadow" alt="UK"> English
+                        </button>
+                        <button onclick="selectLanguage('gu', 'https://flagcdn.com/w40/in.png', 'ગુજરાતી')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/in.png" class="w-5 h-3.5 object-cover rounded shadow" alt="India"> ગુજરાતી (Gujarati)
+                        </button>
+                        <button onclick="selectLanguage('hi', 'https://flagcdn.com/w40/in.png', 'हिन्दी')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/in.png" class="w-5 h-3.5 object-cover rounded shadow" alt="India"> हिन्दी (Hindi)
+                        </button>
+                        <button onclick="selectLanguage('ar', 'https://flagcdn.com/w40/ae.png', 'العربية')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/ae.png" class="w-5 h-3.5 object-cover rounded shadow" alt="UAE"> العربية (Arabic - UAE/SA)
+                        </button>
+                        <button onclick="selectLanguage('es', 'https://flagcdn.com/w40/es.png', 'Español')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/es.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Spain"> Español (Spanish)
+                        </button>
+                        <button onclick="selectLanguage('fr', 'https://flagcdn.com/w40/fr.png', 'Français')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/fr.png" class="w-5 h-3.5 object-cover rounded shadow" alt="France"> Français (French)
+                        </button>
+                        <button onclick="selectLanguage('de', 'https://flagcdn.com/w40/de.png', 'Deutsch')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/de.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Germany"> Deutsch (German)
+                        </button>
+                        <button onclick="selectLanguage('zh-CN', 'https://flagcdn.com/w40/cn.png', '中文')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/cn.png" class="w-5 h-3.5 object-cover rounded shadow" alt="China"> 中文 (Chinese)
+                        </button>
+                        <button onclick="selectLanguage('ru', 'https://flagcdn.com/w40/ru.png', 'Русский')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Russia"> Русский (Russian)
+                        </button>
+                        <button onclick="selectLanguage('ja', 'https://flagcdn.com/w40/jp.png', '日本語')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/jp.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Japan"> 日本語 (Japanese)
+                        </button>
+                        <button onclick="selectLanguage('pt', 'https://flagcdn.com/w40/pt.png', 'Português')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/pt.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Portugal"> Português (Portuguese)
+                        </button>
+                        <button onclick="selectLanguage('it', 'https://flagcdn.com/w40/it.png', 'Italiano')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/it.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Italy"> Italiano (Italian)
+                        </button>
+                        <button onclick="selectLanguage('sw', 'https://flagcdn.com/w40/ke.png', 'Kiswahili')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/ke.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Kenya"> Kiswahili (Swahili - Kenya)
+                        </button>
+                        <button onclick="selectLanguage('tr', 'https://flagcdn.com/w40/tr.png', 'Türkçe')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Turkey"> Türkçe (Turkish)
+                        </button>
+                        <button onclick="selectLanguage('vi', 'https://flagcdn.com/w40/vn.png', 'Tiếng Việt')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/vn.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Vietnam"> Tiếng Việt (Vietnamese)
+                        </button>
+                        <button onclick="selectLanguage('ko', 'https://flagcdn.com/w40/kr.png', '한국어')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/kr.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Korea"> 한국어 (Korean)
+                        </button>
+                        <button onclick="selectLanguage('nl', 'https://flagcdn.com/w40/nl.png', 'Nederlands')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/nl.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Netherlands"> Nederlands (Dutch)
+                        </button>
+                        <button onclick="selectLanguage('pl', 'https://flagcdn.com/w40/pl.png', 'Polski')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/pl.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Poland"> Polski (Polish)
+                        </button>
+                        <button onclick="selectLanguage('id', 'https://flagcdn.com/w40/id.png', 'Bahasa')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/id.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Indonesia"> Bahasa Indonesia
+                        </button>
+                        <button onclick="selectLanguage('th', 'https://flagcdn.com/w40/th.png', 'ไทย')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 hover:text-amber-400 flex items-center gap-2.5 transition">
+                            <img src="https://flagcdn.com/w40/th.png" class="w-5 h-3.5 object-cover rounded shadow" alt="Thailand"> ไทย (Thai)
+                        </button>
+                    </div>
                 </div>
 
                 <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1 text-xs sm:text-sm">
@@ -539,7 +597,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS (NO VIDEO BANNER HERE) ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
@@ -1041,7 +1099,7 @@
                 activeTab.classList.add('active-tab');
             }
 
-            // Video Banner Visibility (HOME, ABOUT US, COMPANY માં જ દેખાશે - PRODUCTS માંથી હટાવી દીધો છે)
+            // Video Banner Visibility (HOME, ABOUT US, COMPANY માં જ દેખાશે)
             const videoBanner = document.getElementById('shared-video-banner');
             if (['home', 'about', 'company'].includes(pageId)) {
                 videoBanner.style.display = 'block';
@@ -1052,19 +1110,38 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Flag Language Translator Engine
-        function translatePage(langCode) {
+        // Custom HD Flag Dropdown Functions
+        function toggleLangDropdown(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('lang-dropdown-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function selectLanguage(langCode, flagImgUrl, langName) {
+            document.getElementById('current-flag-img').src = flagImgUrl;
+            document.getElementById('current-lang-text').innerText = langName;
+            document.getElementById('lang-dropdown-menu').classList.add('hidden');
+            
+            // Execute Google Translate
             const select = document.querySelector('.goog-te-combo');
             if (select) {
                 select.value = langCode;
                 select.dispatchEvent(new Event('change'));
             } else {
-                // Fallback direct cookie setting for Google Translate
                 document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
                 document.cookie = `googtrans=/en/${langCode}; path=/;`;
                 location.reload();
             }
         }
+
+        // Close Dropdown when clicked outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('lang-dropdown-menu');
+            const picker = document.getElementById('lang-picker-container');
+            if (dropdown && picker && !picker.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         // Live Product Search Filter
         function filterProducts() {
