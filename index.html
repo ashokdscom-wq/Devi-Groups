@@ -1,13 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEVI GROUPS | Global Industrial Solutions</title>
+    <title>DEVI GROUPS | Global Industrial Solutions & Exports</title>
+    
+    <!-- Meta SEO & Social Sharing (OpenGraph) -->
+    <meta name="description" content="DEVI GROUPS - Leading manufacturer and global exporter of Industrial Chemicals, Heavy Packaging Solutions, FMCG Food Products, Coffee, and Solar Power Backup Systems.">
+    <meta name="keywords" content="DEVI GROUPS, Devi Chemical, Devi Packaging, Dyes, Intermediates, Food Colours, Masterbatches, Corrugated Box, Spices, Solar Power Kenya">
+    <meta name="author" content="DEVI GROUPS - Shah Nirav">
+    <meta property="og:title" content="DEVI GROUPS | Global Industrial Solutions & Exports">
+    <meta property="og:description" content="Supplying premium chemicals, heavy industrial packaging, and solar power backup globally. Established 1989.">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -23,6 +37,21 @@
         }
     </script>
     <style>
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #092c4c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e67e22;
+        }
+
         .page-content {
             display: none;
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -31,9 +60,11 @@
             display: block;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Interactive Map Pins */
         .map-pin {
             position: absolute;
             transform: translate(-50%, -50%);
@@ -41,6 +72,11 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .map-pin:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            z-index: 20;
         }
         .ping-dot {
             position: relative;
@@ -72,18 +108,26 @@
                 opacity: 0;
             }
         }
+        
+        .card-lift {
+            transition: all 0.25s ease;
+        }
+        .card-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
 
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-md">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16 sm:h-20">
             
             <!-- Logo & Brand Name -->
-            <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer">
-                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block" onerror="this.onerror=null; this.src='logo.jpg';">
-                <span class="text-lg sm:text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
+            <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer group">
+                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block group-hover:scale-105 transition" onerror="this.onerror=null; this.src='logo.jpg';">
+                <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
             <!-- Controls (WhatsApp Button + 3-Lines Menu) -->
@@ -126,15 +170,49 @@
 
         <!-- ==================== PAGE 1: HOME ==================== -->
         <section id="page-home" class="page-content active-page py-8 px-4">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-5xl mx-auto space-y-12">
                 
                 <!-- Text & Overview Section -->
-                <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+                <div class="text-center max-w-2xl mx-auto">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 px-3.5 py-1.5 rounded-full border border-orange-200 inline-block">Global Industrial & Export Powerhouse</span>
                     <h1 class="text-2xl sm:text-4xl font-black text-primary mt-3 mb-3 tracking-tight">Pioneering Excellence Across Global Markets</h1>
                     <p class="text-xs sm:text-base text-slate-600 leading-relaxed max-w-xl mx-auto">
                         Supplying premium Chemical Intermediates, Heavy Industrial Packaging, FMCG Essentials, and Sustainable Solar Backup Solutions worldwide.
                     </p>
+                    <div class="flex justify-center gap-3 mt-5">
+                        <button onclick="showPage('products')" class="bg-primary hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Explore Products <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        <button onclick="showPage('contact')" class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Quick Inquiry</button>
+                    </div>
+                </div>
+
+                <!-- Export Workflow Timeline -->
+                <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md">
+                    <div class="text-center mb-6">
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Seamless Supply Chain</span>
+                        <h3 class="text-lg sm:text-xl font-black text-primary mt-1">Our 4-Step Global Export Process</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-10 h-10 mx-auto bg-blue-100 text-primary rounded-full flex items-center justify-center font-black text-sm mb-2">1</div>
+                            <h5 class="font-bold text-xs text-slate-800">Inquiry & Specs</h5>
+                            <p class="text-[11px] text-slate-500 mt-1">Custom purity & volume analysis</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-10 h-10 mx-auto bg-teal-100 text-secondary rounded-full flex items-center justify-center font-black text-sm mb-2">2</div>
+                            <h5 class="font-bold text-xs text-slate-800">Sampling & QA</h5>
+                            <p class="text-[11px] text-slate-500 mt-1">Lab tested sample approvals</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-10 h-10 mx-auto bg-amber-100 text-accent rounded-full flex items-center justify-center font-black text-sm mb-2">3</div>
+                            <h5 class="font-bold text-xs text-slate-800">Bulk Production</h5>
+                            <p class="text-[11px] text-slate-500 mt-1">Heavy packaging & packing</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="w-10 h-10 mx-auto bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-black text-sm mb-2">4</div>
+                            <h5 class="font-bold text-xs text-slate-800">Global Dispatch</h5>
+                            <p class="text-[11px] text-slate-500 mt-1">FOB / CIF shipment tracking</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- World Export Presence Map Card -->
@@ -167,11 +245,11 @@
                         </div>
                         <div class="map-pin" style="top: 48%; left: 59%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
                         </div>
                         <div class="map-pin" style="top: 75%; left: 86%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
                         </div>
                     </div>
 
@@ -185,18 +263,32 @@
                     </div>
                 </div>
 
+                <!-- Certifications & Compliance Badges -->
+                <div class="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
+                    <div class="text-center mb-5">
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Quality Assurance</span>
+                        <h4 class="text-lg sm:text-xl font-black mt-1">Export Compliance & Standard Certifications</h4>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs font-semibold">
+                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700"><i class="fa-solid fa-award text-amber-400 text-xl block mb-1"></i> ISO 9001:2015</div>
+                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700"><i class="fa-solid fa-shield-halved text-emerald-400 text-xl block mb-1"></i> Food Grade Certified</div>
+                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700"><i class="fa-solid fa-ship text-sky-400 text-xl block mb-1"></i> Export Inspection Council</div>
+                        <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700"><i class="fa-solid fa-industry text-purple-400 text-xl block mb-1"></i> Make In India Standard</div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- ==================== PAGE 2: ABOUT US ==================== -->
+        <!-- ==================== PAGE 2: ABOUT US (EST. 1989) ==================== -->
         <section id="page-about" class="page-content py-8 px-4">
-            <div class="max-w-5xl mx-auto">
-                <div class="text-center mb-10">
+            <div class="max-w-5xl mx-auto space-y-8">
+                <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Corporate Background</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">About DEVI GROUPS</h2>
                 </div>
 
-                <div class="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md text-center mb-10">
+                <div class="bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md text-center">
                     <p class="text-lg sm:text-2xl text-slate-800 font-bold leading-relaxed mb-4">
                         "Established in 1989, expanding across decades of unmatched manufacturing integrity and market reputation."
                     </p>
@@ -248,8 +340,8 @@
 
         <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
-            <div class="max-w-5xl mx-auto">
-                <div class="text-center mb-10">
+            <div class="max-w-5xl mx-auto space-y-6">
+                <div class="text-center mb-8">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Four Core Divisions</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Operational Business Units</h2>
                 </div>
@@ -257,17 +349,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     <!-- 1. Devi Chemical Card -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-primary shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-primary shadow-md card-lift flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-flask-vial text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">1. Devi Chemical</h3>
                             </div>
-                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
-                                <img src="company-chemical.png" 
-                                     alt="Devi Chemical Facility" 
-                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
-                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-chemical.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-chemical.jpeg';}">
+                            <div onclick="openLightbox('company-chemical.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-chemical.png" alt="Devi Chemical Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-chemical.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-chemical.jpeg';}">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial Dyes, Food Colors, Intermediates, Masterbatches, Paper Dyes, Toys & FMCG Ingredients.
@@ -276,17 +366,15 @@
                     </div>
 
                     <!-- 2. Devi Packaging Card -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-secondary shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-secondary shadow-md card-lift flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-boxes-stacked text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">2. Devi Packaging</h3>
                             </div>
-                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
-                                <img src="company-packaging.png" 
-                                     alt="Devi Packaging Facility" 
-                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
-                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-packaging.jpeg';}">
+                            <div onclick="openLightbox('company-packaging.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-packaging.png" alt="Devi Packaging Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-packaging.jpeg';}">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Corrugated Boxes, Bubble Envelopes, Biodegradable Bags, Aluminum Foils & Heavy Duty Plastic Containers.
@@ -295,17 +383,15 @@
                     </div>
 
                     <!-- 3. Devi Coffee Day Card -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-accent shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-accent shadow-md card-lift flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-mug-hot text-2xl text-accent"></i>
                                 <h3 class="text-lg font-bold text-primary">3. Devi Coffee Day</h3>
                             </div>
-                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
-                                <img src="company-coffee.png" 
-                                     alt="Devi Coffee Day Outlet" 
-                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
-                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-coffee.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-coffee.jpeg';}">
+                            <div onclick="openLightbox('company-coffee.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-coffee.png" alt="Devi Coffee Day Outlet" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-coffee.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-coffee.jpeg';}">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3">
                                 Premium handcrafted coffee blends, cafe hospitality, and specialty beverage operations.
@@ -331,17 +417,15 @@
                     </div>
 
                     <!-- 4. Solar Power Backup Services Card -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-amber-500 shadow-md flex flex-col justify-between">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-amber-500 shadow-md card-lift flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-solar-panel text-2xl text-amber-500"></i>
                                 <h3 class="text-lg font-bold text-primary">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
-                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
-                                <img src="company-solar.png" 
-                                     alt="Solar Power Backup Solutions" 
-                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
-                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-solar.jpeg';}">
+                            <div onclick="openLightbox('company-solar.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-solar.jpeg';}">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial solar solutions, Felicity Solar systems, and authorized Couth company distribution based in Kenya.
@@ -353,16 +437,23 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS WITH LIVE SEARCH ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
-            <div class="max-w-5xl mx-auto">
-                <div class="text-center mb-10">
+            <div class="max-w-5xl mx-auto space-y-6">
+                
+                <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Product Catalogs</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Chemical, Packaging & FMCG Lines</h2>
                     <p class="text-slate-500 text-xs mt-1">Download individual product brochures directly below</p>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Instant Live Search Bar -->
+                <div class="max-w-md mx-auto relative">
+                    <input type="text" id="product-search-input" onkeyup="filterProducts()" placeholder="Search any product (e.g. Dyes, Box, Spices)..." class="w-full bg-white border-2 border-slate-300 rounded-2xl py-3 pl-11 pr-4 text-xs sm:text-sm shadow-sm focus:outline-none focus:border-secondary transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     
                     <!-- 1. Devi Chemical Products -->
                     <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-md flex flex-col justify-between">
@@ -374,9 +465,9 @@
                                 <span class="bg-blue-100 text-primary text-[10px] font-bold px-2.5 py-0.5 rounded-full">Chemical Range</span>
                             </div>
 
-                            <div class="space-y-2.5">
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                            <div class="space-y-2.5 product-group">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-palette text-rose-500 text-sm mr-2.5 w-4 text-center"></i> Dyes
                                     </span>
                                     <a href="dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -384,8 +475,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-atom text-cyan-600 text-sm mr-2.5 w-4 text-center"></i> Intermediates
                                     </span>
                                     <a href="intermediates-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -393,8 +484,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-bowl-food text-amber-500 text-sm mr-2.5 w-4 text-center"></i> Food Colours
                                     </span>
                                     <a href="food-colours-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -402,8 +493,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-cubes-stacked text-indigo-500 text-sm mr-2.5 w-4 text-center"></i> Master Batches
                                     </span>
                                     <a href="master-batches-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -411,8 +502,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-scroll text-blue-500 text-sm mr-2.5 w-4 text-center"></i> Paper Dyes
                                     </span>
                                     <a href="paper-dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -420,8 +511,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-shapes text-orange-500 text-sm mr-2.5 w-4 text-center"></i> Toys
                                     </span>
                                     <a href="toys-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
@@ -442,9 +533,9 @@
                                 <span class="bg-teal-100 text-secondary text-[10px] font-bold px-2.5 py-0.5 rounded-full">Packaging Range</span>
                             </div>
 
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                            <div class="space-y-2 product-group">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-box text-amber-700 text-sm mr-2 w-4 text-center"></i> Corrugated Box
                                     </span>
                                     <a href="corrugated-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -452,8 +543,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-bag-shopping text-emerald-600 text-sm mr-2 w-4 text-center"></i> Paper Cup & Paper Bags
                                     </span>
                                     <a href="paper-cups-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -461,8 +552,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-sheet-plastic text-slate-400 text-sm mr-2 w-4 text-center"></i> Aluminium Foil
                                     </span>
                                     <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -470,8 +561,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-cube text-purple-600 text-sm mr-2 w-4 text-center"></i> Hing Box
                                     </span>
                                     <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -479,8 +570,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope-open-text text-sky-500 text-sm mr-2 w-4 text-center"></i> Bubble Envelope
                                     </span>
                                     <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -488,8 +579,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-folder-closed text-stone-600 text-sm mr-2 w-4 text-center"></i> Hard Board Envelope
                                     </span>
                                     <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -497,8 +588,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope text-yellow-600 text-sm mr-2 w-4 text-center"></i> Paper Bubble Envelope
                                     </span>
                                     <a href="paper-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -506,8 +597,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-shield text-blue-600 text-sm mr-2 w-4 text-center"></i> Plastic Bubble Envelope
                                     </span>
                                     <a href="plastic-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -515,8 +606,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-rug text-teal-500 text-sm mr-2 w-4 text-center"></i> Bubble Roll & Sheet
                                     </span>
                                     <a href="bubble-roll-sheet-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -524,8 +615,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-leaf text-green-600 text-sm mr-2 w-4 text-center"></i> Biodegradable Bags
                                     </span>
                                     <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -533,8 +624,8 @@
                                     </a>
                                 </div>
 
-                                <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-jar text-cyan-700 text-sm mr-2 w-4 text-center"></i> Plastic Container
                                     </span>
                                     <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
@@ -559,15 +650,15 @@
                         <span class="text-xs font-semibold text-amber-100">Export Quality Ingredients & Spices</span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 product-group">
                         
                         <!-- 1. SPICES -->
-                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
+                        <div class="product-item bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
                             <div>
                                 <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl mb-3">
                                     <i class="fa-solid fa-mortar-pestle text-amber-200"></i>
                                 </div>
-                                <h4 class="font-black text-lg tracking-wide">1. SPICES</h4>
+                                <h4 class="product-title font-black text-lg tracking-wide">1. SPICES</h4>
                                 <p class="text-xs text-white/80 mt-1">Finest grade pure spices & authentic export blends.</p>
                             </div>
                             <a href="fmcg-spices-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
@@ -576,12 +667,12 @@
                         </div>
 
                         <!-- 2. SEASONING -->
-                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
+                        <div class="product-item bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
                             <div>
                                 <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl mb-3">
                                     <i class="fa-solid fa-wheat-awn text-amber-200"></i>
                                 </div>
-                                <h4 class="font-black text-lg tracking-wide">2. SEASONING</h4>
+                                <h4 class="product-title font-black text-lg tracking-wide">2. SEASONING</h4>
                                 <p class="text-xs text-white/80 mt-1">Specialty food seasoning formulas & taste enhancers.</p>
                             </div>
                             <a href="fmcg-seasoning-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
@@ -590,12 +681,12 @@
                         </div>
 
                         <!-- 3. FARFAR -->
-                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
+                        <div class="product-item bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between hover:bg-white/20 transition">
                             <div>
                                 <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl mb-3">
                                     <i class="fa-solid fa-bowl-rice text-amber-200"></i>
                                 </div>
-                                <h4 class="font-black text-lg tracking-wide">3. FARFAR</h4>
+                                <h4 class="product-title font-black text-lg tracking-wide">3. FARFAR</h4>
                                 <p class="text-xs text-white/80 mt-1">Premium ready-to-fry farfar snack pellets & mixes.</p>
                             </div>
                             <a href="fmcg-farfar-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
@@ -609,17 +700,17 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 5: SISTER CONCERN & BRANDS (NEW HIGHLIGHTED FMCG + SOLAR PHOTO) ==================== -->
+        <!-- ==================== PAGE 5: SISTER CONCERN & BRANDS ==================== -->
         <section id="page-sister-brand" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-8">
                 
-                <div class="text-center mb-6">
+                <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Affiliated Entities</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Creative Impex Ltd / Sister Concern</h2>
                     <p class="text-slate-500 text-xs mt-1">International consumer FMCG exports and East Africa renewable power solutions</p>
                 </div>
 
-                <!-- 1. FMCG DIVISION - STYLISH HIGHLIGHTED LUXURY CARD WITH SINGLE BROCHURE -->
+                <!-- 1. FMCG DIVISION -->
                 <div class="bg-gradient-to-r from-indigo-700 via-purple-700 to-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-2xl">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/20 pb-4 mb-6">
                         <div>
@@ -631,9 +722,7 @@
                         <span class="text-xs font-semibold text-purple-100">Creative Impex Global Consumer Portfolio</span>
                     </div>
 
-                    <!-- Brands & Products Display Cards -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
-                        <!-- BRANDS -->
                         <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
                             <h4 class="font-black text-sm uppercase tracking-widest text-purple-200 border-b border-white/20 pb-2 mb-3 flex items-center gap-2">
                                 <i class="fa-solid fa-tags"></i> BRANDS
@@ -645,7 +734,6 @@
                             </ul>
                         </div>
 
-                        <!-- PRODUCTS -->
                         <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
                             <h4 class="font-black text-sm uppercase tracking-widest text-purple-200 border-b border-white/20 pb-2 mb-3 flex items-center gap-2">
                                 <i class="fa-solid fa-box-archive"></i> PRODUCTS
@@ -659,7 +747,6 @@
                         </div>
                     </div>
 
-                    <!-- Single Common Brochure Button -->
                     <div class="pt-2">
                         <a href="fmcg-brochure.pdf" download class="w-full bg-white hover:bg-slate-100 text-purple-900 font-black text-sm py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
                             <i class="fa-solid fa-file-pdf text-base"></i> Download FMCG Division Brochure
@@ -667,7 +754,7 @@
                     </div>
                 </div>
 
-                <!-- 2. SOLAR POWER BACKUP SERVICES (WITH SOLAR PHOTO & CLEAN LAYOUT) -->
+                <!-- 2. SOLAR POWER BACKUP SERVICES -->
                 <div class="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md flex flex-col justify-between">
                     <div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3 mb-4">
@@ -677,15 +764,11 @@
                             <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full w-fit">Kenya Operations</span>
                         </div>
 
-                        <!-- Solar Photo -->
-                        <div class="w-full rounded-2xl overflow-hidden mb-5 bg-slate-50 border border-slate-200 flex items-center justify-center">
-                            <img src="company-solar.png" 
-                                 alt="Solar Power Backup Solutions" 
-                                 class="w-full h-auto max-h-72 object-contain block mx-auto" 
-                                 onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-solar.jpeg';}">
+                        <div onclick="openLightbox('company-solar.png')" class="cursor-pointer group relative w-full rounded-2xl overflow-hidden mb-5 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                            <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-72 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-solar.jpeg';}">
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                         </div>
 
-                        <!-- Features -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                             <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 font-semibold text-xs text-slate-700 flex items-center gap-2.5">
                                 <i class="fa-solid fa-bolt text-amber-500 text-base"></i>
@@ -702,7 +785,6 @@
                         </div>
                     </div>
 
-                    <!-- Single Solar Brochure Button -->
                     <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow text-xs sm:text-sm">
                         <i class="fa-solid fa-file-pdf text-base"></i> Download Solar Power Brochure
                     </a>
@@ -713,13 +795,14 @@
 
         <!-- ==================== PAGE 6: CONTACT & LOCATIONS ==================== -->
         <section id="page-contact" class="page-content py-8 px-4">
-            <div class="max-w-5xl mx-auto">
-                <div class="text-center mb-10">
+            <div class="max-w-5xl mx-auto space-y-10">
+                
+                <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Inquiry</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Connect With DEVI GROUPS</h2>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     
                     <div class="lg:col-span-5 bg-primary text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl flex flex-col justify-between">
                         <div>
@@ -742,20 +825,20 @@
                     </div>
 
                     <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md">
-                        <form action="mailto:devigroup1989@gmail.com" method="POST" enctype="text/plain" class="space-y-4">
+                        <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-[10px] uppercase font-bold text-slate-700 mb-1">Your Name</label>
-                                    <input type="text" name="Name" required placeholder="Full Name" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
+                                    <input type="text" id="form-name" required placeholder="Full Name" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] uppercase font-bold text-slate-700 mb-1">Email ID</label>
-                                    <input type="email" name="Email" required placeholder="name@company.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
+                                    <input type="email" id="form-email" required placeholder="name@company.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-[10px] uppercase font-bold text-slate-700 mb-1">Select Division</label>
-                                <select name="Division" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
+                                <select id="form-division" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary">
                                     <option value="Devi Chemical">Devi Chemical (India)</option>
                                     <option value="Devi Packaging">Devi Packaging (India)</option>
                                     <option value="Devi Coffee Day">Devi Coffee Day (India)</option>
@@ -766,11 +849,12 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] uppercase font-bold text-slate-700 mb-1">Inquiry Details</label>
-                                <textarea name="Message" rows="3" required placeholder="Product specifications, requirements..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary"></textarea>
+                                <textarea id="form-message" rows="3" required placeholder="Product specifications, requirements..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary"></textarea>
                             </div>
                             <button type="submit" class="w-full bg-accent hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow transition text-xs">
                                 <i class="fa-solid fa-paper-plane mr-1.5"></i> Submit Inquiry
                             </button>
+                            <p id="form-status" class="hidden text-center text-xs font-bold text-emerald-600 pt-2"></p>
                         </form>
                     </div>
 
@@ -816,14 +900,33 @@
 
     </main>
 
+    <!-- Floating Sticky WhatsApp Widget -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="flex items-center gap-2 bg-whatsapp hover:bg-emerald-600 text-white font-bold px-4 py-3 rounded-full shadow-2xl transition duration-300 hover:scale-105 border-2 border-white">
+            <i class="fa-brands fa-whatsapp text-2xl"></i>
+            <span class="hidden sm:inline text-xs">Chat with Us</span>
+        </a>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="relative max-w-4xl w-full flex justify-center">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-3xl hover:text-amber-400"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightbox-image" src="" class="max-h-[85vh] max-w-full object-contain rounded-xl shadow-2xl" onclick="event.stopPropagation()">
+        </div>
+    </div>
+
     <!-- Footer -->
-    <footer class="bg-primary text-slate-400 py-5 border-t border-slate-700 text-center text-xs">
-        <p>© 2026 DEVI GROUPS. All Rights Reserved. | Sole Proprietorship</p>
-        <p class="mt-1 text-slate-500">Email: devigroup1989@gmail.com | Export Compliance</p>
+    <footer class="bg-primary text-slate-400 py-6 border-t border-slate-700 text-center text-xs">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 2026 DEVI GROUPS. All Rights Reserved. | Sole Proprietorship</p>
+            <p class="text-slate-300 font-semibold">Email: <a href="mailto:devigroup1989@gmail.com" class="hover:text-amber-400">devigroup1989@gmail.com</a></p>
+        </div>
     </footer>
 
-    <!-- JavaScript Navigation Logic -->
+    <!-- JavaScript Engine -->
     <script>
+        // Page Navigation
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
@@ -839,11 +942,57 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Toggle Header Dropdown
         function toggleMenu() {
             const menu = document.getElementById('unified-menu');
             menu.classList.toggle('hidden');
         }
 
+        // Live Product Search Filter
+        function filterProducts() {
+            const input = document.getElementById('product-search-input').value.toLowerCase();
+            const items = document.querySelectorAll('.product-item');
+            
+            items.forEach(item => {
+                const title = item.querySelector('.product-title').innerText.toLowerCase();
+                if (title.includes(input)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Lightbox Functions
+        function openLightbox(src) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            modal.classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        // Direct Email Form Submit Handling
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const division = document.getElementById('form-division').value;
+            const msg = document.getElementById('form-message').value;
+
+            // Direct mailto trigger fallback
+            const mailtoLink = `mailto:devigroup1989@gmail.com?subject=Inquiry from ${encodeURIComponent(name)} (${encodeURIComponent(division)})&body=Name: ${encodeURIComponent(name)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0ADivision: ${encodeURIComponent(division)}%0D%0AMessage:%0D%0A${encodeURIComponent(msg)}`;
+            window.location.href = mailtoLink;
+
+            const status = document.getElementById('form-status');
+            status.innerText = "Thank you! Opening your email client to send your inquiry...";
+            status.classList.remove('hidden');
+        }
+
+        // Map Switcher
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
