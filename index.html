@@ -112,14 +112,12 @@
         </div>
     </header>
 
-    <!-- Full Screen Video Banner (૧૦૦% Full Width Screen) -->
-    <div id="shared-video-banner" class="w-full bg-black">
-        <div class="w-full aspect-[16/9] sm:aspect-[21/9] max-h-[85vh] bg-black overflow-hidden shadow-2xl flex items-center justify-center">
-            <video autoplay loop muted playsinline class="w-full h-full object-contain sm:object-cover bg-black">
-                <source src="banner-video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
+    <!-- Full Width Video Container (કોઈ પણ ભાગ કટ થયા વગર પૂરો દેખાશે) -->
+    <div id="shared-video-banner" class="w-full bg-slate-900 flex justify-center items-center shadow-md">
+        <video autoplay loop muted playsinline class="w-full max-w-7xl h-auto max-h-[85vh] object-contain block mx-auto">
+            <source src="banner-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 
     <main class="flex-grow">
@@ -481,7 +479,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope-open-text text-sky-500 text-base mr-3 w-5 text-center"></i> Bubble Envelope
                                     </span>
-                                    <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -738,7 +736,7 @@
             // Video Banner Visibility (Home, About, Company, Products પર જ દેખાશે)
             const videoBanner = document.getElementById('shared-video-banner');
             if (['home', 'about', 'company', 'products'].includes(pageId)) {
-                videoBanner.style.display = 'block';
+                videoBanner.style.display = 'flex';
             } else {
                 videoBanner.style.display = 'none';
             }
