@@ -76,7 +76,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Header (મોબાઇલ અને લેપટોપ બંને માટે એકસરખી ડિઝાઇન) -->
+    <!-- Header -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-md">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16 sm:h-20">
             
@@ -86,7 +86,7 @@
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
             </div>
 
-            <!-- Controls (WhatsApp Button + 3-Lines Hamburger Menu) -->
+            <!-- Controls (WhatsApp Button + 3-Lines Menu) -->
             <div class="flex items-center gap-2 sm:gap-3">
                 <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
@@ -112,7 +112,7 @@
         </div>
     </header>
 
-    <!-- Global Video Banner (મોબાઇલ સ્ક્રીનની જેમ જ સેન્ટર્ડ અને પરફેક્ટ રેશિયો) -->
+    <!-- Global Video Banner -->
     <div id="shared-video-banner" class="w-full max-w-5xl mx-auto px-4 pt-4 sm:pt-6">
         <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white">
             <video autoplay loop muted playsinline class="w-full h-auto block object-contain">
@@ -159,7 +159,7 @@
                         </div>
                         <div class="map-pin" style="top: 28%; left: 51%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇩🇪 Germany</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇩🇪 Germany</span>
                         </div>
                         <div class="map-pin" style="top: 45%; left: 63%;">
                             <div class="ping-dot"><span></span><span></span></div>
@@ -246,7 +246,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
+        <!-- ==================== PAGE 3: COMPANY DIVISIONS (WITH PHOTOS & CLEAN LAYOUT) ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto">
                 <div class="text-center mb-10">
@@ -255,83 +255,92 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- 1. Devi Chemical -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border-t-4 border-primary shadow-md flex flex-col justify-between">
+                    
+                    <!-- 1. Devi Chemical Card -->
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-primary shadow-md flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-flask-vial text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">1. Devi Chemical</h3>
                             </div>
-                            <p class="text-slate-600 text-xs sm:text-sm mb-4">
+                            <!-- Photo Section -->
+                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
+                                <img src="company-chemical.jpg" alt="Devi Chemical Facility" class="w-full h-full object-cover" onerror="this.src='logo.png'; this.className='w-full h-full object-contain p-4 bg-slate-50';">
+                            </div>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial Dyes, Food Colors, Intermediates, Masterbatches, Paper Dyes, Toys & FMCG Ingredients.
                             </p>
                         </div>
-                        <button onclick="showPage('products')" class="text-secondary font-bold text-xs sm:text-sm flex items-center gap-2 hover:underline">
-                            Explore Chemical Catalog <i class="fa-solid fa-arrow-right"></i>
-                        </button>
                     </div>
 
-                    <!-- 2. Devi Packaging -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border-t-4 border-secondary shadow-md flex flex-col justify-between">
+                    <!-- 2. Devi Packaging Card -->
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-secondary shadow-md flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-boxes-stacked text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">2. Devi Packaging</h3>
                             </div>
-                            <p class="text-slate-600 text-xs sm:text-sm mb-4">
+                            <!-- Photo Section -->
+                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
+                                <img src="company-packaging.jpg" alt="Devi Packaging Facility" class="w-full h-full object-cover" onerror="this.src='logo.png'; this.className='w-full h-full object-contain p-4 bg-slate-50';">
+                            </div>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Corrugated Boxes, Bubble Envelopes, Biodegradable Bags, Aluminum Foils & Heavy Duty Plastic Containers.
                             </p>
                         </div>
-                        <button onclick="showPage('products')" class="text-secondary font-bold text-xs sm:text-sm flex items-center gap-2 hover:underline">
-                            Explore Packaging Catalog <i class="fa-solid fa-arrow-right"></i>
-                        </button>
                     </div>
 
-                    <!-- 3. Devi Coffee Day -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border-t-4 border-accent shadow-md flex flex-col justify-between">
+                    <!-- 3. Devi Coffee Day Card -->
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-accent shadow-md flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-mug-hot text-2xl text-accent"></i>
                                 <h3 class="text-lg font-bold text-primary">3. Devi Coffee Day</h3>
                             </div>
-                            <p class="text-slate-600 text-xs sm:text-sm mb-4">
+                            <!-- Photo Section -->
+                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
+                                <img src="company-coffee.jpg" alt="Devi Coffee Day Outlet" class="w-full h-full object-cover" onerror="this.src='logo.png'; this.className='w-full h-full object-contain p-4 bg-slate-50';">
+                            </div>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3">
                                 Premium handcrafted coffee blends, cafe hospitality, and specialty beverage operations.
                             </p>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <a href="https://instagram.com/devicoffeeday" target="_blank" class="bg-pink-50 text-pink-700 hover:bg-pink-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-pink-200">
+                            <div class="flex flex-wrap gap-1.5">
+                                <a href="https://instagram.com/devicoffeeday" target="_blank" class="bg-pink-50 text-pink-700 hover:bg-pink-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-pink-200">
                                     <i class="fa-brands fa-instagram"></i> Instagram
                                 </a>
-                                <a href="https://facebook.com/devicoffeeday" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-blue-200">
+                                <a href="https://facebook.com/devicoffeeday" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-blue-200">
                                     <i class="fa-brands fa-facebook"></i> Facebook
                                 </a>
-                                <a href="https://www.google.com/search?q=Devi+Coffee+Day" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-emerald-200">
+                                <a href="https://www.google.com/search?q=Devi+Coffee+Day" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-emerald-200">
                                     <i class="fa-brands fa-google"></i> Google Page
                                 </a>
-                                <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-amber-200">
+                                <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="bg-amber-50 text-amber-800 hover:bg-amber-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-amber-200">
                                     <i class="fa-solid fa-book-open"></i> Menu
                                 </a>
-                                <a href="https://www.devicoffeeday.com" target="_blank" class="bg-slate-100 text-slate-800 hover:bg-slate-200 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-slate-300">
+                                <a href="https://www.devicoffeeday.com" target="_blank" class="bg-slate-100 text-slate-800 hover:bg-slate-200 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-slate-300">
                                     <i class="fa-solid fa-globe"></i> Website
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 4. Solar Power Backup Services -->
-                    <div class="bg-white rounded-2xl sm:rounded-3xl p-6 border-t-4 border-amber-500 shadow-md flex flex-col justify-between">
+                    <!-- 4. Solar Power Backup Services Card -->
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-amber-500 shadow-md flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-3 mb-3">
+                            <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-solar-panel text-2xl text-amber-500"></i>
                                 <h3 class="text-lg font-bold text-primary">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
-                            <p class="text-slate-600 text-xs sm:text-sm mb-4">
+                            <!-- Photo Section -->
+                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
+                                <img src="company-solar.jpg" alt="Solar Power Backup Solutions" class="w-full h-full object-cover" onerror="this.src='logo.png'; this.className='w-full h-full object-contain p-4 bg-slate-50';">
+                            </div>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial solar solutions, Felicity Solar systems, and authorized Couth company distribution based in Kenya.
                             </p>
                         </div>
-                        <button onclick="showPage('sister-brand')" class="text-amber-600 font-bold text-xs sm:text-sm flex items-center gap-2 hover:underline">
-                            View Power Units <i class="fa-solid fa-arrow-right"></i>
-                        </button>
                     </div>
+
                 </div>
             </div>
         </section>
