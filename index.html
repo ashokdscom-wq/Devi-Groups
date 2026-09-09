@@ -40,6 +40,7 @@
         /* Smooth Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -62,6 +63,28 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Active Menu Tab Styling */
+        .nav-link {
+            position: relative;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        .nav-link.active-tab {
+            color: #fbbf24; /* Amber Gold */
+            background-color: rgba(255, 255, 255, 0.12);
+            font-weight: 800;
+        }
+        .nav-link.active-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            width: 70%;
+            height: 3px;
+            background-color: #fbbf24;
+            border-radius: 9999px;
         }
 
         /* Interactive Map Pins */
@@ -116,44 +139,73 @@
             transform: translateY(-4px);
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
         }
+
+        /* Hide Horizontal Scrollbar in Navbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-primary text-white shadow-md">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16 sm:h-20">
-            
+    <!-- Header (Main Brand Bar + Full Horizontal Navigation Bar) -->
+    <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
+        
+        <!-- Top Branding Row -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16 border-b border-slate-700/60">
             <!-- Logo & Brand Name -->
             <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer group">
-                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block group-hover:scale-105 transition" onerror="this.onerror=null; this.src='logo.jpg';">
+                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-11 w-auto object-contain bg-white rounded p-1 shadow-sm block group-hover:scale-105 transition" onerror="this.onerror=null; this.src='logo.jpg';">
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
-            <!-- Controls (WhatsApp Button + 3-Lines Menu) -->
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
+            <!-- Direct Contact Actions -->
+            <div class="flex items-center gap-3">
+                <a href="mailto:devigroup1989@gmail.com" class="hidden md:flex items-center gap-1.5 text-xs text-slate-300 hover:text-amber-400 transition">
+                    <i class="fa-solid fa-envelope text-accent"></i> devigroup1989@gmail.com
+                </a>
+                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
                     <span>WhatsApp</span>
                 </a>
+            </div>
+        </div>
 
-                <button onclick="toggleMenu()" class="text-xl sm:text-2xl px-2 py-1 text-slate-200 hover:text-white focus:outline-none bg-white/10 rounded-lg hover:bg-white/20 transition">
-                    <i class="fa-solid fa-bars"></i>
+        <!-- Full Horizontal Menu Line (આખી આડી લાઈન) -->
+        <div class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800">
+            <nav class="max-w-6xl mx-auto px-2 sm:px-6 flex items-center justify-start md:justify-center overflow-x-auto no-scrollbar py-1.5 gap-1 sm:gap-2">
+                
+                <button onclick="showPage('home')" id="tab-home" class="nav-link active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider text-slate-200 hover:text-amber-400 hover:bg-white/5 font-semibold">
+                    <i class="fa-solid fa-house text-xs mr-1 opacity-80"></i> Home
                 </button>
-            </div>
+
+                <button onclick="showPage('about')" id="tab-about" class="nav-link px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider text-slate-200 hover:text-amber-400 hover:bg-white/5 font-semibold">
+                    <i class="fa-solid fa-circle-info text-xs mr-1 opacity-80"></i> About Us
+                </button>
+
+                <button onclick="showPage('company')" id="tab-company" class="nav-link px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider text-slate-200 hover:text-amber-400 hover:bg-white/5 font-semibold">
+                    <i class="fa-solid fa-building text-xs mr-1 opacity-80"></i> Company
+                </button>
+
+                <button onclick="showPage('products')" id="tab-products" class="nav-link px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider text-slate-200 hover:text-amber-400 hover:bg-white/5 font-semibold">
+                    <i class="fa-solid fa-boxes-stacked text-xs mr-1 opacity-80"></i> Products
+                </button>
+
+                <button onclick="showPage('sister-brand')" id="tab-sister-brand" class="nav-link px-3.5 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wider text-slate-200 hover:text-amber-400 hover:bg-white/5 font-semibold">
+                    <i class="fa-solid fa-award text-xs mr-1 opacity-80"></i> Our Sister Brand
+                </button>
+
+                <button onclick="showPage('contact')" id="tab-contact" class="nav-link px-4 py-1.5 rounded-xl text-xs sm:text-sm uppercase tracking-wider bg-accent hover:bg-orange-600 text-white font-bold ml-1 transition shadow-sm">
+                    <i class="fa-solid fa-paper-plane text-xs mr-1"></i> Contact Us
+                </button>
+
+            </nav>
         </div>
 
-        <!-- Dropdown Menu -->
-        <div id="unified-menu" class="hidden bg-slate-900 border-t border-slate-700 px-6 py-4 transition-all">
-            <div class="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-center text-sm font-semibold">
-                <button onclick="showPage('home'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Home</button>
-                <button onclick="showPage('about'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">About Us</button>
-                <button onclick="showPage('company'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Company</button>
-                <button onclick="showPage('products'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Products</button>
-                <button onclick="showPage('sister-brand'); toggleMenu();" class="py-2.5 px-3 rounded-lg hover:bg-white/10 text-slate-200 hover:text-amber-400 transition">Our Sister Brand</button>
-                <button onclick="showPage('contact'); toggleMenu();" class="col-span-2 sm:col-span-3 lg:col-span-5 py-2 px-3 rounded-lg bg-accent hover:bg-orange-600 text-white font-bold transition mt-1">Contact Us</button>
-            </div>
-        </div>
     </header>
 
     <!-- Global Video Banner -->
@@ -241,15 +293,15 @@
                         </div>
                         <div class="map-pin" style="top: 45%; left: 63%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
                         </div>
                         <div class="map-pin" style="top: 48%; left: 59%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇸🇦 Saudi Arabia</span>
                         </div>
                         <div class="map-pin" style="top: 75%; left: 86%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇺 Australia</span>
                         </div>
                     </div>
 
@@ -437,7 +489,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS WITH LIVE SEARCH ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
@@ -926,12 +978,20 @@
 
     <!-- JavaScript Engine -->
     <script>
-        // Page Navigation
+        // Page Navigation with Active Tab Highlighting
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active-page');
 
+            // Manage Tab Highlights
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active-tab'));
+            const activeTab = document.getElementById('tab-' + pageId);
+            if (activeTab && pageId !== 'contact') {
+                activeTab.classList.add('active-tab');
+            }
+
+            // Video Banner Visibility (Home, About, Company, Products પર જ દેખાશે)
             const videoBanner = document.getElementById('shared-video-banner');
             if (['home', 'about', 'company', 'products'].includes(pageId)) {
                 videoBanner.style.display = 'block';
@@ -940,12 +1000,6 @@
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Toggle Header Dropdown
-        function toggleMenu() {
-            const menu = document.getElementById('unified-menu');
-            menu.classList.toggle('hidden');
         }
 
         // Live Product Search Filter
@@ -983,7 +1037,6 @@
             const division = document.getElementById('form-division').value;
             const msg = document.getElementById('form-message').value;
 
-            // Direct mailto trigger fallback
             const mailtoLink = `mailto:devigroup1989@gmail.com?subject=Inquiry from ${encodeURIComponent(name)} (${encodeURIComponent(division)})&body=Name: ${encodeURIComponent(name)}%0D%0AEmail: ${encodeURIComponent(email)}%0D%0ADivision: ${encodeURIComponent(division)}%0D%0AMessage:%0D%0A${encodeURIComponent(msg)}`;
             window.location.href = mailtoLink;
 
@@ -992,7 +1045,7 @@
             status.classList.remove('hidden');
         }
 
-        // Map Switcher
+        // Multi-Location Map Switcher
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
@@ -1034,4 +1087,3 @@
 
 </body>
 </html>
-
