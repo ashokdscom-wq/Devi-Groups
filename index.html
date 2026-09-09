@@ -22,6 +22,18 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Translate Script Integration -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -72,7 +84,7 @@
             white-space: nowrap;
         }
         .nav-link.active-tab {
-            color: #fbbf24; /* Amber Gold */
+            color: #fbbf24;
             background-color: rgba(255, 255, 255, 0.12);
             font-weight: 800;
         }
@@ -140,6 +152,17 @@
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
         }
 
+        /* Hide Google Translate Default Top Bar */
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+        #google_translate_element {
+            display: none;
+        }
+
         /* Hide Horizontal Scrollbar in Navbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -152,7 +175,10 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
 
-    <!-- Header (Main Brand Bar + Full Horizontal Navigation Bar) -->
+    <!-- Hidden Default Google Translate Hook -->
+    <div id="google_translate_element"></div>
+
+    <!-- Header (Main Brand Bar + Language Selector + Full Horizontal Navigation Bar) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         
         <!-- Top Branding Row -->
@@ -163,14 +189,38 @@
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
-            <!-- Direct Contact Actions -->
-            <div class="flex items-center gap-3">
-                <a href="mailto:devigroup1989@gmail.com" class="hidden md:flex items-center gap-1.5 text-xs text-slate-300 hover:text-amber-400 transition">
-                    <i class="fa-solid fa-envelope text-accent"></i> devigroup1989@gmail.com
-                </a>
-                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
+            <!-- Direct Contact Actions + Flag Language Selector -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                
+                <!-- Flag-based Global Language Selector -->
+                <div class="relative inline-block text-left">
+                    <select onchange="translatePage(this.value)" class="bg-slate-800/90 text-amber-300 font-bold text-xs py-1.5 px-2.5 rounded-lg border border-slate-600 focus:outline-none focus:border-amber-400 cursor-pointer shadow-inner">
+                        <option value="en">🌐 🇬🇧 English</option>
+                        <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+                        <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+                        <option value="ar">🇦🇪 / 🇸🇦 العربية (Arabic)</option>
+                        <option value="es">🇪🇸 Español (Spanish)</option>
+                        <option value="fr">🇫🇷 Français (French)</option>
+                        <option value="de">🇩🇪 Deutsch (German)</option>
+                        <option value="zh-CN">🇨🇳 中文 (Chinese)</option>
+                        <option value="ru">🇷🇺 Русский (Russian)</option>
+                        <option value="ja">🇯🇵 日本語 (Japanese)</option>
+                        <option value="pt">🇵🇹 Português (Portuguese)</option>
+                        <option value="it">🇮🇹 Italiano (Italian)</option>
+                        <option value="sw">🇰🇪 Kiswahili (Swahili - Kenya)</option>
+                        <option value="tr">🇹🇷 Türkçe (Turkish)</option>
+                        <option value="vi">🇻🇳 Tiếng Việt (Vietnamese)</option>
+                        <option value="ko">🇰🇷 한국어 (Korean)</option>
+                        <option value="nl">🇳🇱 Nederlands (Dutch)</option>
+                        <option value="pl">🇵🇱 Polski (Polish)</option>
+                        <option value="id">🇮🇩 Bahasa Indonesia</option>
+                        <option value="th">🇹🇭 ไทย (Thai)</option>
+                    </select>
+                </div>
+
+                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
-                    <span>WhatsApp</span>
+                    <span class="hidden sm:inline">WhatsApp</span>
                 </a>
             </div>
         </div>
@@ -208,7 +258,7 @@
 
     </header>
 
-    <!-- Global Video Banner -->
+    <!-- Global Video Banner (ફક્ત HOME, ABOUT US, COMPANY માં જ દેખાશે) -->
     <div id="shared-video-banner" class="w-full max-w-5xl mx-auto px-4 pt-4 sm:pt-6">
         <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white">
             <video autoplay loop muted playsinline class="w-full h-auto block object-contain">
@@ -489,7 +539,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS (NO VIDEO BANNER HERE) ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
@@ -991,15 +1041,29 @@
                 activeTab.classList.add('active-tab');
             }
 
-            // Video Banner Visibility (Home, About, Company, Products પર જ દેખાશે)
+            // Video Banner Visibility (HOME, ABOUT US, COMPANY માં જ દેખાશે - PRODUCTS માંથી હટાવી દીધો છે)
             const videoBanner = document.getElementById('shared-video-banner');
-            if (['home', 'about', 'company', 'products'].includes(pageId)) {
+            if (['home', 'about', 'company'].includes(pageId)) {
                 videoBanner.style.display = 'block';
             } else {
                 videoBanner.style.display = 'none';
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Flag Language Translator Engine
+        function translatePage(langCode) {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                // Fallback direct cookie setting for Google Translate
+                document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
+                document.cookie = `googtrans=/en/${langCode}; path=/;`;
+                location.reload();
+            }
         }
 
         // Live Product Search Filter
@@ -1087,3 +1151,4 @@
 
 </body>
 </html>
+
