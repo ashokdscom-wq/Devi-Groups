@@ -76,9 +76,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Header (સરખું હેડર) -->
+    <!-- Header -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+        <div class="w-full px-4 sm:px-8 flex justify-between items-center h-20">
             
             <!-- Logo & Brand Name -->
             <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer">
@@ -112,10 +112,10 @@
         </div>
     </header>
 
-    <!-- Global Video Banner (HOME, ABOUT US, COMPANY, PRODUCTS પર દેખાશે) -->
-    <div id="shared-video-banner" class="w-full max-w-7xl mx-auto px-4 pt-6 pb-2">
-        <div class="relative w-full aspect-[16/9] bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-200">
-            <video autoplay loop muted playsinline class="w-full h-full object-cover">
+    <!-- Full Screen Video Banner (૧૦૦% Full Width Screen) -->
+    <div id="shared-video-banner" class="w-full bg-black">
+        <div class="w-full aspect-[16/9] sm:aspect-[21/9] max-h-[85vh] bg-black overflow-hidden shadow-2xl flex items-center justify-center">
+            <video autoplay loop muted playsinline class="w-full h-full object-contain sm:object-cover bg-black">
                 <source src="banner-video.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
@@ -124,9 +124,9 @@
 
     <main class="flex-grow">
 
-        <!-- ==================== PAGE 1: HOME (DEFAULT) ==================== -->
-        <section id="page-home" class="page-content active-page py-8 px-4">
-            <div class="max-w-6xl mx-auto">
+        <!-- ==================== PAGE 1: HOME ==================== -->
+        <section id="page-home" class="page-content active-page py-12 px-4">
+            <div class="max-w-7xl mx-auto">
                 
                 <!-- Text & Overview -->
                 <div class="text-center max-w-4xl mx-auto mb-16">
@@ -189,8 +189,8 @@
         </section>
 
         <!-- ==================== PAGE 2: ABOUT US ==================== -->
-        <section id="page-about" class="page-content py-8 px-4">
-            <div class="max-w-6xl mx-auto">
+        <section id="page-about" class="page-content py-12 px-4">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs">Corporate Background</span>
                     <h2 class="text-3xl md:text-4xl font-black text-primary mt-2">About DEVI GROUPS</h2>
@@ -247,8 +247,8 @@
         </section>
 
         <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
-        <section id="page-company" class="page-content py-8 px-4">
-            <div class="max-w-6xl mx-auto">
+        <section id="page-company" class="page-content py-12 px-4">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs">Four Core Divisions</span>
                     <h2 class="text-3xl md:text-4xl font-black text-primary mt-2">Operational Business Units</h2>
@@ -337,7 +337,7 @@
         </section>
 
         <!-- ==================== PAGE 4: PRODUCTS ==================== -->
-        <section id="page-products" class="page-content py-8 px-4">
+        <section id="page-products" class="page-content py-12 px-4">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs">Direct Product Catalogs</span>
@@ -463,7 +463,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-sheet-plastic text-slate-400 text-base mr-3 w-5 text-center"></i> Aluminium Foil
                                     </span>
-                                    <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -472,7 +472,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-cube text-purple-600 text-base mr-3 w-5 text-center"></i> Hing Box
                                     </span>
-                                    <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -481,7 +481,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope-open-text text-sky-500 text-base mr-3 w-5 text-center"></i> Bubble Envelope
                                     </span>
-                                    <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -490,7 +490,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-folder-closed text-stone-600 text-base mr-3 w-5 text-center"></i> Hard Board Envelope
                                     </span>
-                                    <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -499,7 +499,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope text-yellow-600 text-base mr-3 w-5 text-center"></i> Paper Bubble Envelope
                                     </span>
-                                    <a href="paper-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="paper-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -508,7 +508,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-shield text-blue-600 text-base mr-3 w-5 text-center"></i> Plastic Bubble Envelope
                                     </span>
-                                    <a href="plastic-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="plastic-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -517,7 +517,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-rug text-teal-500 text-base mr-3 w-5 text-center"></i> Bubble Roll & Sheet
                                     </span>
-                                    <a href="bubble-roll-sheet-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="bubble-roll-sheet-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -526,7 +526,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-leaf text-green-600 text-base mr-3 w-5 text-center"></i> Biodegradable Bags
                                     </span>
-                                    <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -535,7 +535,7 @@
                                     <span class="font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-jar text-cyan-700 text-base mr-3 w-5 text-center"></i> Plastic Container
                                     </span>
-                                    <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                                    <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center gap-1.5 transition">
                                         <i class="fa-solid fa-file-pdf"></i> Brochure
                                     </a>
                                 </div>
@@ -554,8 +554,8 @@
         </section>
 
         <!-- ==================== PAGE 5: SISTER CONCERN & BRANDS ==================== -->
-        <section id="page-sister-brand" class="page-content py-16 px-4">
-            <div class="max-w-6xl mx-auto">
+        <section id="page-sister-brand" class="page-content py-12 px-4">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs">Affiliated Entities</span>
                     <h2 class="text-3xl md:text-4xl font-black text-primary mt-2">Creative Impex Ltd / Sister Concern (ccm/yer)</h2>
@@ -618,9 +618,9 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 6: CONTACT & LOCATIONS (UPDATED EMAIL) ==================== -->
-        <section id="page-contact" class="page-content py-16 px-4">
-            <div class="max-w-6xl mx-auto">
+        <!-- ==================== PAGE 6: CONTACT & LOCATIONS ==================== -->
+        <section id="page-contact" class="page-content py-12 px-4">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-12">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs">Direct Inquiry</span>
                     <h2 class="text-3xl md:text-4xl font-black text-primary mt-2">Connect With DEVI GROUPS</h2>
@@ -735,7 +735,7 @@
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active-page');
 
-            // Video Banner Visibility Logic (Home, About, Company, Products પર દેખાશે)
+            // Video Banner Visibility (Home, About, Company, Products પર જ દેખાશે)
             const videoBanner = document.getElementById('shared-video-banner');
             if (['home', 'about', 'company', 'products'].includes(pageId)) {
                 videoBanner.style.display = 'block';
