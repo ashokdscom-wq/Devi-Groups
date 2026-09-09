@@ -82,7 +82,7 @@
             
             <!-- Logo & Brand Name -->
             <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer">
-                <img src="./logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block" onerror="this.onerror=null; this.src='logo.jpg';">
+                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-12 w-auto object-contain bg-white rounded p-1 shadow-sm block" onerror="this.onerror=null; this.src='logo.jpg';">
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase">DEVI GROUPS</span>
             </div>
 
@@ -246,7 +246,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 3: COMPANY DIVISIONS (WITH .PNG PHOTOS) ==================== -->
+        <!-- ==================== PAGE 3: COMPANY DIVISIONS (NO CROPPING / PERFECT FIT) ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto">
                 <div class="text-center mb-10">
@@ -263,9 +263,12 @@
                                 <i class="fa-solid fa-flask-vial text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">1. Devi Chemical</h3>
                             </div>
-                            <!-- Photo Section (.png) -->
-                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
-                                <img src="./company-chemical.png" alt="Devi Chemical Facility" class="w-full h-full object-cover">
+                            <!-- Uncut Full Size Image Container -->
+                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-chemical.png" 
+                                     alt="Devi Chemical Facility" 
+                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
+                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-chemical.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-chemical.jpeg';}">
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial Dyes, Food Colors, Intermediates, Masterbatches, Paper Dyes, Toys & FMCG Ingredients.
@@ -280,9 +283,12 @@
                                 <i class="fa-solid fa-boxes-stacked text-2xl text-secondary"></i>
                                 <h3 class="text-lg font-bold text-primary">2. Devi Packaging</h3>
                             </div>
-                            <!-- Photo Section (.png) -->
-                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
-                                <img src="./company-packaging.png" alt="Devi Packaging Facility" class="w-full h-full object-cover">
+                            <!-- Uncut Full Size Image Container -->
+                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-packaging.png" 
+                                     alt="Devi Packaging Facility" 
+                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
+                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-packaging.jpeg';}">
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Corrugated Boxes, Bubble Envelopes, Biodegradable Bags, Aluminum Foils & Heavy Duty Plastic Containers.
@@ -297,9 +303,12 @@
                                 <i class="fa-solid fa-mug-hot text-2xl text-accent"></i>
                                 <h3 class="text-lg font-bold text-primary">3. Devi Coffee Day</h3>
                             </div>
-                            <!-- Photo Section (.png) -->
-                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
-                                <img src="./company-coffee.png" alt="Devi Coffee Day Outlet" class="w-full h-full object-cover">
+                            <!-- Uncut Full Size Image Container -->
+                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-coffee.png" 
+                                     alt="Devi Coffee Day Outlet" 
+                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
+                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-coffee.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-coffee.jpeg';}">
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3">
                                 Premium handcrafted coffee blends, cafe hospitality, and specialty beverage operations.
@@ -331,9 +340,12 @@
                                 <i class="fa-solid fa-solar-panel text-2xl text-amber-500"></i>
                                 <h3 class="text-lg font-bold text-primary">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
-                            <!-- Photo Section (.png) -->
-                            <div class="w-full aspect-[16/9] rounded-xl overflow-hidden mb-3 bg-slate-100 border border-slate-200">
-                                <img src="./company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-full object-cover">
+                            <!-- Uncut Full Size Image Container -->
+                            <div class="w-full rounded-xl overflow-hidden mb-3 bg-slate-50 border border-slate-200 flex items-center justify-center">
+                                <img src="company-solar.png" 
+                                     alt="Solar Power Backup Solutions" 
+                                     class="w-full h-auto max-h-64 object-contain block mx-auto" 
+                                     onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}else if(!this.src.endsWith('.jpeg')){this.src='company-solar.jpeg';}">
                             </div>
                             <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
                                 Industrial solar solutions, Felicity Solar systems, and authorized Couth company distribution based in Kenya.
