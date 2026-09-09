@@ -72,14 +72,11 @@
                 opacity: 0;
             }
         }
-        .slide-fade {
-            transition: opacity 0.8s ease-in-out;
-        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Header (સરખું હેડર) -->
+    <!-- Header (મોબાઇલ અને લેપટોપ બંને માટે ક્લીન હેડર) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
             
@@ -121,42 +118,15 @@
         <section id="page-home" class="page-content active-page py-10 px-4">
             <div class="max-w-6xl mx-auto">
                 
-                <!-- 1. Photo Slideshow / Dynamic Banner (ટોચ પર) -->
-                <div class="relative max-w-5xl mx-auto aspect-[16/8] sm:aspect-[16/7] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-200 mb-12">
-                    <!-- Slide 1 -->
-                    <div id="slide-1" class="slide-item absolute inset-0 opacity-100 slide-fade flex items-center justify-center bg-gradient-to-r from-slate-900 to-primary text-white p-8">
-                        <div class="text-center">
-                            <i class="fa-solid fa-flask-vial text-5xl text-accent mb-3"></i>
-                            <h3 class="text-2xl sm:text-4xl font-bold tracking-tight">Advanced Chemical Solutions</h3>
-                            <p class="text-slate-300 text-xs sm:text-sm mt-2">Dyes, Intermediates, Masterbatches & Food Colours</p>
-                        </div>
-                    </div>
-                    <!-- Slide 2 -->
-                    <div id="slide-2" class="slide-item absolute inset-0 opacity-0 slide-fade flex items-center justify-center bg-gradient-to-r from-slate-900 to-secondary text-white p-8">
-                        <div class="text-center">
-                            <i class="fa-solid fa-boxes-stacked text-5xl text-accent mb-3"></i>
-                            <h3 class="text-2xl sm:text-4xl font-bold tracking-tight">Industrial Packaging Manufacturing</h3>
-                            <p class="text-slate-300 text-xs sm:text-sm mt-2">Corrugated Boxes, Bubble Envelopes & Containers</p>
-                        </div>
-                    </div>
-                    <!-- Slide 3 -->
-                    <div id="slide-3" class="slide-item absolute inset-0 opacity-0 slide-fade flex items-center justify-center bg-gradient-to-r from-slate-900 to-amber-950 text-white p-8">
-                        <div class="text-center">
-                            <i class="fa-solid fa-solar-panel text-5xl text-accent mb-3"></i>
-                            <h3 class="text-2xl sm:text-4xl font-bold tracking-tight">Solar Power & FMCG Operations</h3>
-                            <p class="text-slate-300 text-xs sm:text-sm mt-2">Kenya Solar Power Backup & Global Export Trade</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide Navigation Dots -->
-                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-                        <span onclick="setSlide(0)" class="dot h-2.5 w-8 rounded-full bg-accent cursor-pointer transition"></span>
-                        <span onclick="setSlide(1)" class="dot h-2.5 w-3 rounded-full bg-white/50 cursor-pointer transition"></span>
-                        <span onclick="setSlide(2)" class="dot h-2.5 w-3 rounded-full bg-white/50 cursor-pointer transition"></span>
-                    </div>
+                <!-- 1. Video Container (Auto-Playing Loop Video) -->
+                <div class="relative max-w-5xl mx-auto aspect-[16/9] sm:aspect-[16/7] bg-black rounded-3xl overflow-hidden shadow-2xl border border-slate-200 mb-12">
+                    <video autoplay loop muted playsinline class="w-full h-full object-cover">
+                        <source src="banner-video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
 
-                <!-- 2. Text & Overview (લખાણ નીચે લાવી દીધું છે) -->
+                <!-- 2. Text & Overview (લખાણ નીચે ગોઠવેલું છે) -->
                 <div class="text-center max-w-4xl mx-auto mb-16">
                     <span class="text-accent font-bold uppercase tracking-widest text-xs bg-orange-100 px-3.5 py-1.5 rounded-full border border-orange-200">Global Industrial & Export Powerhouse</span>
                     <h1 class="text-3xl sm:text-5xl font-black text-primary mt-4 mb-4 tracking-tight">Pioneering Excellence Across Global Markets</h1>
@@ -755,9 +725,8 @@
         <p class="mt-1 text-slate-500">Terms & Conditions Apply | Export Compliance</p>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- JavaScript Navigation Logic -->
     <script>
-        // Page Navigation
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
@@ -765,37 +734,11 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Toggle Menu
         function toggleMenu() {
             const menu = document.getElementById('unified-menu');
             menu.classList.toggle('hidden');
         }
 
-        // Dynamic Photo Slider
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-item');
-        const dots = document.querySelectorAll('.dot');
-
-        function setSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.style.opacity = i === index ? '1' : '0';
-            });
-            dots.forEach((dot, i) => {
-                if (i === index) {
-                    dot.className = 'dot h-2.5 w-8 rounded-full bg-accent cursor-pointer transition';
-                } else {
-                    dot.className = 'dot h-2.5 w-3 rounded-full bg-white/50 cursor-pointer transition';
-                }
-            });
-            currentSlide = index;
-        }
-
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % slides.length;
-            setSlide(currentSlide);
-        }, 3500);
-
-        // Map Switcher
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
