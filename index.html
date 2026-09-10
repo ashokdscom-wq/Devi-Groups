@@ -589,22 +589,23 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
+        <!-- ==================== PAGE 3: COMPANY DIVISIONS (VIDEO ON TOP, TEXT BELOW) ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-8">
                 
-                <div class="text-center">
-                    <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Four Core Divisions</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Operational Business Units</h2>
-                    <p class="text-slate-500 text-xs mt-1">Integrated manufacturing, processing and global renewable solutions</p>
-                </div>
-
-                <!-- Dedicated Corporate Company Video Banner -->
+                <!-- 1. Dedicated Corporate Company Video Banner (Placed at TOP) -->
                 <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
                     <video autoplay loop muted playsinline class="w-full h-auto max-h-[70vh] block object-contain mx-auto bg-black">
                         <source src="company-video.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
+                </div>
+
+                <!-- 2. Text & Overview Section (Placed BELOW video) -->
+                <div class="text-center pt-2">
+                    <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Four Core Divisions</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Operational Business Units</h2>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-1">Integrated manufacturing, processing and global renewable solutions</p>
                 </div>
 
                 <!-- 4 Operational Cards -->
@@ -1220,7 +1221,7 @@
 
     <!-- Technical Specs (TDS / MSDS) Modal -->
     <div id="techspecs-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white w-empty rounded-3xl p-6 shadow-2xl border border-slate-200 w-full max-w-md">
+        <div class="bg-white rounded-3xl p-6 shadow-2xl border border-slate-200 w-full max-w-md">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 id="ts-title" class="text-base font-black text-primary flex items-center gap-2"></h3>
                 <button onclick="closeTechSpecs()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
