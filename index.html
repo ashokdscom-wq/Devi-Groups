@@ -183,7 +183,7 @@
 
         /* Quote button active state */
         .btn-quote-added {
-            background-color: #10b981 !important; /* Emerald green */
+            background-color: #10b981 !important;
             color: #ffffff !important;
         }
     </style>
@@ -687,14 +687,14 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS WITH MULTI-SELECT QUOTE CART ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS (WITH 100% BROCHURE LABELS & VIEWER MODAL) ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Product Catalogs</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Chemical, Packaging & FMCG Lines</h2>
-                    <p class="text-slate-500 text-xs mt-1">Download brochures, view TDS/MSDS specs or select multiple products for quote</p>
+                    <p class="text-slate-500 text-xs mt-1">Open interactive brochures, view TDS/MSDS specs or select multiple products for quote</p>
                 </div>
 
                 <!-- Instant Live Search Bar -->
@@ -723,7 +723,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Dyes', 'Reactive / Direct / Acid Dyes', '98.5% Standard', 'Export Drum / 25kg Bag')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
-                                        <a href="dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Dyes Brochure', 'dyes-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Dyes (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -735,7 +735,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Intermediates', 'Organic Synthesized Intermediates', '99.0% High Purity', 'HDPE Drums / IBC Tanks')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
-                                        <a href="intermediates-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Intermediates Brochure', 'intermediates-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Intermediates (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -747,7 +747,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Food Colours', 'Synthetic / Natural Food Grades', 'FSSAI / FDA Compliant', 'Food Grade Air-Tight Packing')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
-                                        <a href="food-colours-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Food Colours Brochure', 'food-colours-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Food Colours (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -759,7 +759,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Master Batches', 'Color & Additive Polymer Batches', 'Uniform Dispersion', '25kg Moisture Proof Bags')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
-                                        <a href="master-batches-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Master Batches Brochure', 'master-batches-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Master Batches (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -770,7 +770,7 @@
                                         <i class="fa-solid fa-scroll text-blue-500 text-sm mr-2.5 w-4 text-center"></i> Paper Dyes
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
-                                        <a href="paper-dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Paper Dyes Brochure', 'paper-dyes-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Paper Dyes (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -781,7 +781,7 @@
                                         <i class="fa-solid fa-shapes text-orange-500 text-sm mr-2.5 w-4 text-center"></i> Toys
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
-                                        <a href="toys-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Toys Brochure', 'toys-brochure.pdf')" class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Toys (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -805,7 +805,7 @@
                                         <i class="fa-solid fa-box text-amber-700 text-sm mr-2 w-4 text-center"></i> Corrugated Box
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="corrugated-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Corrugated Box Brochure', 'corrugated-box-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Corrugated Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -815,7 +815,7 @@
                                         <i class="fa-solid fa-bag-shopping text-emerald-600 text-sm mr-2 w-4 text-center"></i> Paper Cup & Paper Bags
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="paper-cups-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Paper Cup & Bags Brochure', 'paper-cups-bags-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Paper Cup & Bags (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -825,7 +825,7 @@
                                         <i class="fa-solid fa-sheet-plastic text-slate-400 text-sm mr-2 w-4 text-center"></i> Aluminium Foil
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Aluminium Foil Brochure', 'aluminium-foil-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Aluminium Foil (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -835,7 +835,7 @@
                                         <i class="fa-solid fa-cube text-purple-600 text-sm mr-2 w-4 text-center"></i> Hing Box
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Hing Box Brochure', 'hing-box-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Hing Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -845,7 +845,7 @@
                                         <i class="fa-solid fa-envelope-open-text text-sky-500 text-sm mr-2 w-4 text-center"></i> Bubble Envelope
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Bubble Envelope Brochure', 'bubble-envelope-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -855,7 +855,7 @@
                                         <i class="fa-solid fa-folder-closed text-stone-600 text-sm mr-2 w-4 text-center"></i> Hard Board Envelope
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Hard Board Envelope Brochure', 'hard-board-envelope-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Hard Board Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -865,7 +865,7 @@
                                         <i class="fa-solid fa-leaf text-green-600 text-sm mr-2 w-4 text-center"></i> Biodegradable Bags
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Biodegradable Bags Brochure', 'biodegradable-bags-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Biodegradable Bags (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -875,7 +875,7 @@
                                         <i class="fa-solid fa-jar text-cyan-700 text-sm mr-2 w-4 text-center"></i> Plastic Container
                                     </span>
                                     <div class="flex items-center gap-1">
-                                        <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                        <button onclick="openBrochureViewer('Plastic Container Brochure', 'plastic-container-brochure.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                         <button onclick="toggleProductInQuote(this, 'Plastic Container (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition">+ Quote</button>
                                     </div>
                                 </div>
@@ -909,7 +909,7 @@
                                 <p class="text-xs text-white/80 mt-1">Finest grade pure spices & authentic export blends.</p>
                             </div>
                             <div class="mt-4 flex gap-2">
-                                <a href="fmcg-spices-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                <button onclick="openBrochureViewer('Spices Brochure', 'fmcg-spices-brochure.pdf')" class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                 <button onclick="toggleProductInQuote(this, 'Spices (Devi FMCG)')" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
                             </div>
                         </div>
@@ -924,7 +924,7 @@
                                 <p class="text-xs text-white/80 mt-1">Specialty food seasoning formulas & taste enhancers.</p>
                             </div>
                             <div class="mt-4 flex gap-2">
-                                <a href="fmcg-seasoning-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                <button onclick="openBrochureViewer('Seasoning Brochure', 'fmcg-seasoning-brochure.pdf')" class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                 <button onclick="toggleProductInQuote(this, 'Seasoning (Devi FMCG)')" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
                             </div>
                         </div>
@@ -939,7 +939,7 @@
                                 <p class="text-xs text-white/80 mt-1">Premium ready-to-fry farfar snack pellets & mixes.</p>
                             </div>
                             <div class="mt-4 flex gap-2">
-                                <a href="fmcg-farfar-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-lines"></i> Brochure</a>
+                                <button onclick="openBrochureViewer('Farfar Brochure', 'fmcg-farfar-brochure.pdf')" class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                 <button onclick="toggleProductInQuote(this, 'Farfar (Devi FMCG)')" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
                             </div>
                         </div>
@@ -998,9 +998,9 @@
                     </div>
 
                     <div class="pt-2">
-                        <a href="fmcg-brochure.pdf" download class="w-full bg-white hover:bg-slate-100 text-purple-900 font-black text-sm py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
-                            <i class="fa-solid fa-file-lines text-base"></i> Download FMCG Division Brochure
-                        </a>
+                        <button onclick="openBrochureViewer('Creative Impex FMCG Division Brochure', 'fmcg-brochure.pdf')" class="w-full bg-white hover:bg-slate-100 text-purple-900 font-black text-sm py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-lg">
+                            <i class="fa-solid fa-book-open text-base"></i> View & Download FMCG Division Brochure
+                        </button>
                     </div>
                 </div>
 
@@ -1035,9 +1035,9 @@
                         </div>
                     </div>
 
-                    <a href="solar-brochure.pdf" download class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow text-xs sm:text-sm">
-                        <i class="fa-solid fa-file-lines text-base"></i> Download Solar Power Brochure
-                    </a>
+                    <button onclick="openBrochureViewer('Solar Power Backup Brochure', 'solar-brochure.pdf')" class="w-full bg-secondary hover:bg-cyan-800 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow text-xs sm:text-sm">
+                        <i class="fa-solid fa-book-open text-base"></i> View & Download Solar Power Brochure
+                    </button>
                 </div>
 
             </div>
@@ -1165,6 +1165,38 @@
         </a>
     </div>
 
+    <!-- Interactive Brochure Viewer Modal with Download Option -->
+    <div id="brochure-modal" class="fixed inset-0 bg-black/85 z-[130] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-brochure-title" class="text-base sm:text-lg font-black text-primary flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-accent"></i> Official Product Brochure
+                </h3>
+                <button onclick="closeBrochureViewer()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto mb-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col items-center justify-center text-center min-h-[220px]">
+                <div class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-inner">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <h4 id="modal-brochure-name" class="font-black text-slate-800 text-sm sm:text-base">Product Brochure</h4>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm">Detailed product specifications, export packing volume, and purity analysis are ready.</p>
+                <div class="mt-4 flex flex-wrap gap-2 justify-center">
+                    <a id="modal-brochure-download-btn" href="#" download class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download PDF Brochure
+                    </a>
+                    <a id="modal-brochure-view-btn" href="#" target="_blank" class="bg-primary hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in New Tab
+                    </a>
+                </div>
+            </div>
+
+            <button onclick="closeBrochureViewer()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                Close Viewer
+            </button>
+        </div>
+    </div>
+
     <!-- Multi-Product Quote Cart Drawer Modal -->
     <div id="quote-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200">
@@ -1251,6 +1283,19 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Brochure Viewer Functions
+        function openBrochureViewer(title, filePath) {
+            document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
+            document.getElementById('modal-brochure-name').innerText = title;
+            document.getElementById('modal-brochure-download-btn').href = filePath;
+            document.getElementById('modal-brochure-view-btn').href = filePath;
+            document.getElementById('brochure-modal').classList.remove('hidden');
+        }
+
+        function closeBrochureViewer() {
+            document.getElementById('brochure-modal').classList.add('hidden');
+        }
+
         // Port & Freight Selector Data
         const portData = {
             'us': { name: 'Port of Houston, Port of New York, Long Beach', terms: 'FOB (Mundra/Pipavav), CIF, CFR, DDP', transit: 'Direct Container Vessel (FCL / LCL)' },
@@ -1274,12 +1319,10 @@
         function toggleProductInQuote(btn, productName) {
             const index = quoteCart.indexOf(productName);
             if (index > -1) {
-                // If already in cart, remove it
                 quoteCart.splice(index, 1);
                 btn.classList.remove('btn-quote-added');
                 btn.innerHTML = '+ Quote';
             } else {
-                // Add to multi-select cart
                 quoteCart.push(productName);
                 btn.classList.add('btn-quote-added');
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Added';
@@ -1292,7 +1335,6 @@
             if (index > -1) {
                 quoteCart.splice(index, 1);
             }
-            // Update button states on page
             document.querySelectorAll('.quote-btn').forEach(btn => {
                 if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(productName)) {
                     btn.classList.remove('btn-quote-added');
