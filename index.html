@@ -187,6 +187,12 @@
     <!-- Hidden Default Google Translate Hook -->
     <div id="google_translate_element"></div>
 
+    <!-- Toast Notification for Adding Multi-Items -->
+    <div id="toast-notify" class="fixed top-24 left-1/2 -translate-x-1/2 z-[200] hidden bg-slate-900/95 text-white px-5 py-2.5 rounded-full shadow-2xl border border-amber-400 text-xs font-bold flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-text">Product added to quote list</span>
+    </div>
+
     <!-- Header (Main Brand Bar + Real Image Flag Language Selector + Full Horizontal Navigation Bar) -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         
@@ -421,7 +427,7 @@
                         </div>
                         <div class="map-pin" style="top: 45%; left: 63%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
                         </div>
                         <div class="map-pin" style="top: 48%; left: 59%;">
                             <div class="ping-dot"><span></span><span></span></div>
@@ -571,7 +577,7 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 3: COMPANY DIVISIONS (WITH DEDICATED COMPANY VIDEO) ==================== -->
+        <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-8">
                 
@@ -681,14 +687,14 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS WITH QUOTE CART & TECH SPECS ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS (MULTI-SELECT QUOTE ENABLED) ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Product Catalogs</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Chemical, Packaging & FMCG Lines</h2>
-                    <p class="text-slate-500 text-xs mt-1">Download brochures, view TDS/MSDS specs or add to multi-quote cart</p>
+                    <p class="text-slate-500 text-xs mt-1">Select multiple products at once by clicking <strong>"+ Quote"</strong>, then request a combined price list.</p>
                 </div>
 
                 <!-- Instant Live Search Bar -->
@@ -718,7 +724,7 @@
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Dyes', 'Reactive / Direct / Acid Dyes', '98.5% Standard', 'Export Drum / 25kg Bag')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
                                         <a href="dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Dyes (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-dyes" onclick="toggleProductQuote('Dyes (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -730,7 +736,7 @@
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Intermediates', 'Organic Synthesized Intermediates', '99.0% High Purity', 'HDPE Drums / IBC Tanks')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
                                         <a href="intermediates-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Intermediates (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-intermediates" onclick="toggleProductQuote('Intermediates (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -742,7 +748,7 @@
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Food Colours', 'Synthetic / Natural Food Grades', 'FSSAI / FDA Compliant', 'Food Grade Air-Tight Packing')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
                                         <a href="food-colours-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Food Colours (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-foodcolours" onclick="toggleProductQuote('Food Colours (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -754,7 +760,7 @@
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <button onclick="openTechSpecs('Master Batches', 'Color & Additive Polymer Batches', 'Uniform Dispersion', '25kg Moisture Proof Bags')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
                                         <a href="master-batches-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Master Batches (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-masterbatches" onclick="toggleProductQuote('Master Batches (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -765,7 +771,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <a href="paper-dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Paper Dyes (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-paperdyes" onclick="toggleProductQuote('Paper Dyes (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -776,7 +782,7 @@
                                     </span>
                                     <div class="flex items-center gap-1.5 self-end sm:self-auto">
                                         <a href="toys-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Toys (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button id="btn-quote-toys" onclick="toggleProductQuote('Toys (Devi Chemical)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
                             </div>
@@ -800,7 +806,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="corrugated-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Corrugated Box (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Corrugated Box (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -810,7 +816,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="paper-cups-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Paper Cup & Bags (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Paper Cup & Bags (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -820,7 +826,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Aluminium Foil (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Aluminium Foil (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -830,7 +836,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Hing Box (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Hing Box (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -840,7 +846,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Bubble Envelope (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Bubble Envelope (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -850,7 +856,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Hard Board Envelope (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Hard Board Envelope (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -860,7 +866,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Biodegradable Bags (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Biodegradable Bags (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
 
@@ -870,7 +876,7 @@
                                     </span>
                                     <div class="flex items-center gap-1">
                                         <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
-                                        <button onclick="addToQuote('Plastic Container (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                        <button onclick="toggleProductQuote('Plastic Container (Devi Packaging)', this)" class="quote-btn bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-sm">+ Quote</button>
                                     </div>
                                 </div>
                             </div>
@@ -904,7 +910,7 @@
                             </div>
                             <div class="mt-4 flex gap-2">
                                 <a href="fmcg-spices-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
-                                <button onclick="addToQuote('Spices (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                                <button onclick="toggleProductQuote('Spices (Devi FMCG)', this)" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition shadow">+ Quote</button>
                             </div>
                         </div>
 
@@ -919,7 +925,7 @@
                             </div>
                             <div class="mt-4 flex gap-2">
                                 <a href="fmcg-seasoning-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
-                                <button onclick="addToQuote('Seasoning (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                                <button onclick="toggleProductQuote('Seasoning (Devi FMCG)', this)" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition shadow">+ Quote</button>
                             </div>
                         </div>
 
@@ -934,7 +940,7 @@
                             </div>
                             <div class="mt-4 flex gap-2">
                                 <a href="fmcg-farfar-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
-                                <button onclick="addToQuote('Farfar (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                                <button onclick="toggleProductQuote('Farfar (Devi FMCG)', this)" class="quote-btn bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition shadow">+ Quote</button>
                             </div>
                         </div>
 
@@ -1163,15 +1169,24 @@
     <div id="quote-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="text-lg font-black text-primary flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-accent"></i> Selected Quote Items</h3>
+                <div>
+                    <h3 class="text-lg font-black text-primary flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-accent"></i> Selected Multi-Quote Items</h3>
+                    <p class="text-[11px] text-slate-500">Review selected items before sending quotation request</p>
+                </div>
                 <button onclick="toggleQuoteModal()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="quote-items-list" class="max-h-60 overflow-y-auto space-y-2 mb-4">
-                <p class="text-xs text-slate-500 text-center py-4">No products added yet. Click "+ Quote" on any product to add.</p>
+            
+            <div id="quote-items-list" class="max-h-64 overflow-y-auto space-y-2 mb-5 pr-1">
+                <p class="text-xs text-slate-500 text-center py-6">No products selected yet. Click <strong>"+ Quote"</strong> on any product to select multiple items.</p>
             </div>
-            <div class="space-y-2">
-                <button onclick="submitMultiQuote('whatsapp')" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-brands fa-whatsapp text-base"></i> Send Quote Request via WhatsApp</button>
-                <button onclick="submitMultiQuote('email')" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-solid fa-envelope text-base"></i> Send Quote Request via Email</button>
+
+            <div class="space-y-2.5">
+                <button onclick="submitMultiQuote('whatsapp')" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Send Multi-Product Quote on WhatsApp
+                </button>
+                <button onclick="submitMultiQuote('email')" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-solid fa-envelope text-lg"></i> Send Multi-Product Quote via Email
+                </button>
             </div>
         </div>
     </div>
@@ -1262,46 +1277,88 @@
             }
         }
 
-        // Multi-Product Quote Cart State
+        // Multi-Product Quote Cart State (Toggle & Select Multiple Products)
         let quoteCart = [];
-        function addToQuote(productName) {
-            if (!quoteCart.includes(productName)) {
-                quoteCart.push(productName);
-                updateQuoteCartUI();
-            }
-            toggleQuoteModal(true);
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notify');
+            const text = document.getElementById('toast-text');
+            text.innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2000);
         }
-        function removeFromQuote(index) {
-            quoteCart.splice(index, 1);
+
+        function toggleProductQuote(productName, btnElement) {
+            const index = quoteCart.indexOf(productName);
+            if (index > -1) {
+                // Remove if already selected
+                quoteCart.splice(index, 1);
+                if (btnElement) {
+                    btnElement.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                    btnElement.classList.add('bg-accent', 'hover:bg-orange-600');
+                    btnElement.innerHTML = '+ Quote';
+                }
+                showToast(`Removed from Quote (${quoteCart.length} selected)`);
+            } else {
+                // Add to multi-select cart
+                quoteCart.push(productName);
+                if (btnElement) {
+                    btnElement.classList.remove('bg-accent', 'hover:bg-orange-600');
+                    btnElement.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+                }
+                showToast(`Added to Quote (${quoteCart.length} selected)`);
+            }
             updateQuoteCartUI();
         }
+
+        function removeFromQuote(index) {
+            const removedItem = quoteCart[index];
+            quoteCart.splice(index, 1);
+            
+            // Reset button styling if present on page
+            document.querySelectorAll('.quote-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(removedItem)) {
+                    btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                    btn.classList.add('bg-accent', 'hover:bg-orange-600');
+                    btn.innerHTML = '+ Quote';
+                }
+            });
+
+            updateQuoteCartUI();
+        }
+
         function updateQuoteCartUI() {
             document.getElementById('quote-count-badge').innerText = quoteCart.length;
             const container = document.getElementById('quote-items-list');
             if (quoteCart.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No products added yet.</p>';
+                container.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">No products selected yet. Click <strong>"+ Quote"</strong> on any product to select multiple items.</p>';
                 return;
             }
             container.innerHTML = quoteCart.map((item, idx) => `
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                    <span class="font-bold text-slate-800"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> ${item}</span>
-                    <button onclick="removeFromQuote(${idx})" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-0.5"><i class="fa-solid fa-trash"></i></button>
+                <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 text-xs transition">
+                    <span class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-600"></i> ${item}</span>
+                    <button onclick="removeFromQuote(${idx})" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded-lg transition"><i class="fa-solid fa-trash-can"></i> Remove</button>
                 </div>
             `).join('');
         }
+
         function toggleQuoteModal(forceOpen) {
             const modal = document.getElementById('quote-modal');
             if (forceOpen === true) modal.classList.remove('hidden');
             else modal.classList.toggle('hidden');
         }
+
         function submitMultiQuote(channel) {
-            if (quoteCart.length === 0) return alert('Please add at least one product.');
+            if (quoteCart.length === 0) return alert('Please select at least one product using "+ Quote".');
             const listStr = quoteCart.map((p, i) => `${i+1}. ${p}`).join('%0D%0A');
             if (channel === 'whatsapp') {
-                const text = `Hello DEVI GROUPS, I would like to request an official quotation for the following products:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease provide price, MOQ and delivery details.`;
+                const text = `Hello DEVI GROUPS, I would like to request an official quotation for the following (${quoteCart.length}) products:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease provide price, MOQ and shipment schedule.`;
                 window.open(`https://wa.me/919727726216?text=${text}`, '_blank');
             } else {
-                const mailto = `mailto:devigroup1989@gmail.com?subject=Multi-Product Quotation Request&body=Hello DEVI GROUPS,%0D%0A%0D%0AI would like to request an official quotation for:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease share FOB/CIF rates.`;
+                const mailto = `mailto:devigroup1989@gmail.com?subject=Multi-Product Quotation Request (${quoteCart.length} Items)&body=Hello DEVI GROUPS,%0D%0A%0D%0AI would like to request an official quotation for the following products:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease share FOB/CIF rates.`;
                 window.location.href = mailto;
             }
         }
