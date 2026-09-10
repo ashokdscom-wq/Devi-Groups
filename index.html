@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEVI GROUPS | Global Industrial Solutions & Exports</title>
+    <title>DEVI GROUPS | Global Industrial Solutions & Multi-Division Conglomerate</title>
     
     <!-- Meta SEO & Social Sharing (OpenGraph) -->
-    <meta name="description" content="DEVI GROUPS - Leading manufacturer and global exporter of Industrial Chemicals, Heavy Packaging Solutions, FMCG Food Products, Coffee, and Solar Power Backup Systems.">
-    <meta name="keywords" content="DEVI GROUPS, Devi Chemical, Devi Packaging, Dyes, Intermediates, Food Colours, Masterbatches, Corrugated Box, Spices, Solar Power Kenya">
+    <meta name="description" content="DEVI GROUPS - Leading global conglomerate manufacturing and exporting Industrial Chemicals, Heavy Packaging, FMCG Food Products, Coffee Day Blends, and Solar Power Backup Systems.">
+    <meta name="keywords" content="DEVI GROUPS, Devi Chemical, Devi Packaging, Dyes, Intermediates, Food Colours, Masterbatches, Corrugated Box, Spices, Solar Power Kenya, Global Exporters">
     <meta name="author" content="DEVI GROUPS - Shah Nirav">
     <meta property="og:title" content="DEVI GROUPS | Global Industrial Solutions & Exports">
     <meta property="og:description" content="Supplying premium chemicals, heavy industrial packaging, and solar power backup globally. Established 1989.">
@@ -198,14 +198,21 @@
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
-            <!-- Direct Contact Actions + Real Flag Language Dropdown -->
-            <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Direct Contact Actions + Real Flag Language Dropdown + Quote Cart Indicator -->
+            <div class="flex items-center gap-2 sm:gap-3">
                 
+                <!-- Quote Cart Trigger Button -->
+                <button onclick="toggleQuoteModal()" class="relative bg-slate-800/90 hover:bg-slate-700 text-amber-300 px-3 py-1.5 rounded-xl border border-slate-600 font-bold text-xs flex items-center gap-1.5 shadow transition">
+                    <i class="fa-solid fa-cart-shopping text-sm"></i>
+                    <span class="hidden md:inline">Quote Cart</span>
+                    <span id="quote-count-badge" class="bg-accent text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+
                 <!-- HD Flag Image Custom Dropdown -->
                 <div class="relative inline-block text-left" id="lang-picker-container">
                     <button type="button" onclick="toggleLangDropdown(event)" id="selected-lang-btn" class="flex items-center gap-2 bg-slate-800/95 hover:bg-slate-700 text-amber-300 font-bold text-xs py-1.5 px-3 rounded-xl border border-slate-600 focus:outline-none focus:border-amber-400 shadow-md transition">
                         <img id="current-flag-img" src="https://flagcdn.com/w40/gb.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Flag">
-                        <span id="current-lang-text">English</span>
+                        <span id="current-lang-text" class="hidden sm:inline">English</span>
                         <i class="fa-solid fa-chevron-down text-[10px] ml-1 text-slate-400"></i>
                     </button>
 
@@ -280,6 +287,19 @@
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
                     <span class="hidden sm:inline">WhatsApp</span>
                 </a>
+            </div>
+        </div>
+
+        <!-- Global Multi-Timezone Trade Desk -->
+        <div class="bg-slate-950 text-slate-300 text-[10px] sm:text-xs py-1 px-4 border-b border-slate-800">
+            <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-amber-400 flex items-center gap-1"><i class="fa-solid fa-globe animate-spin" style="animation-duration: 10s;"></i> 24x7 Global Trade Desk:</span>
+                <div class="flex items-center gap-3 sm:gap-6 font-mono text-[11px]">
+                    <span>🇮🇳 IND: <strong id="clock-india" class="text-white">--:--</strong></span>
+                    <span>🇦🇪 DXB: <strong id="clock-dubai" class="text-white">--:--</strong></span>
+                    <span>🇰🇪 NBO: <strong id="clock-kenya" class="text-white">--:--</strong></span>
+                    <span>🇺🇸 NYC: <strong id="clock-usa" class="text-white">--:--</strong></span>
+                </div>
             </div>
         </div>
 
@@ -401,7 +421,7 @@
                         </div>
                         <div class="map-pin" style="top: 45%; left: 63%;">
                             <div class="ping-dot"><span></span><span></span></div>
-                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
+                            <span class="bg-slate-900/90 text-white text-[9px] sm:text-xs font-bold px-1.5 py-0.5 rounded shadow mt-1 border border-slate-700 whitespace-nowrap">🇦🇪 UAE</span>
                         </div>
                         <div class="map-pin" style="top: 48%; left: 59%;">
                             <div class="ping-dot"><span></span><span></span></div>
@@ -438,6 +458,40 @@
                         <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
                             <img src="https://flagcdn.com/w40/au.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="Australia">
                             <span>Australia</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Global Freight & Delivery Port Routing Hub -->
+                <div class="bg-gradient-to-r from-slate-900 via-primary to-slate-900 text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
+                    <div class="text-center mb-6">
+                        <span class="text-amber-400 font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">International Logistics Hub</span>
+                        <h3 class="text-xl sm:text-2xl font-black mt-2">Check Port Clearance & Freight Terms</h3>
+                        <p class="text-slate-300 text-xs mt-1">Select your country to view connected container ports & shipping terms</p>
+                    </div>
+
+                    <div class="max-w-md mx-auto mb-6">
+                        <select id="port-selector" onchange="updatePortDetails()" class="w-full bg-slate-800 text-amber-300 font-bold text-xs sm:text-sm p-3 rounded-xl border border-slate-600 focus:outline-none focus:border-amber-400 shadow-inner">
+                            <option value="us">🇺🇸 United States (North America)</option>
+                            <option value="ae">🇦🇪 UAE & Middle East (GCC)</option>
+                            <option value="eu">🇩🇪 / 🇬🇧 Europe (Germany, UK, Netherlands)</option>
+                            <option value="ke">🇰🇪 Kenya & East Africa</option>
+                            <option value="au">🇦🇺 Australia & Oceania</option>
+                        </select>
+                    </div>
+
+                    <div id="port-details-card" class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Primary Destination Ports</span>
+                            <strong id="port-name" class="text-sm text-white">Port of Houston, Port of New York, Long Beach</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Supported Incoterms</span>
+                            <strong id="port-terms" class="text-sm text-amber-300">FOB (Mundra/Pipavav), CIF, CFR, DDP</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Transit & Handling</span>
+                            <strong id="port-transit" class="text-sm text-emerald-400">Direct Container Vessel (FCL / LCL)</strong>
                         </div>
                     </div>
                 </div>
@@ -627,14 +681,14 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 4: PRODUCTS ==================== -->
+        <!-- ==================== PAGE 4: PRODUCTS WITH QUOTE CART & TECH SPECS ==================== -->
         <section id="page-products" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-6">
                 
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Product Catalogs</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Chemical, Packaging & FMCG Lines</h2>
-                    <p class="text-slate-500 text-xs mt-1">Download individual product brochures directly below</p>
+                    <p class="text-slate-500 text-xs mt-1">Download brochures, view TDS/MSDS specs or add to multi-quote cart</p>
                 </div>
 
                 <!-- Instant Live Search Bar -->
@@ -656,58 +710,74 @@
                             </div>
 
                             <div class="space-y-2.5 product-group">
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Dyes -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-palette text-rose-500 text-sm mr-2.5 w-4 text-center"></i> Dyes
                                     </span>
-                                    <a href="dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <button onclick="openTechSpecs('Dyes', 'Reactive / Direct / Acid Dyes', '98.5% Standard', 'Export Drum / 25kg Bag')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
+                                        <a href="dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Dyes (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Intermediates -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-atom text-cyan-600 text-sm mr-2.5 w-4 text-center"></i> Intermediates
                                     </span>
-                                    <a href="intermediates-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <button onclick="openTechSpecs('Intermediates', 'Organic Synthesized Intermediates', '99.0% High Purity', 'HDPE Drums / IBC Tanks')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
+                                        <a href="intermediates-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Intermediates (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Food Colours -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-bowl-food text-amber-500 text-sm mr-2.5 w-4 text-center"></i> Food Colours
                                     </span>
-                                    <a href="food-colours-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <button onclick="openTechSpecs('Food Colours', 'Synthetic / Natural Food Grades', 'FSSAI / FDA Compliant', 'Food Grade Air-Tight Packing')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
+                                        <a href="food-colours-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Food Colours (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Master Batches -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-cubes-stacked text-indigo-500 text-sm mr-2.5 w-4 text-center"></i> Master Batches
                                     </span>
-                                    <a href="master-batches-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <button onclick="openTechSpecs('Master Batches', 'Color & Additive Polymer Batches', 'Uniform Dispersion', '25kg Moisture Proof Bags')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-bold px-2 py-1 rounded-lg">TDS</button>
+                                        <a href="master-batches-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Master Batches (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Paper Dyes -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-scroll text-blue-500 text-sm mr-2.5 w-4 text-center"></i> Paper Dyes
                                     </span>
-                                    <a href="paper-dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <a href="paper-dyes-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Paper Dyes (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
-                                <div class="product-item flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+                                <!-- Toys -->
+                                <div class="product-item flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition gap-2">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-shapes text-orange-500 text-sm mr-2.5 w-4 text-center"></i> Toys
                                     </span>
-                                    <a href="toys-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-3 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                                        <a href="toys-brochure.pdf" download class="bg-primary hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Toys (Devi Chemical)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -728,99 +798,80 @@
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-box text-amber-700 text-sm mr-2 w-4 text-center"></i> Corrugated Box
                                     </span>
-                                    <a href="corrugated-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="corrugated-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Corrugated Box (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-bag-shopping text-emerald-600 text-sm mr-2 w-4 text-center"></i> Paper Cup & Paper Bags
                                     </span>
-                                    <a href="paper-cups-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="paper-cups-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Paper Cup & Bags (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-sheet-plastic text-slate-400 text-sm mr-2 w-4 text-center"></i> Aluminium Foil
                                     </span>
-                                    <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="aluminium-foil-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Aluminium Foil (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-cube text-purple-600 text-sm mr-2 w-4 text-center"></i> Hing Box
                                     </span>
-                                    <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="hing-box-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Hing Box (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-envelope-open-text text-sky-500 text-sm mr-2 w-4 text-center"></i> Bubble Envelope
                                     </span>
-                                    <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Bubble Envelope (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-folder-closed text-stone-600 text-sm mr-2 w-4 text-center"></i> Hard Board Envelope
                                     </span>
-                                    <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
-                                </div>
-
-                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
-                                        <i class="fa-solid fa-envelope text-yellow-600 text-sm mr-2 w-4 text-center"></i> Paper Bubble Envelope
-                                    </span>
-                                    <a href="paper-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
-                                </div>
-
-                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
-                                        <i class="fa-solid fa-shield text-blue-600 text-sm mr-2 w-4 text-center"></i> Plastic Bubble Envelope
-                                    </span>
-                                    <a href="plastic-bubble-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
-                                </div>
-
-                                <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
-                                        <i class="fa-solid fa-rug text-teal-500 text-sm mr-2 w-4 text-center"></i> Bubble Roll & Sheet
-                                    </span>
-                                    <a href="bubble-roll-sheet-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="hard-board-envelope-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Hard Board Envelope (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-leaf text-green-600 text-sm mr-2 w-4 text-center"></i> Biodegradable Bags
                                     </span>
-                                    <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="biodegradable-bags-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Biodegradable Bags (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
                                     <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
                                         <i class="fa-solid fa-jar text-cyan-700 text-sm mr-2 w-4 text-center"></i> Plastic Container
                                     </span>
-                                    <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
-                                        <i class="fa-solid fa-file-pdf"></i> Brochure
-                                    </a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="plastic-container-brochure.pdf" download class="bg-secondary hover:bg-cyan-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 transition"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                                        <button onclick="addToQuote('Plastic Container (Devi Packaging)')" class="bg-accent hover:bg-orange-600 text-white text-[11px] font-bold px-2 py-1 rounded-lg transition">+ Quote</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -851,9 +902,10 @@
                                 <h4 class="product-title font-black text-lg tracking-wide">1. SPICES</h4>
                                 <p class="text-xs text-white/80 mt-1">Finest grade pure spices & authentic export blends.</p>
                             </div>
-                            <a href="fmcg-spices-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
-                                <i class="fa-solid fa-file-pdf"></i> Brochure
-                            </a>
+                            <div class="mt-4 flex gap-2">
+                                <a href="fmcg-spices-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
+                                <button onclick="addToQuote('Spices (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                            </div>
                         </div>
 
                         <!-- 2. SEASONING -->
@@ -865,9 +917,10 @@
                                 <h4 class="product-title font-black text-lg tracking-wide">2. SEASONING</h4>
                                 <p class="text-xs text-white/80 mt-1">Specialty food seasoning formulas & taste enhancers.</p>
                             </div>
-                            <a href="fmcg-seasoning-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
-                                <i class="fa-solid fa-file-pdf"></i> Brochure
-                            </a>
+                            <div class="mt-4 flex gap-2">
+                                <a href="fmcg-seasoning-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
+                                <button onclick="addToQuote('Seasoning (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                            </div>
                         </div>
 
                         <!-- 3. FARFAR -->
@@ -879,9 +932,10 @@
                                 <h4 class="product-title font-black text-lg tracking-wide">3. FARFAR</h4>
                                 <p class="text-xs text-white/80 mt-1">Premium ready-to-fry farfar snack pellets & mixes.</p>
                             </div>
-                            <a href="fmcg-farfar-brochure.pdf" download class="mt-4 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition shadow">
-                                <i class="fa-solid fa-file-pdf"></i> Brochure
-                            </a>
+                            <div class="mt-4 flex gap-2">
+                                <a href="fmcg-farfar-brochure.pdf" download class="flex-1 bg-white text-orange-600 hover:bg-orange-50 font-bold text-xs py-2 px-2 rounded-xl flex items-center justify-center gap-1 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</a>
+                                <button onclick="addToQuote('Farfar (Devi FMCG)')" class="bg-primary hover:bg-slate-900 text-white font-bold text-xs px-3 py-2 rounded-xl transition">+ Quote</button>
+                            </div>
                         </div>
 
                     </div>
@@ -1098,11 +1152,44 @@
     </main>
 
     <!-- Floating Sticky WhatsApp Widget -->
-    <div class="fixed bottom-6 right-6 z-50">
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="flex items-center gap-2 bg-whatsapp hover:bg-emerald-600 text-white font-bold px-4 py-3 rounded-full shadow-2xl transition duration-300 hover:scale-105 border-2 border-white">
             <i class="fa-brands fa-whatsapp text-2xl"></i>
             <span class="hidden sm:inline text-xs">Chat with Us</span>
         </a>
+    </div>
+
+    <!-- Multi-Product Quote Cart Drawer Modal -->
+    <div id="quote-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-lg font-black text-primary flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-accent"></i> Selected Quote Items</h3>
+                <button onclick="toggleQuoteModal()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="quote-items-list" class="max-h-60 overflow-y-auto space-y-2 mb-4">
+                <p class="text-xs text-slate-500 text-center py-4">No products added yet. Click "+ Quote" on any product to add.</p>
+            </div>
+            <div class="space-y-2">
+                <button onclick="submitMultiQuote('whatsapp')" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-brands fa-whatsapp text-base"></i> Send Quote Request via WhatsApp</button>
+                <button onclick="submitMultiQuote('email')" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-solid fa-envelope text-base"></i> Send Quote Request via Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Specs (TDS / MSDS) Modal -->
+    <div id="techspecs-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="ts-title" class="text-base font-black text-primary flex items-center gap-2"></h3>
+                <button onclick="closeTechSpecs()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><span class="text-slate-500 block text-[10px] uppercase font-bold">Grade & Application</span><strong id="ts-grade" class="text-slate-800"></strong></div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><span class="text-slate-500 block text-[10px] uppercase font-bold">Purity / Active Content</span><strong id="ts-purity" class="text-emerald-700"></strong></div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><span class="text-slate-500 block text-[10px] uppercase font-bold">Standard Export Packaging</span><strong id="ts-pack" class="text-slate-800"></strong></div>
+            </div>
+            <button onclick="closeTechSpecs()" class="w-full bg-primary text-white font-bold py-2.5 rounded-xl text-xs mt-4">Close Specifications</button>
+        </div>
     </div>
 
     <!-- Image Lightbox Modal -->
@@ -1123,13 +1210,24 @@
 
     <!-- JavaScript Engine -->
     <script>
+        // Live International World Clocks
+        function updateClocks() {
+            const now = new Date();
+            const format = (tz) => new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(now);
+            document.getElementById('clock-india').innerText = format('Asia/Kolkata');
+            document.getElementById('clock-dubai').innerText = format('Asia/Dubai');
+            document.getElementById('clock-kenya').innerText = format('Africa/Nairobi');
+            document.getElementById('clock-usa').innerText = format('America/New_York');
+        }
+        setInterval(updateClocks, 1000);
+        updateClocks();
+
         // Page Navigation with Active Tab Highlighting
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active-page');
 
-            // Manage Tab Highlights
             document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active-tab'));
             const activeTab = document.getElementById('tab-' + pageId);
             if (activeTab && pageId !== 'contact') {
@@ -1147,19 +1245,90 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Port & Freight Selector Data
+        const portData = {
+            'us': { name: 'Port of Houston, Port of New York, Long Beach', terms: 'FOB (Mundra/Pipavav), CIF, CFR, DDP', transit: 'Direct Container Vessel (FCL / LCL)' },
+            'ae': { name: 'Jebel Ali Port (Dubai), Dammam, Jeddah', terms: 'FOB, CIF Jebel Ali, Direct Sea Cargo', transit: '3-5 Days Direct Sea Freight' },
+            'eu': { name: 'Port of Hamburg, Rotterdam, Felixstowe (UK)', terms: 'FOB, CIF European Base Ports', transit: 'Weekly Scheduled Sailings' },
+            'ke': { name: 'Port of Mombasa, Nairobi ICD Depot', terms: 'CIF Mombasa, Ex-Warehouse Nairobi', transit: 'Authorized Distribution Hub' },
+            'au': { name: 'Port of Melbourne, Port of Sydney, Fremantle', terms: 'FOB India Ports, CIF Oceania', transit: 'Full Container Logistics' }
+        };
+        function updatePortDetails() {
+            const key = document.getElementById('port-selector').value;
+            if(portData[key]) {
+                document.getElementById('port-name').innerText = portData[key].name;
+                document.getElementById('port-terms').innerText = portData[key].terms;
+                document.getElementById('port-transit').innerText = portData[key].transit;
+            }
+        }
+
+        // Multi-Product Quote Cart State
+        let quoteCart = [];
+        function addToQuote(productName) {
+            if (!quoteCart.includes(productName)) {
+                quoteCart.push(productName);
+                updateQuoteCartUI();
+            }
+            toggleQuoteModal(true);
+        }
+        function removeFromQuote(index) {
+            quoteCart.splice(index, 1);
+            updateQuoteCartUI();
+        }
+        function updateQuoteCartUI() {
+            document.getElementById('quote-count-badge').innerText = quoteCart.length;
+            const container = document.getElementById('quote-items-list');
+            if (quoteCart.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No products added yet.</p>';
+                return;
+            }
+            container.innerHTML = quoteCart.map((item, idx) => `
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                    <span class="font-bold text-slate-800"><i class="fa-solid fa-check text-emerald-600 mr-1.5"></i> ${item}</span>
+                    <button onclick="removeFromQuote(${idx})" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-0.5"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function toggleQuoteModal(forceOpen) {
+            const modal = document.getElementById('quote-modal');
+            if (forceOpen === true) modal.classList.remove('hidden');
+            else modal.classList.toggle('hidden');
+        }
+        function submitMultiQuote(channel) {
+            if (quoteCart.length === 0) return alert('Please add at least one product.');
+            const listStr = quoteCart.map((p, i) => `${i+1}. ${p}`).join('%0D%0A');
+            if (channel === 'whatsapp') {
+                const text = `Hello DEVI GROUPS, I would like to request an official quotation for the following products:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease provide price, MOQ and delivery details.`;
+                window.open(`https://wa.me/919727726216?text=${text}`, '_blank');
+            } else {
+                const mailto = `mailto:devigroup1989@gmail.com?subject=Multi-Product Quotation Request&body=Hello DEVI GROUPS,%0D%0A%0D%0AI would like to request an official quotation for:%0D%0A%0D%0A${listStr}%0D%0A%0D%0APlease share FOB/CIF rates.`;
+                window.location.href = mailto;
+            }
+        }
+
+        // Technical Specs Modal
+        function openTechSpecs(title, grade, purity, pack) {
+            document.getElementById('ts-title').innerHTML = `<i class="fa-solid fa-flask text-secondary"></i> ${title} Specifications`;
+            document.getElementById('ts-grade').innerText = grade;
+            document.getElementById('ts-purity').innerText = purity;
+            document.getElementById('ts-pack').innerText = pack;
+            document.getElementById('techspecs-modal').classList.remove('hidden');
+        }
+        function closeTechSpecs() {
+            document.getElementById('techspecs-modal').classList.add('hidden');
+        }
+
         // Custom HD Flag Dropdown Functions
         function toggleLangDropdown(event) {
             event.stopPropagation();
             const menu = document.getElementById('lang-dropdown-menu');
             menu.classList.toggle('hidden');
         }
-
         function selectLanguage(langCode, flagImgUrl, langName) {
             document.getElementById('current-flag-img').src = flagImgUrl;
             document.getElementById('current-lang-text').innerText = langName;
             document.getElementById('lang-dropdown-menu').classList.add('hidden');
             
-            // Execute Google Translate
             const select = document.querySelector('.goog-te-combo');
             if (select) {
                 select.value = langCode;
@@ -1170,28 +1339,20 @@
                 location.reload();
             }
         }
-
-        // Close Dropdown when clicked outside
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('lang-dropdown-menu');
             const picker = document.getElementById('lang-picker-container');
-            if (dropdown && picker && !picker.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
+            if (dropdown && picker && !picker.contains(e.target)) dropdown.classList.add('hidden');
         });
 
         // Live Product Search Filter
         function filterProducts() {
             const input = document.getElementById('product-search-input').value.toLowerCase();
             const items = document.querySelectorAll('.product-item');
-            
             items.forEach(item => {
                 const title = item.querySelector('.product-title').innerText.toLowerCase();
-                if (title.includes(input)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
+                if (title.includes(input)) item.style.display = 'flex';
+                else item.style.display = 'none';
             });
         }
 
@@ -1202,7 +1363,6 @@
             img.src = src;
             modal.classList.remove('hidden');
         }
-
         function closeLightbox() {
             document.getElementById('lightbox-modal').classList.add('hidden');
         }
@@ -1225,37 +1385,22 @@
 
         // Multi-Location Map Switcher
         const locationData = {
-            'chemical': {
-                name: 'Devi Chemical Plant (Gujarat, India)',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000'
-            },
-            'packaging': {
-                name: 'Devi Packaging Manufacturing Unit (Gujarat, India)',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001'
-            },
-            'coffee': {
-                name: 'Devi Coffee Day Flagship Store (Gujarat, India)',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58756.24151243169!2d72.50742459999999!3d23.033833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000002'
-            },
-            'creative': {
-                name: 'Creative Impex Ltd & SOLAR POWER BACKUP SERVICES (Nairobi, Kenya)',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004'
-            }
+            'chemical': { name: 'Devi Chemical Plant (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000' },
+            'packaging': { name: 'Devi Packaging Manufacturing Unit (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001' },
+            'coffee': { name: 'Devi Coffee Day Flagship Store (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58756.24151243169!2d72.50742459999999!3d23.033833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000002' },
+            'creative': { name: 'Creative Impex Ltd & SOLAR POWER BACKUP SERVICES (Nairobi, Kenya)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004' }
         };
 
         function changeMap(key) {
             const mapFrame = document.getElementById('location-map-frame');
             const label = document.getElementById('active-location-name');
-            
             if (locationData[key]) {
                 mapFrame.src = locationData[key].url;
                 label.innerHTML = '📍 Active Location: ' + locationData[key].name;
             }
-
             document.querySelectorAll('.loc-btn').forEach(btn => {
                 btn.className = 'loc-btn p-3.5 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 border-2 border-slate-300 hover:border-primary shadow-sm font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5';
             });
-
             const activeBtn = document.getElementById('btn-loc-' + key);
             if (activeBtn) {
                 activeBtn.className = 'loc-btn p-3.5 rounded-2xl bg-primary text-amber-300 border-2 border-amber-400 shadow-lg font-black text-xs text-center transition duration-200 flex flex-col items-center justify-center gap-1.5 scale-[1.02]';
