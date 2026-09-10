@@ -316,8 +316,8 @@
 
     </header>
 
-    <!-- Global Video Banner (ફક્ત HOME, ABOUT US, COMPANY માં જ દેખાશે) -->
-    <div id="shared-video-banner" class="w-full max-w-5xl mx-auto px-4 pt-4 sm:pt-6">
+    <!-- Home Banner Video (ફક્ત અને ફક્ત HOME પેજ પર જ દેખાશે) -->
+    <div id="home-video-banner" class="w-full max-w-5xl mx-auto px-4 pt-4 sm:pt-6">
         <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-white">
             <video autoplay loop muted playsinline class="w-full h-auto block object-contain">
                 <source src="banner-video.mp4" type="video/mp4">
@@ -375,7 +375,7 @@
                     </div>
                 </div>
 
-                <!-- World Export Presence Map Card (WITH VIBRANT HIGH-CONTRAST COUNTRY BADGES) -->
+                <!-- World Export Presence Map Card -->
                 <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-lg">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Footprint</span>
@@ -413,7 +413,7 @@
                         </div>
                     </div>
 
-                    <!-- Highlighted High-Visibility Country Badges (HD Flag + Bold Text + 3D Hover) -->
+                    <!-- Highlighted Country Badges -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 text-center">
                         <div class="bg-gradient-to-b from-white to-slate-50 p-3 rounded-2xl border-2 border-primary/20 shadow-md font-black text-xs text-primary flex items-center justify-center gap-2 hover:border-accent hover:scale-105 transition duration-200">
                             <img src="https://flagcdn.com/w40/us.png" class="w-5 h-3.5 object-cover rounded shadow-sm" alt="USA">
@@ -517,14 +517,25 @@
             </div>
         </section>
 
-        <!-- ==================== PAGE 3: COMPANY DIVISIONS ==================== -->
+        <!-- ==================== PAGE 3: COMPANY DIVISIONS (WITH DEDICATED COMPANY VIDEO) ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
-            <div class="max-w-5xl mx-auto space-y-6">
-                <div class="text-center mb-8">
+            <div class="max-w-5xl mx-auto space-y-8">
+                
+                <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Four Core Divisions</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary mt-1">Operational Business Units</h2>
+                    <p class="text-slate-500 text-xs mt-1">Integrated manufacturing, processing and global renewable solutions</p>
                 </div>
 
+                <!-- Dedicated Corporate Company Video Banner -->
+                <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white">
+                    <video autoplay loop muted playsinline class="w-full h-auto max-h-[70vh] block object-contain mx-auto bg-black">
+                        <source src="company-video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <!-- 4 Operational Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     <!-- 1. Devi Chemical Card -->
@@ -1039,7 +1050,7 @@
 
                 </div>
 
-                <!-- Multi-Location Map Hub (WITH HIGH-CONTRAST HIGHLIGHTED 4 DIVISION BUTTONS) -->
+                <!-- Multi-Location Map Hub -->
                 <div class="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 px-3 py-1 rounded-full border border-orange-200">Global & National Infrastructure</span>
@@ -1125,12 +1136,12 @@
                 activeTab.classList.add('active-tab');
             }
 
-            // Video Banner Visibility (HOME, ABOUT US, COMPANY માં જ દેખાશે)
-            const videoBanner = document.getElementById('shared-video-banner');
-            if (['home', 'about', 'company'].includes(pageId)) {
-                videoBanner.style.display = 'block';
+            // Video Banner Visibility (માત્ર અને માત્ર HOME પેજ પર જ દેખાશે)
+            const homeBanner = document.getElementById('home-video-banner');
+            if (pageId === 'home') {
+                homeBanner.style.display = 'block';
             } else {
-                videoBanner.style.display = 'none';
+                homeBanner.style.display = 'none';
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1212,7 +1223,7 @@
             status.classList.remove('hidden');
         }
 
-        // Multi-Location Map Switcher with High-Contrast Styles
+        // Multi-Location Map Switcher
         const locationData = {
             'chemical': {
                 name: 'Devi Chemical Plant (Gujarat, India)',
