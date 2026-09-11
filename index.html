@@ -193,7 +193,7 @@
     <!-- Hidden Default Google Translate Hook -->
     <div id="google_translate_element"></div>
 
-    <!-- Header (Main Brand Bar + Real Image Flag Language Selector + Full Horizontal Navigation Bar) -->
+    <!-- Header -->
     <header class="sticky top-0 z-50 bg-primary text-white shadow-xl">
         
         <!-- Top Branding Row -->
@@ -479,7 +479,7 @@
                     </div>
                 </div>
 
-                <!-- Global Freight & Delivery Port Routing Hub (UPDATED: Mundra, Navasheva Bombay, ICD Ahmedabad + CIF) -->
+                <!-- Global Freight & Delivery Port Routing Hub -->
                 <div class="bg-gradient-to-r from-slate-900 via-primary to-slate-900 text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
                     <div class="text-center mb-6">
                         <span class="text-amber-400 font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">International Logistics Hub</span>
@@ -514,7 +514,7 @@
                     </div>
                 </div>
 
-                <!-- Certifications & Compliance Badges (UPDATED: APEDA, FSSAI Food Grade, IEC & Make in India) -->
+                <!-- Certifications & Compliance Badges -->
                 <div class="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
                     <div class="text-center mb-5">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Quality Assurance & Compliances</span>
@@ -668,7 +668,7 @@
                         </div>
                     </div>
 
-                    <!-- 3. Devi Coffee Day Card (UPDATED with FSSAI & MSME Highlighted Badges) -->
+                    <!-- 3. Devi Coffee Day Card (UPDATED with Google Live Location Link) -->
                     <div class="bg-white rounded-2xl sm:rounded-3xl p-5 border-t-4 border-accent shadow-md card-lift flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-3">
@@ -714,8 +714,9 @@
                                 <a href="https://facebook.com/devicoffeeday" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-blue-200">
                                     <i class="fa-brands fa-facebook"></i> Facebook
                                 </a>
-                                <a href="https://www.google.com/search?q=Devi+Coffee+Day" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-emerald-200">
-                                    <i class="fa-brands fa-google"></i> Google Page
+                                <!-- UPDATED LIVE MAP LINK -->
+                                <a href="https://maps.app.goo.gl/QssH7tUxENCe6vCL9?g_st=ac" target="_blank" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-emerald-200">
+                                    <i class="fa-solid fa-location-dot text-rose-500"></i> Live Location
                                 </a>
                                 <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="bg-amber-50 text-amber-800 hover:bg-amber-100 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-amber-200">
                                     <i class="fa-solid fa-book-open"></i> Menu
@@ -934,7 +935,7 @@
                                 </div>
 
                                 <div class="product-item flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
-                                    <span class="product-title font-semibold text-xs sm:text-sm text-slate-800 flex items-center">
+                                    <span class="product-title font-semibold text-xs sm:text-slate-800 flex items-center">
                                         <i class="fa-solid fa-jar text-cyan-700 text-sm mr-2 w-4 text-center"></i> Plastic Container
                                     </span>
                                     <div class="flex items-center gap-1">
@@ -1513,12 +1514,24 @@
             status.classList.remove('hidden');
         }
 
-        // Multi-Location Map Switcher
+        // Multi-Location Map Switcher (UPDATED with Devi Coffee Day Exact Location)
         const locationData = {
-            'chemical': { name: 'Devi Chemical Plant (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000' },
-            'packaging': { name: 'Devi Packaging Manufacturing Unit (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001' },
-            'coffee': { name: 'Devi Coffee Day Flagship Store (Gujarat, India)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58756.24151243169!2d72.50742459999999!3d23.033833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000002' },
-            'creative': { name: 'Creative Impex Ltd & SOLAR POWER BACKUP SERVICES (Nairobi, Kenya)', url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004' }
+            'chemical': { 
+                name: 'Devi Chemical Plant (Gujarat, India)', 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d117506.49508688463!2d72.49397637841797!3d23.0204741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000' 
+            },
+            'packaging': { 
+                name: 'Devi Packaging Manufacturing Unit (Gujarat, India)', 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001' 
+            },
+            'coffee': { 
+                name: 'Devi Coffee Day (Rivera Arcade, 100 Feet Rd, Prahlad Nagar, Ahmedabad) ☕', 
+                url: 'https://maps.google.com/maps?q=Devi+Coffee+Day+Rivera+Arcade+Prahladnagar+Ahmedabad&t=&z=16&ie=UTF8&iwloc=&output=embed' 
+            },
+            'creative': { 
+                name: 'Creative Impex Ltd & SOLAR POWER BACKUP SERVICES (Nairobi, Kenya)', 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004' 
+            }
         };
 
         function changeMap(key) {
