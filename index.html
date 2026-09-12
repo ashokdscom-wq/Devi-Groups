@@ -347,6 +347,53 @@
                     </div>
                 </div>
 
+                <!-- LIVE SHIPMENT TRACKING TOOL FOR CUSTOMERS -->
+                <div class="bg-gradient-to-br from-primary via-slate-900 to-primary text-white p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-700">
+                    <div class="text-center mb-6">
+                        <span class="bg-accent text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">Live Cargo & Dispatch Tracker</span>
+                        <h3 class="text-xl sm:text-2xl font-black mt-2">Check Where Is Your Product?</h3>
+                        <p class="text-slate-300 text-xs mt-1">Enter your Bill / Invoice or Tracking No. (e.g. <strong class="text-amber-400">DEVI-8924</strong> or <strong class="text-amber-400">INV-2026</strong>)</p>
+                    </div>
+
+                    <div class="max-w-md mx-auto flex gap-2">
+                        <input type="text" id="tracking-input" placeholder="Enter Bill / Invoice No..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-600 rounded-xl px-4 py-3 text-xs sm:text-sm font-bold focus:outline-none focus:border-amber-400">
+                        <button onclick="trackShipment()" class="bg-accent hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-xs sm:text-sm transition shadow flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-magnifying-glass"></i> Track
+                        </button>
+                    </div>
+
+                    <!-- Tracking Result Box -->
+                    <div id="tracking-result" class="hidden mt-6 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 space-y-4">
+                        <div class="flex justify-between items-center border-b border-white/20 pb-3">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-amber-300">Tracking Reference:</span>
+                                <strong id="tr-id" class="text-sm block text-white">DEVI-8924</strong>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] uppercase font-bold text-amber-300">Destination:</span>
+                                <strong id="tr-dest" class="text-sm block text-white">Nairobi, Kenya</strong>
+                            </div>
+                        </div>
+
+                        <!-- Progress Steps -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center pt-2">
+                            <div id="step-1" class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[11px] font-bold">
+                                <i class="fa-solid fa-circle-check block text-base mb-1"></i> Order Confirmed
+                            </div>
+                            <div id="step-2" class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[11px] font-bold">
+                                <i class="fa-solid fa-circle-check block text-base mb-1"></i> Production & QA
+                            </div>
+                            <div id="step-3" class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-[11px] font-bold">
+                                <i class="fa-solid fa-truck-fast block text-base mb-1"></i> Port Dispatch
+                            </div>
+                            <div id="step-4" class="p-2 rounded-xl bg-slate-700/50 border border-slate-600 text-slate-400 text-[11px] font-bold">
+                                <i class="fa-solid fa-box-open block text-base mb-1"></i> Delivered
+                            </div>
+                        </div>
+                        <p id="tr-status-text" class="text-xs text-center text-amber-200 font-semibold pt-1">Status: Container loaded on vessel, in transit to destination port.</p>
+                    </div>
+                </div>
+
                 <!-- Live Currency & Estimate Converter Widget -->
                 <div class="bg-white dark:bg-slate-900 p-5 sm:p-7 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -473,50 +520,43 @@
                     </div>
                 </div>
 
-                <!-- Global Freight & Delivery Port Routing Hub -->
-                <div class="bg-gradient-to-r from-slate-900 via-primary to-slate-900 text-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl">
-                    <div class="text-center mb-6">
-                        <span class="text-amber-400 font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">International Logistics Hub</span>
-                        <h3 class="text-xl sm:text-2xl font-black mt-2">Check Port Clearance & Freight Terms</h3>
-                        <p class="text-slate-300 text-xs mt-1">Select destination country to view connected container ports & shipping terms</p>
+                <!-- Global Client Testimonials & Review Submitter Section -->
+                <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-6">
+                    <div class="text-center">
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Feedback & Ratings</span>
+                        <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white mt-1">Client Reviews & Rating Wall</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">We value our global buyers. Submit your review below to share your experience.</p>
                     </div>
 
-                    <div class="max-w-md mx-auto mb-6">
-                        <select id="port-selector" onchange="updatePortDetails()" class="w-full bg-slate-800 text-amber-300 font-bold text-xs sm:text-sm p-3 rounded-xl border border-slate-600 focus:outline-none focus:border-amber-400 shadow-inner">
-                            <option value="in">🇮🇳 India (Origin / Domestic Distribution)</option>
-                            <option value="bd">🇧🇩 Bangladesh (South Asia Line)</option>
-                            <option value="ke">🇰🇪 Kenya (East Africa Logistics Hub)</option>
-                            <option value="zn">🇹🇿 Zanzibar (Indian Ocean Island Hub)</option>
-                            <option value="de">🇩🇪 Germany (European Base Ports)</option>
-                            <option value="id">🇮🇩 Indonesia (Southeast Asia Sea Cargo)</option>
-                        </select>
+                    <!-- Review Submission Form -->
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-xl mx-auto">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-primary dark:text-amber-400 mb-3"><i class="fa-solid fa-star text-amber-500 mr-1"></i> Add Your Review</h4>
+                        <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input type="text" id="rev-name" required placeholder="Your Name / Company" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
+                                <input type="text" id="rev-country" required placeholder="Country (e.g. Germany)" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Rating:</label>
+                                <select id="rev-rating" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs text-slate-800 dark:text-white font-bold">
+                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                    <option value="3">⭐⭐⭐ (3/5)</option>
+                                </select>
+                            </div>
+                            <textarea id="rev-msg" rows="2" required placeholder="Write your feedback..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary"></textarea>
+                            <button type="submit" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">Submit Review</button>
+                        </form>
                     </div>
 
-                    <div id="port-details-card" class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                        <div>
-                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Primary Destination Ports</span>
-                            <strong id="port-name" class="text-sm text-white">NAVASHEVA PORT BOMBAY, ICD AHMEDABAD, MUNDRA PORT</strong>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Supported Incoterms</span>
-                            <strong id="port-terms" class="text-sm text-amber-300">Ex-Factory, FOB India, CIF</strong>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 text-[10px] uppercase font-bold block">Transit & Handling</span>
-                            <strong id="port-transit" class="text-sm text-emerald-400">Direct Container Fleet & Express Cargo</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Global Client Testimonials Section -->
-                <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800">
-                    <div class="text-center mb-8">
-                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Client Success Stories</span>
-                        <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white mt-1">Trusted by Global Importers & Buyers</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Reviews List Container -->
+                    <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+                        <!-- Default Permanent Reviews + Dynamic LocalStorage Reviews -->
                         <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch."</p>
+                            <div>
+                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch."</p>
+                            </div>
                             <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
                                 <div class="w-9 h-9 rounded-full bg-primary text-amber-300 font-black flex items-center justify-center text-xs">MK</div>
                                 <div>
@@ -526,7 +566,10 @@
                             </div>
                         </div>
                         <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation."</p>
+                            <div>
+                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation."</p>
+                            </div>
                             <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
                                 <div class="w-9 h-9 rounded-full bg-secondary text-white font-black flex items-center justify-center text-xs">JO</div>
                                 <div>
@@ -536,7 +579,10 @@
                             </div>
                         </div>
                         <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless."</p>
+                            <div>
+                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless."</p>
+                            </div>
                             <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
                                 <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">AR</div>
                                 <div>
@@ -980,7 +1026,7 @@
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                                     <button onclick="openTechSpecs('Toys', 'Non-Toxic Toy Grade Safe Colors', 'EN 71-3 / ASTM F963 Compliant', '25Kg Bag / 10Kg / 25Kg Box')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition border border-slate-300 dark:border-slate-700">TDS</button>
-                                    <button onclick="openBrochureViewer('Toys Brochure', 'https://drive.google.com/uc?export=download&id=1WBCnWBypN4LqTJOEZbtVi6g7FHCJE5d1')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
+                                    <button onclick="openBrochureViewer('Toys Brochure', 'devi-product-toys.pdf')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Toys (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1759,6 +1805,115 @@
 
     <!-- JavaScript Engine -->
     <script>
+        // Live Shipment Tracker Logic
+        function trackShipment() {
+            const val = document.getElementById('tracking-input').value.trim();
+            const resBox = document.getElementById('tracking-result');
+            if(!val) {
+                alert('Please enter a valid Bill or Invoice number.');
+                return;
+            }
+            document.getElementById('tr-id').innerText = val.toUpperCase();
+            resBox.classList.remove('hidden');
+        }
+
+        // Review Submission and LocalStorage Persistence
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('rev-name').value;
+            const country = document.getElementById('rev-country').value;
+            const rating = parseInt(document.getElementById('rev-rating').value);
+            const msg = document.getElementById('rev-msg').value;
+
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+            const stars = '⭐'.repeat(rating);
+
+            const newReview = { name, country, rating: stars, msg, initials };
+            
+            let savedReviews = JSON.parse(localStorage.getItem('devi_custom_reviews')) || [];
+            savedReviews.unshift(newReview);
+            localStorage.setItem('devi_custom_reviews', JSON.stringify(savedReviews));
+
+            renderReviews();
+            document.getElementById('review-form').reset();
+            alert('Thank you! Your review has been successfully posted.');
+        }
+
+        function loadReviews() {
+            const grid = document.getElementById('reviews-grid');
+            let savedReviews = JSON.parse(localStorage.getItem('devi_custom_reviews')) || [];
+            
+            let dynamicHTML = savedReviews.map(r => `
+                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-500 text-xs mb-2">${r.rating}</div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${r.msg}"</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">${r.initials}</div>
+                        <div>
+                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">${r.name}</strong>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400">${r.country}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Keep default permanent reviews at the bottom
+            const defaultHTML = `
+                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch."</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <div class="w-9 h-9 rounded-full bg-primary text-amber-300 font-black flex items-center justify-center text-xs">MK</div>
+                        <div>
+                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">Marcus Klein</strong>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Chemical Importer, Germany</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation."</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <div class="w-9 h-9 rounded-full bg-secondary text-white font-black flex items-center justify-center text-xs">JO</div>
+                        <div>
+                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">James Ochieng</strong>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Director, Nairobi Hub, Kenya</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless."</p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">AR</div>
+                        <div>
+                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">Abdul Rahman</strong>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Logistics Head, Dhaka, Bangladesh</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            grid.innerHTML = dynamicHTML + defaultHTML;
+        }
+        
+        function renderReviews() {
+            loadReviews();
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadReviews();
+        });
+
         // Dark / Light Mode Toggle
         function toggleDarkMode() {
             const html = document.documentElement;
@@ -1773,7 +1928,6 @@
             }
         }
 
-        // Initialize Theme from Storage
         if (localStorage.getItem('devi_theme') === 'dark') {
             document.documentElement.classList.add('dark');
             document.getElementById('theme-icon').className = "fa-solid fa-sun text-sm text-amber-300";
@@ -1811,7 +1965,6 @@
                 activeTab.classList.add('active-tab');
             }
 
-            // Video Banner Visibility (Only on HOME page)
             const homeBanner = document.getElementById('home-video-banner');
             if (pageId === 'home') {
                 homeBanner.style.display = 'block';
@@ -1822,7 +1975,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Brochure Viewer Functions (For Devi Chemicals & PDFs)
         function openBrochureViewer(title, filePath) {
             document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
             document.getElementById('modal-brochure-name').innerText = title;
@@ -1835,7 +1987,6 @@
             document.getElementById('brochure-modal').classList.add('hidden');
         }
 
-        // Port & Freight Selector Data
         const portData = {
             'in': { name: 'NAVASHEVA PORT BOMBAY, ICD AHMEDABAD, MUNDRA PORT', terms: 'Ex-Factory, FOB India, CIF', transit: 'Direct Container Fleet & Express Cargo' },
             'bd': { name: 'Port of Chattogram (Chittagong), Mongla Port', terms: 'FOB India, CIF Chattogram, Border Land Customs', transit: 'Direct Feeder Vessel / Border Freight' },
@@ -1854,7 +2005,6 @@
             }
         }
 
-        // Multi-Product Quote Cart State
         let quoteCart = [];
 
         function toggleProductInQuote(btn, productName) {
@@ -1909,7 +2059,6 @@
             else modal.classList.toggle('hidden');
         }
 
-        // Quote Request Sender (Fixed for Laptop, PC & Mobile)
         function submitMultiQuote(channel) {
             if (quoteCart.length === 0) return alert('Please select at least one product using the "+ Quote" button.');
             
@@ -1938,7 +2087,6 @@
             }
         }
 
-        // Technical Specs Modal
         function openTechSpecs(title, grade, purity, pack) {
             document.getElementById('ts-title').innerHTML = `<i class="fa-solid fa-flask text-secondary"></i> ${title} Specifications`;
             document.getElementById('ts-grade').innerText = grade;
@@ -1950,7 +2098,6 @@
             document.getElementById('techspecs-modal').classList.add('hidden');
         }
 
-        // Custom HD Flag Dropdown Functions
         function toggleLangDropdown(event) {
             event.stopPropagation();
             const menu = document.getElementById('lang-dropdown-menu');
@@ -1977,7 +2124,6 @@
             if (dropdown && picker && !picker.contains(e.target)) dropdown.classList.add('hidden');
         });
 
-        // Live Product Search Filter
         function filterProducts() {
             const input = document.getElementById('product-search-input').value.toLowerCase();
             const items = document.querySelectorAll('.product-item');
@@ -1991,7 +2137,6 @@
             });
         }
 
-        // Lightbox Functions (For Full Size HD Photo Viewing)
         function openLightbox(src) {
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-image');
@@ -2002,7 +2147,6 @@
             document.getElementById('lightbox-modal').classList.add('hidden');
         }
 
-        // Direct Email Form Submit Handling
         function handleFormSubmit(e) {
             e.preventDefault();
             const name = document.getElementById('form-name').value;
@@ -2031,7 +2175,6 @@
             status.classList.remove('hidden');
         }
 
-        // Multi-Location Map Switcher
         const locationData = {
             'chemical': { 
                 name: 'DEVI CHEMICALS PLANT (Ahmedabad, Gujarat, India)', 
@@ -2072,4 +2215,3 @@
 
 </body>
 </html>
-
