@@ -994,20 +994,38 @@
                     </div>
                 </div>
 
-                <!-- ==================== 3. DEVI PACKAGING DIVISION (READY FOR YOUR CUSTOM PHOTOS) ==================== -->
+                <!-- ==================== 3. DEVI PACKAGING DIVISION (UPDATED WITH LARGE HD PHOTO & BROCHURE) ==================== -->
                 <div class="space-y-6 pt-4">
+                    
                     <!-- Highlighted Center Title -->
-                    <div class="text-center bg-gradient-to-r from-secondary via-teal-800 to-secondary text-white py-5 px-6 rounded-2xl shadow-xl border-b-4 border-amber-400">
-                        <span class="bg-white/20 text-white text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-1 shadow-sm">Protective & Industrial Packaging</span>
+                    <div class="text-center bg-gradient-to-r from-secondary via-teal-800 to-secondary text-white py-6 px-6 rounded-2xl shadow-xl border-b-4 border-amber-400">
+                        <span class="bg-white/20 text-white text-[11px] font-black uppercase tracking-widest px-3.5 py-1 rounded-full inline-block mb-2 shadow-sm">Protective & Industrial Packaging</span>
                         <h2 class="text-2xl sm:text-4xl font-black tracking-wider uppercase text-white flex items-center justify-center gap-3">
                             <i class="fa-solid fa-boxes-stacked text-amber-300"></i> DEVI PACKAGING DIVISION
                         </h2>
                         <p class="text-teal-100 text-xs sm:text-sm mt-1 max-w-xl mx-auto">Complete Range of Heavy-Duty Corrugated Boxes, Protective Envelopes, Foils & Containers</p>
+                        
+                        <!-- Big Packaging Division Brochure Button -->
+                        <div class="mt-4 flex justify-center">
+                            <button onclick="openBrochureViewer('Devi Packaging Division Brochure', 'Devi-packaging.pdf')" class="bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105">
+                                <i class="fa-solid fa-file-pdf text-base text-rose-700"></i> Download Devi Packaging Brochure
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Large Packaging Division Photo (devi-packaging-division.png) -->
+                    <div class="w-full bg-white rounded-3xl p-3 sm:p-4 border-2 border-secondary/30 shadow-xl overflow-hidden">
+                        <div onclick="openLightbox('devi-packaging-division.png')" class="cursor-pointer group relative w-full h-64 sm:h-96 rounded-2xl overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <img src="devi-packaging-division.png" alt="Devi Packaging Division" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-packaging-division.jpg';}else{this.src='company-packaging.png';}">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition duration-300">
+                                <span class="bg-black/60 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-magnifying-glass-plus text-xl text-amber-400"></i> View Large HD Photo</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="space-y-4 product-group">
                         
-                        <!-- 1. CORRUGATED BOX (Upload as: packaging-box.png or .jpg) -->
+                        <!-- 1. CORRUGATED BOX (packaging-box.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-box.png')">
                                 <img src="packaging-box.png" alt="Corrugated Box" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-box.jpg';}else{this.src='https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80';}">
@@ -1024,12 +1042,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Corrugated Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 2. PAPER CUP (Upload as: packaging-paper-cup.png or .jpg) -->
+                        <!-- 2. PAPER CUP (packaging-paper-cup.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-paper-cup.png')">
                                 <img src="packaging-paper-cup.png" alt="Paper Cup" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-cup.jpg';}else{this.src='https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?w=800&auto=format&fit=crop&q=80';}">
@@ -1046,12 +1065,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Paper Cup (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 3. PAPER BAG (Upload as: packaging-paper-bag.png or .jpg) -->
+                        <!-- 3. PAPER BAG (packaging-paper-bag.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-paper-bag.png')">
                                 <img src="packaging-paper-bag.png" alt="Paper Bag" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-bag.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
@@ -1068,12 +1088,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Paper Bag (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 4. ALUMINUM FOIL (Upload as: packaging-aluminum-foil.png or .jpg) -->
+                        <!-- 4. ALUMINUM FOIL (packaging-aluminum-foil.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-aluminum-foil.png')">
                                 <img src="packaging-aluminum-foil.png" alt="Aluminum Foil" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-aluminum-foil.jpg';}else{this.src='https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=800&auto=format&fit=crop&q=80';}">
@@ -1090,12 +1111,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Aluminum Foil (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 5. HINJ BOX (Upload as: packaging-hinj-box.png or .jpg) -->
+                        <!-- 5. HINJ BOX (packaging-hinj-box.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-hinj-box.png')">
                                 <img src="packaging-hinj-box.png" alt="Hinj Box" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hinj-box.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
@@ -1112,15 +1134,16 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Hinj Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 6. BUBBLE ENVELOPE (Upload as: packaging-bubble-envelope.png or .jpg) -->
+                        <!-- 6. BUBBLE ENVELOPE (packaging-plastic-bubble-envelope.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
-                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-bubble-envelope.png')">
-                                <img src="packaging-bubble-envelope.png" alt="Bubble Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-plastic-bubble-envelope.png')">
+                                <img src="packaging-plastic-bubble-envelope.png" alt="Bubble Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-envelope.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1134,15 +1157,16 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 7. HARD BOARD ENVELOPE (Upload as: packaging-hard-board-envelope.png or .jpg) -->
+                        <!-- 7. HARD BOARD ENVELOPE (packaging-paper-bag.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
-                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-hard-board-envelope.png')">
-                                <img src="packaging-hard-board-envelope.png" alt="Hard Board Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hard-board-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80';}">
+                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-paper-bag.png')">
+                                <img src="packaging-paper-bag.png" alt="Hard Board Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-bag.jpg';}else{this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1156,15 +1180,16 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Hard Board Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 8. PEPPER BUBBLE ENVELOPE (Upload as: packaging-pepper-envelope.png or .jpg) -->
+                        <!-- 8. PEPPER BUBBLE ENVELOPE (packaging-paper-bag.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
-                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-pepper-envelope.png')">
-                                <img src="packaging-pepper-envelope.png" alt="Pepper Bubble Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-pepper-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                            <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-paper-bag.png')">
+                                <img src="packaging-paper-bag.png" alt="Pepper Bubble Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-bag.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1178,12 +1203,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Pepper Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 9. PLASTIC BUBBLE ENVELOPE (Upload as: packaging-plastic-bubble-envelope.png or .jpg) -->
+                        <!-- 9. PLASTIC BUBBLE ENVELOPE (packaging-plastic-bubble-envelope.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-plastic-bubble-envelope.png')">
                                 <img src="packaging-plastic-bubble-envelope.png" alt="Plastic Bubble Envelope" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-plastic-bubble-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
@@ -1200,12 +1226,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Plastic Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 10. BUBBLE ROLL AND SHEET (Upload as: packaging-bubble-roll.png or .jpg) -->
+                        <!-- 10. BUBBLE ROLL AND SHEET (packaging-bubble-roll.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-bubble-roll.png')">
                                 <img src="packaging-bubble-roll.png" alt="Bubble Roll and Sheet" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-roll.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
@@ -1222,12 +1249,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Bubble Roll and Sheet (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 11. BIODEGREE BAGS (Upload as: packaging-biodegree-bags.png or .jpg) -->
+                        <!-- 11. BIODEGREE BAGS (packaging-biodegree-bags.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-biodegree-bags.png')">
                                 <img src="packaging-biodegree-bags.png" alt="Biodegree Bags" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-biodegree-bags.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
@@ -1244,12 +1272,13 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Biodegree Bags (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 12. PLASTIC CONTAINER (Upload as: packaging-plastic-container.png or .jpg) -->
+                        <!-- 12. PLASTIC CONTAINER (packaging-plastic-container.png) -->
                         <div class="product-item bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200" onclick="openLightbox('packaging-plastic-container.png')">
                                 <img src="packaging-plastic-container.png" alt="Plastic Container" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-plastic-container.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
@@ -1266,6 +1295,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100">
+                                    <button onclick="openBrochureViewer('Packaging Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Plastic Container (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
