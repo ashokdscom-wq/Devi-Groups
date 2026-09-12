@@ -903,7 +903,7 @@
                     </div>
                 </div>
 
-                <!-- ==================== 2. FMCG FOOD PRODUCTS (UPDATED: 3 PRODUCT PDFs VIA MODAL & 3 PRODUCT PHOTOS) ==================== -->
+                <!-- ==================== 2. FMCG FOOD PRODUCTS ==================== -->
                 <div class="space-y-6 pt-4">
                     <div class="text-center bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white py-5 px-6 rounded-2xl shadow-xl border-b-4 border-amber-300">
                         <span class="bg-white/20 text-white text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-1 shadow-sm">Food & Culinary Range</span>
@@ -912,9 +912,9 @@
                         </h2>
                         <p class="text-amber-100 text-xs sm:text-sm mt-1 max-w-xl mx-auto">Export Quality Pure Spices, Savory Food Seasonings & Crisp Snack Pellets</p>
                         
-                        <!-- FMCG Division Brochure Button (Opens Brochure Modal to prevent 404) -->
+                        <!-- FMCG Division Brochure Button (Opens 3 Product PDF Brochure) -->
                         <div class="mt-4 flex justify-center">
-                            <button onclick="openBrochureViewer('FMCG Food Products Brochure (3 Products PDF)', 'fmcg-products-brochure.pdf')" class="bg-white hover:bg-amber-50 text-amber-900 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
+                            <button onclick="openBrochureViewer('FMCG Food Products Brochure', 'fmcg-products-brochure.pdf')" class="bg-white hover:bg-amber-50 text-amber-900 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
                                 <i class="fa-solid fa-file-pdf text-base text-rose-700"></i> View FMCG Food Brochure (3 Products PDF)
                             </button>
                         </div>
@@ -1002,7 +1002,7 @@
                     </div>
                 </div>
 
-                <!-- ==================== 3. DEVI PACKAGING DIVISION (UPDATED: BROCHURE OPENS VIA MODAL & 12 PRODUCTS OPEN SINGLE PHOTOS) ==================== -->
+                <!-- ==================== 3. DEVI PACKAGING DIVISION (UPDATED WITH CORRECT FILE NAME: Devi-packaging-brochure.pdf) ==================== -->
                 <div class="space-y-6 pt-4">
                     
                     <!-- MASTER HIGHLIGHTED HEADER WITH FULL SIZE PHOTO & PDF BROCHURE BUTTON INSIDE -->
@@ -1020,9 +1020,9 @@
                                 Complete Range of Heavy-Duty Corrugated Boxes, Protective Envelopes, Foils & Containers
                             </p>
                             
-                            <!-- Highlighted PDF Brochure Button (Opens Modal safely to prevent 404) -->
+                            <!-- Highlighted PDF Brochure Button (Linked to exact file name from GitHub: Devi-packaging-brochure.pdf) -->
                             <div class="mt-4 flex justify-center">
-                                <button onclick="openBrochureViewer('Devi Packaging Division Brochure', 'devi-packaging.pdf')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
+                                <button onclick="openBrochureViewer('Devi Packaging Division Brochure', 'Devi-packaging-brochure.pdf')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
                                     <i class="fa-solid fa-file-pdf text-base text-rose-700"></i> View Devi Packaging Brochure
                                 </button>
                             </div>
@@ -1040,7 +1040,7 @@
 
                     </div>
 
-                    <!-- 12 PACKAGING PRODUCT CARDS (BROCHURE BUTTONS OPEN SINGLE PHOTOS) -->
+                    <!-- 12 PACKAGING PRODUCT CARDS (OPENS SINGLE PHOTOS) -->
                     <div class="space-y-4 product-group">
                         
                         <!-- 1. CORRUGATED BOX -->
@@ -1580,7 +1580,7 @@
 
     </main>
 
-    <!-- Interactive Brochure Viewer Modal with Download Option (Prevents 404 Error) -->
+    <!-- Interactive Brochure Viewer Modal with Download Option (For Devi Chemicals) -->
     <div id="brochure-modal" class="fixed inset-0 bg-black/85 z-[130] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -1702,7 +1702,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Brochure Viewer Functions (Safe Modal Preview to prevent 404)
+        // Brochure Viewer Functions (For Devi Chemicals & PDFs)
         function openBrochureViewer(title, filePath) {
             document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
             document.getElementById('modal-brochure-name').innerText = title;
