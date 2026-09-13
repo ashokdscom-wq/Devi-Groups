@@ -5,26 +5,194 @@ const sb = supabase.createClient(
   cfg.supabaseKey
 );
 
-let currentView = 'dashboard';
+let currentView = "dashboard";
 
 
-const $ = s => document.querySelector(s);
+/* =========================
+   HELPERS
+========================= */
 
-const esc = s =>
-  String(s ?? '').replace(
+const $ = (s) => document.querySelector(s);
+
+const esc = (s) =>
+  String(s ?? "").replace(
     /[&<>"']/g,
-    m => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
+    (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
     }[m])
   );
 
 
 /* =========================
-   AUTH
+   ADMIN URL
+========================= */
+
+function adminUrl() {
+
+  return (
+    window.location.origin +
+    window.location.pathname.replace(
+      /index\.html$/,
+      ""
+    )
+  );
+
+}
+
+
+/* =========================
+   PASSWORD RECOVERY
+========================= */
+
+function showRecovery() {
+
+  $("#login").classList.remove("hidden");
+
+  $("#app").classList.add("hidden");
+
+  $("#forgotBox").classList.add("hidden");
+
+  $("#recoveryBox").classList.remove("hidden");
+
+  $("#password").removeAttribute("required");
+
+  $("#email").removeAttribute("required");
+
+}
+
+
+/* =========================
+   SEND RESET EMAIL
+========================= */
+
+async function sendReset() {
+
+  const email =
+    $("#resetEmail").value.trim() ||
+    $("#email").value.trim();
+
+  if (!email) {
+
+    $("#resetMsg").textContent =
+      "Enter your admin email.";
+
+    return;
+  }
+
+  $("#resetMsg").textContent =
+    "Sending reset email...";
+
+
+  const { error } =
+    await sb.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: adminUrl()
+      }
+    );
+
+
+  if (error) {
+
+    $("#resetMsg").textContent =
+      error.message;
+
+  } else {
+
+    $("#resetMsg").textContent =
+      "Reset email sent. Open the latest email and set your new password here.";
+
+  }
+
+}
+
+
+/* =========================
+   UPDATE PASSWORD
+========================= */
+
+async function updatePassword() {
+
+  const a =
+    $("#newPassword").value;
+
+  const b =
+    $("#newPassword2").value;
+
+
+  if (!a || a.length < 6) {
+
+    $("#recoveryMsg").textContent =
+      "Password must be at least 6 characters.";
+
+    return;
+
+  }
+
+
+  if (a !== b) {
+
+    $("#recoveryMsg").textContent =
+      "Passwords do not match.";
+
+    return;
+
+  }
+
+
+  $("#recoveryMsg").textContent =
+    "Updating...";
+
+
+  const { error } =
+    await sb.auth.updateUser({
+      password: a
+    });
+
+
+  if (error) {
+
+    $("#recoveryMsg").textContent =
+      error.message;
+
+    return;
+
+  }
+
+
+  $("#recoveryMsg").textContent =
+    "Password updated. You can now login.";
+
+
+  $("#recoveryBox").classList.add("hidden");
+
+  $("#forgotBox").classList.add("hidden");
+
+  $("#password").setAttribute(
+    "required",
+    ""
+  );
+
+  $("#email").setAttribute(
+    "required",
+    ""
+  );
+
+  $("#loginMsg").textContent =
+    "Password updated successfully. Please sign in.";
+
+
+  await sb.auth.signOut();
+
+}
+
+
+/* =========================
+   BOOT
 ========================= */
 
 async function boot() {
@@ -33,89 +201,188 @@ async function boot() {
     data: { session }
   } = await sb.auth.getSession();
 
+
   if (session) {
+
     showApp(session);
+
   } else {
-    $('#login').classList.remove('hidden');
+
+    $("#login").classList.remove(
+      "hidden"
+    );
+
   }
 
-  sb.auth.onAuthStateChange((_event, session) => {
 
-    if (session) {
-      showApp(session);
-    } else {
-      location.reload();
+  sb.auth.onAuthStateChange(
+    (event, session) => {
+
+      if (event === "PASSWORD_RECOVERY") {
+
+        showRecovery();
+
+        return;
+
+      }
+
+
+      if (session) {
+
+        showApp(session);
+
+      } else if (
+        event === "SIGNED_OUT"
+      ) {
+
+        location.reload();
+
+      }
+
     }
+  );
 
-  });
+
+  if (
+    /type=recovery|access_token=.*type=recovery/
+      .test(location.hash)
+  ) {
+
+    showRecovery();
+
+  }
 
 }
 
 
+/* =========================
+   SHOW ADMIN APP
+========================= */
+
 async function showApp(session) {
 
-  $('#login').classList.add('hidden');
-  $('#app').classList.remove('hidden');
+  $("#login").classList.add(
+    "hidden"
+  );
 
-  $('#userEmail').textContent =
-    session.user.email || '';
+  $("#app").classList.remove(
+    "hidden"
+  );
+
+
+  $("#userEmail").textContent =
+    session.user.email || "";
+
 
   render();
 
 }
 
 
-/* LOGIN */
+/* =========================
+   LOGIN
+========================= */
 
-$('#loginForm').onsubmit = async e => {
+$("#loginForm").onsubmit =
+  async (e) => {
 
-  e.preventDefault();
+    e.preventDefault();
 
-  $('#loginMsg').textContent = 'Signing in...';
 
-  const {
-    error
-  } = await sb.auth.signInWithPassword({
+    $("#loginMsg").textContent =
+      "Logging in...";
 
-    email: $('#email').value,
-    password: $('#password').value
 
-  });
+    const {
+      error
+    } =
+      await sb.auth.signInWithPassword({
 
-  if (error) {
+        email:
+          $("#email").value,
 
-    $('#loginMsg').textContent =
-      error.message;
+        password:
+          $("#password").value
 
-  }
+      });
+
+
+    if (error) {
+
+      $("#loginMsg").textContent =
+        error.message;
+
+    }
+
+  };
+
+
+/* =========================
+   FORGOT PASSWORD BUTTON
+========================= */
+
+$("#forgotBtn").onclick = () => {
+
+  $("#forgotBox")
+    .classList.toggle("hidden");
+
+  $("#resetEmail").value =
+    $("#email").value;
 
 };
 
 
-/* LOGOUT */
+/* =========================
+   RESET BUTTON
+========================= */
 
-$('#logout').onclick = () =>
-  sb.auth.signOut();
+$("#sendReset").onclick =
+  sendReset;
 
 
-/* TABS */
+/* =========================
+   UPDATE PASSWORD BUTTON
+========================= */
+
+$("#updatePassword").onclick =
+  updatePassword;
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+$("#logout").onclick =
+  () => sb.auth.signOut();
+
+
+/* =========================
+   TABS
+========================= */
 
 document
-  .querySelectorAll('.tab')
-  .forEach(button => {
+  .querySelectorAll(".tab")
+  .forEach((button) => {
 
     button.onclick = () => {
 
       document
-        .querySelectorAll('.tab')
-        .forEach(x =>
-          x.classList.remove('active')
+        .querySelectorAll(".tab")
+        .forEach((x) =>
+          x.classList.remove(
+            "active"
+          )
         );
 
-      button.classList.add('active');
+
+      button.classList.add(
+        "active"
+      );
+
 
       currentView =
         button.dataset.view;
+
 
       render();
 
@@ -130,36 +397,63 @@ document
 
 async function render() {
 
-  const main = $('#main');
+  const main = $("#main");
 
   main.innerHTML =
-    '<div class="p-10 text-center">Loading…</div>';
+    '<div class="p-10 text-center">Loading...</div>';
 
-  if (currentView === 'dashboard')
+
+  if (
+    currentView === "dashboard"
+  )
     return dashboard();
 
-  if (currentView === 'products')
+
+  if (
+    currentView === "products"
+  )
     return crudProducts();
 
-  if (currentView === 'units')
+
+  if (
+    currentView === "units"
+  )
     return crudUnits();
 
-  if (currentView === 'homepage')
+
+  if (
+    currentView === "homepage"
+  )
     return homepage();
 
-  if (currentView === 'enquiries')
+
+  if (
+    currentView === "enquiries"
+  )
     return enquiries();
 
-  if (currentView === 'reviews')
+
+  if (
+    currentView === "reviews"
+  )
     return reviews();
 
-  if (currentView === 'company')
+
+  if (
+    currentView === "company"
+  )
     return company();
 
-  if (currentView === 'documents')
+
+  if (
+    currentView === "documents"
+  )
     return documents();
 
-  if (currentView === 'tracking')
+
+  if (
+    currentView === "tracking"
+  )
     return tracking();
 
 }
@@ -172,33 +466,43 @@ async function render() {
 async function dashboard() {
 
   const tables = [
-    'products',
-    'business_units',
-    'enquiries',
-    'reviews',
-    'documents',
-    'tracking'
+    "products",
+    "business_units",
+    "enquiries",
+    "reviews",
+    "documents",
+    "tracking"
   ];
+
 
   const nums = {};
 
-  for (const table of tables) {
+
+  for (
+    const table of tables
+  ) {
 
     const {
       count
-    } = await sb
-      .from(table)
-      .select('*', {
-        count: 'exact',
-        head: true
-      });
+    } =
+      await sb
+        .from(table)
+        .select(
+          "*",
+          {
+            count: "exact",
+            head: true
+          }
+        );
 
-    nums[table] = count || 0;
+
+    nums[table] =
+      count || 0;
 
   }
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-6">
       Dashboard
@@ -206,35 +510,43 @@ async function dashboard() {
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-      ${tables.map(t => `
+      ${tables
+        .map(
+          (table) => `
 
-        <div class="border rounded-2xl p-5">
+          <div class="border rounded-2xl p-5">
 
-          <div class="text-slate-500 uppercase text-xs font-bold">
-            ${t}
+            <div class="text-slate-500 uppercase text-xs font-bold">
+              ${table}
+            </div>
+
+            <div class="text-4xl font-black mt-2">
+              ${nums[table]}
+            </div>
+
           </div>
 
-          <div class="text-4xl font-black mt-2">
-            ${nums[t]}
-          </div>
-
-        </div>
-
-      `).join('')}
+        `
+        )
+        .join("")}
 
     </div>
+
   `;
 
 }
 
 
 /* =========================
-   PRODUCTS
+   PRODUCT FORM
 ========================= */
 
-function formHtml(type, item = {}) {
+function formHtml(
+  type,
+  item = {}
+) {
 
-  if (type === 'product') {
+  if (type === "product") {
 
     return `
 
@@ -250,6 +562,7 @@ function formHtml(type, item = {}) {
           value="${esc(item.id)}"
         >
 
+
         <input
           name="name"
           required
@@ -258,19 +571,25 @@ function formHtml(type, item = {}) {
           class="w-full border rounded-xl p-3"
         >
 
+
         <input
           name="business_unit"
           required
           placeholder="Business Unit"
-          value="${esc(item.business_unit || 'DEVI CHEMICALS')}"
+          value="${esc(
+            item.business_unit ||
+            "DEVI CHEMICALS"
+          )}"
           class="w-full border rounded-xl p-3"
         >
+
 
         <textarea
           name="description"
           placeholder="Description"
           class="w-full border rounded-xl p-3"
         >${esc(item.description)}</textarea>
+
 
         <input
           name="packing"
@@ -279,12 +598,14 @@ function formHtml(type, item = {}) {
           class="w-full border rounded-xl p-3"
         >
 
+
         <input
           name="photo_url"
           placeholder="Photo URL"
           value="${esc(item.photo_url)}"
           class="w-full border rounded-xl p-3"
         >
+
 
         <input
           name="brochure_url"
@@ -293,6 +614,7 @@ function formHtml(type, item = {}) {
           class="w-full border rounded-xl p-3"
         >
 
+
         <input
           name="sort_order"
           type="number"
@@ -300,17 +622,23 @@ function formHtml(type, item = {}) {
           class="w-full border rounded-xl p-3"
         >
 
+
         <label class="flex gap-2">
 
           <input
             name="active"
             type="checkbox"
-            ${item.active !== false ? 'checked' : ''}
+            ${
+              item.active !== false
+                ? "checked"
+                : ""
+            }
           >
 
           Active
 
         </label>
+
 
         <button
           class="bg-slate-900 text-white px-5 py-3 rounded-xl font-bold"
@@ -327,31 +655,23 @@ function formHtml(type, item = {}) {
 }
 
 
-/* PRODUCT LIST */
+/* =========================
+   PRODUCTS
+========================= */
 
 async function crudProducts() {
 
   const {
-    data,
-    error
-  } = await sb
-    .from('products')
-    .select('*')
-    .order('business_unit')
-    .order('sort_order');
+    data
+  } =
+    await sb
+      .from("products")
+      .select("*")
+      .order("business_unit")
+      .order("sort_order");
 
 
-  if (error) {
-
-    $('#main').innerHTML =
-      `<p class="text-red-600">${esc(error.message)}</p>`;
-
-    return;
-
-  }
-
-
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <div class="flex justify-between items-center mb-5">
 
@@ -368,10 +688,12 @@ async function crudProducts() {
 
     </div>
 
+
     <div
       id="editor"
       class="hidden border rounded-2xl p-5 mb-5"
     ></div>
+
 
     <div class="overflow-auto">
 
@@ -403,49 +725,60 @@ async function crudProducts() {
 
         </thead>
 
+
         <tbody>
 
-          ${(data || []).map(p => `
+          ${(data || [])
+            .map(
+              (p) => `
 
-            <tr class="border-b">
+              <tr class="border-b">
 
-              <td class="p-2 font-bold">
-                ${esc(p.name)}
-              </td>
+                <td class="p-2 font-bold">
+                  ${esc(p.name)}
+                </td>
 
-              <td>
-                ${esc(p.business_unit)}
-              </td>
+                <td>
+                  ${esc(
+                    p.business_unit
+                  )}
+                </td>
 
-              <td>
-                ${esc(p.packing)}
-              </td>
+                <td>
+                  ${esc(p.packing)}
+                </td>
 
-              <td>
-                ${p.active ? 'Yes' : 'No'}
-              </td>
+                <td>
+                  ${
+                    p.active
+                      ? "Yes"
+                      : "No"
+                  }
+                </td>
 
-              <td class="text-right">
+                <td class="text-right">
 
-                <button
-                  class="edit text-blue-700 mr-3"
-                  data-id="${p.id}"
-                >
-                  Edit
-                </button>
+                  <button
+                    class="edit text-blue-700 mr-3"
+                    data-id="${p.id}"
+                  >
+                    Edit
+                  </button>
 
-                <button
-                  class="del text-rose-600"
-                  data-id="${p.id}"
-                >
-                  Delete
-                </button>
+                  <button
+                    class="del text-rose-600"
+                    data-id="${p.id}"
+                  >
+                    Delete
+                  </button>
 
-              </td>
+                </td>
 
-            </tr>
+              </tr>
 
-          `).join('')}
+            `
+            )
+            .join("")}
 
         </tbody>
 
@@ -456,103 +789,147 @@ async function crudProducts() {
   `;
 
 
-  $('#new').onclick = () =>
-    openProduct({});
+  $("#new").onclick =
+    () => openProduct({});
 
 
   document
-    .querySelectorAll('.edit')
-    .forEach(button => {
+    .querySelectorAll(".edit")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        const {
-          data
-        } = await sb
-          .from('products')
-          .select('*')
-          .eq('id', button.dataset.id)
-          .single();
+            const {
+              data
+            } =
+              await sb
+                .from("products")
+                .select("*")
+                .eq(
+                  "id",
+                  button.dataset.id
+                )
+                .single();
 
-        openProduct(data);
 
-      };
+            openProduct(data);
 
-    });
+          };
+
+      }
+    );
 
 
   document
-    .querySelectorAll('.del')
-    .forEach(button => {
+    .querySelectorAll(".del")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        if (
-          confirm('Delete this product?')
-        ) {
+            if (
+              confirm(
+                "Delete this product?"
+              )
+            ) {
 
-          await sb
-            .from('products')
-            .delete()
-            .eq('id', button.dataset.id);
+              await sb
+                .from("products")
+                .delete()
+                .eq(
+                  "id",
+                  button.dataset.id
+                );
 
-          render();
 
-        }
+              render();
 
-      };
+            }
 
-    });
+          };
+
+      }
+    );
 
 }
 
 
-/* OPEN PRODUCT */
+/* =========================
+   OPEN PRODUCT
+========================= */
 
 function openProduct(item) {
 
-  const editor = $('#editor');
+  const editor =
+    $("#editor");
 
-  editor.classList.remove('hidden');
+
+  editor.classList.remove(
+    "hidden"
+  );
+
 
   editor.innerHTML =
-    formHtml('product', item);
+    formHtml(
+      "product",
+      item
+    );
 
 
-  $('#editForm').onsubmit =
-    async event => {
+  $("#editForm").onsubmit =
+    async (event) => {
 
       event.preventDefault();
 
-      const fd =
-        new FormData(event.target);
 
-      const obj =
-        Object.fromEntries(fd);
-
-      obj.active =
-        fd.has('active');
-
-      obj.sort_order =
-        Number(obj.sort_order || 0);
+      const formData =
+        new FormData(
+          event.target
+        );
 
 
-      if (obj.id) {
+      const object =
+        Object.fromEntries(
+          formData
+        );
+
+
+      object.active =
+        formData.has("active");
+
+
+      object.sort_order =
+        Number(
+          object.sort_order || 0
+        );
+
+
+      if (object.id) {
 
         await sb
-          .from('products')
-          .update(obj)
-          .eq('id', obj.id);
+          .from("products")
+          .update(object)
+          .eq(
+            "id",
+            object.id
+          );
 
       } else {
 
-        delete obj.id;
+        delete object.id;
+
 
         await sb
-          .from('products')
-          .insert(obj);
+          .from("products")
+          .insert(
+            object
+          );
 
       }
+
 
       render();
 
@@ -569,13 +946,14 @@ async function crudUnits() {
 
   const {
     data
-  } = await sb
-    .from('business_units')
-    .select('*')
-    .order('sort_order');
+  } =
+    await sb
+      .from("business_units")
+      .select("*")
+      .order("sort_order");
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <div class="flex justify-between items-center mb-5">
 
@@ -592,108 +970,140 @@ async function crudUnits() {
 
     </div>
 
+
     <div
       id="editor"
       class="hidden border rounded-2xl p-5 mb-5"
     ></div>
 
+
     <div class="grid md:grid-cols-2 gap-4">
 
-      ${(data || []).map(u => `
+      ${(data || [])
+        .map(
+          (u) => `
 
-        <div class="border rounded-2xl p-4">
+          <div class="border rounded-2xl p-4">
 
-          <h3 class="font-black">
-            ${esc(u.name)}
-          </h3>
+            <h3 class="font-black">
+              ${esc(u.name)}
+            </h3>
 
-          <p class="text-sm text-slate-500 mt-1">
-            ${esc(u.description)}
-          </p>
+            <p class="text-sm text-slate-500 mt-1">
+              ${esc(u.description)}
+            </p>
 
-          <div class="mt-3">
+            <div class="mt-3">
 
-            <button
-              class="edit text-blue-700 mr-3"
-              data-id="${u.id}"
-            >
-              Edit
-            </button>
+              <button
+                class="edit text-blue-700 mr-3"
+                data-id="${u.id}"
+              >
+                Edit
+              </button>
 
-            <button
-              class="del text-rose-600"
-              data-id="${u.id}"
-            >
-              Delete
-            </button>
+              <button
+                class="del text-rose-600"
+                data-id="${u.id}"
+              >
+                Delete
+              </button>
+
+            </div>
 
           </div>
 
-        </div>
-
-      `).join('')}
+        `
+        )
+        .join("")}
 
     </div>
 
   `;
 
 
-  $('#new').onclick =
+  $("#new").onclick =
     () => openUnit({});
 
 
   document
-    .querySelectorAll('.edit')
-    .forEach(button => {
+    .querySelectorAll(".edit")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        const {
-          data
-        } = await sb
-          .from('business_units')
-          .select('*')
-          .eq('id', button.dataset.id)
-          .single();
+            const {
+              data
+            } =
+              await sb
+                .from("business_units")
+                .select("*")
+                .eq(
+                  "id",
+                  button.dataset.id
+                )
+                .single();
 
-        openUnit(data);
 
-      };
+            openUnit(data);
 
-    });
+          };
+
+      }
+    );
 
 
   document
-    .querySelectorAll('.del')
-    .forEach(button => {
+    .querySelectorAll(".del")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        if (
-          confirm('Delete this unit?')
-        ) {
+            if (
+              confirm(
+                "Delete this unit?"
+              )
+            ) {
 
-          await sb
-            .from('business_units')
-            .delete()
-            .eq('id', button.dataset.id);
+              await sb
+                .from("business_units")
+                .delete()
+                .eq(
+                  "id",
+                  button.dataset.id
+                );
 
-          render();
 
-        }
+              render();
 
-      };
+            }
 
-    });
+          };
+
+      }
+    );
 
 }
 
 
+/* =========================
+   OPEN BUSINESS UNIT
+========================= */
+
 function openUnit(x) {
 
-  const editor = $('#editor');
+  const editor =
+    $("#editor");
 
-  editor.classList.remove('hidden');
+
+  editor.classList.remove(
+    "hidden"
+  );
+
 
   editor.innerHTML = `
 
@@ -708,6 +1118,7 @@ function openUnit(x) {
         value="${esc(x.id)}"
       >
 
+
       <input
         name="name"
         required
@@ -716,11 +1127,13 @@ function openUnit(x) {
         class="w-full border rounded-xl p-3"
       >
 
+
       <textarea
         name="description"
         placeholder="Description"
         class="w-full border rounded-xl p-3"
       >${esc(x.description)}</textarea>
+
 
       <input
         name="image_url"
@@ -729,12 +1142,14 @@ function openUnit(x) {
         class="w-full border rounded-xl p-3"
       >
 
+
       <input
         name="website_url"
         placeholder="Website URL"
         value="${esc(x.website_url)}"
         class="w-full border rounded-xl p-3"
       >
+
 
       <button
         class="bg-slate-900 text-white px-5 py-3 rounded-xl"
@@ -747,33 +1162,43 @@ function openUnit(x) {
   `;
 
 
-  $('#unitForm').onsubmit =
-    async event => {
+  $("#unitForm").onsubmit =
+    async (event) => {
 
       event.preventDefault();
 
-      const obj =
+
+      const object =
         Object.fromEntries(
-          new FormData(event.target)
+          new FormData(
+            event.target
+          )
         );
 
 
-      if (obj.id) {
+      if (object.id) {
 
         await sb
-          .from('business_units')
-          .update(obj)
-          .eq('id', obj.id);
+          .from("business_units")
+          .update(object)
+          .eq(
+            "id",
+            object.id
+          );
 
       } else {
 
-        delete obj.id;
+        delete object.id;
+
 
         await sb
-          .from('business_units')
-          .insert(obj);
+          .from("business_units")
+          .insert(
+            object
+          );
 
       }
+
 
       render();
 
@@ -790,53 +1215,61 @@ async function homepage() {
 
   const {
     data
-  } = await sb
-    .from('site_content')
-    .select('*')
-    .order('key');
+  } =
+    await sb
+      .from("site_content")
+      .select("*")
+      .order("key");
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-5">
       Homepage Content
     </h2>
+
 
     <form
       id="homeForm"
       class="space-y-4"
     >
 
-      ${(data || []).map(x => `
+      ${(data || [])
+        .map(
+          (x) => `
 
-        <div>
+          <div>
 
-          <label
-            class="text-xs font-bold uppercase"
-          >
-            ${esc(x.key)}
-          </label>
+            <label class="text-xs font-bold uppercase">
+              ${esc(x.key)}
+            </label>
 
-          ${
-            x.value_type === 'text'
-            ? `
-              <textarea
-                name="${esc(x.key)}"
-                class="w-full border rounded-xl p-3 mt-1"
-              >${esc(x.value)}</textarea>
-            `
-            : `
-              <input
-                name="${esc(x.key)}"
-                value="${esc(x.value)}"
-                class="w-full border rounded-xl p-3 mt-1"
-              >
-            `
-          }
 
-        </div>
+            ${
+              x.value_type === "text"
 
-      `).join('')}
+                ? `
+                  <textarea
+                    name="${esc(x.key)}"
+                    class="w-full border rounded-xl p-3 mt-1"
+                  >${esc(x.value)}</textarea>
+                `
+
+                : `
+                  <input
+                    name="${esc(x.key)}"
+                    value="${esc(x.value)}"
+                    class="w-full border rounded-xl p-3 mt-1"
+                  >
+                `
+
+            }
+
+          </div>
+
+        `
+        )
+        .join("")}
 
 
       <button
@@ -850,18 +1283,24 @@ async function homepage() {
   `;
 
 
-  $('#homeForm').onsubmit =
-    async e => {
+  $("#homeForm").onsubmit =
+    async (event) => {
 
-      e.preventDefault();
+      event.preventDefault();
+
 
       for (
-        const [key, value]
-        of new FormData(e.target)
+        const [
+          key,
+          value
+        ]
+        of new FormData(
+          event.target
+        )
       ) {
 
         await sb
-          .from('site_content')
+          .from("site_content")
           .upsert({
             key,
             value
@@ -869,7 +1308,10 @@ async function homepage() {
 
       }
 
-      alert('Homepage saved.');
+
+      alert(
+        "Homepage saved."
+      );
 
     };
 
@@ -884,110 +1326,139 @@ async function enquiries() {
 
   const {
     data
-  } = await sb
-    .from('enquiries')
-    .select('*')
-    .order('created_at', {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("enquiries")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-5">
       Customer Enquiries
     </h2>
 
+
     <div class="space-y-3">
 
-      ${(data || []).map(x => `
+      ${(data || [])
+        .map(
+          (x) => `
 
-        <article
-          class="border rounded-2xl p-4"
-        >
-
-          <div class="flex justify-between">
-
-            <b>
-              ${esc(x.name)}
-            </b>
-
-            <span class="text-xs">
-              ${new Date(
-                x.created_at
-              ).toLocaleString()}
-            </span>
-
-          </div>
-
-          <p class="text-sm">
-            ${esc(x.email)}
-            ${x.phone
-              ? ` · ${esc(x.phone)}`
-              : ''}
-          </p>
-
-          <p class="mt-2">
-            ${esc(x.message)}
-          </p>
-
-          <p class="text-xs mt-2">
-            Products:
-            ${esc(
-              (x.products || []).join(', ')
-            )}
-          </p>
-
-          <select
-            class="status mt-3 border rounded-lg p-2"
-            data-id="${x.id}"
+          <article
+            class="border rounded-2xl p-4"
           >
 
-            <option
-              ${x.status === 'new'
-                ? 'selected'
-                : ''}
+            <div class="flex justify-between">
+
+              <b>
+                ${esc(x.name)}
+              </b>
+
+              <span class="text-xs">
+                ${
+                  new Date(
+                    x.created_at
+                  ).toLocaleString()
+                }
+              </span>
+
+            </div>
+
+
+            <p class="text-sm">
+              ${esc(x.email)}
+              ${
+                x.phone
+                  ? ` · ${esc(x.phone)}`
+                  : ""
+              }
+            </p>
+
+
+            <p class="mt-2">
+              ${esc(x.message)}
+            </p>
+
+
+            <p class="text-xs mt-2">
+              Products:
+              ${esc(
+                (
+                  x.products || []
+                ).join(", ")
+              )}
+            </p>
+
+
+            <select
+              class="status mt-3 border rounded-lg p-2"
+              data-id="${x.id}"
             >
-              new
-            </option>
 
-            <option
-              ${x.status === 'contacted'
-                ? 'selected'
-                : ''}
-            >
-              contacted
-            </option>
+              <option
+                ${
+                  x.status === "new"
+                    ? "selected"
+                    : ""
+                }
+              >
+                new
+              </option>
 
-            <option
-              ${x.status === 'quoted'
-                ? 'selected'
-                : ''}
-            >
-              quoted
-            </option>
+              <option
+                ${
+                  x.status === "contacted"
+                    ? "selected"
+                    : ""
+                }
+              >
+                contacted
+              </option>
 
-            <option
-              ${x.status === 'closed'
-                ? 'selected'
-                : ''}
-            >
-              closed
-            </option>
+              <option
+                ${
+                  x.status === "quoted"
+                    ? "selected"
+                    : ""
+                }
+              >
+                quoted
+              </option>
 
-            <option
-              ${x.status === 'spam'
-                ? 'selected'
-                : ''}
-            >
-              spam
-            </option>
+              <option
+                ${
+                  x.status === "closed"
+                    ? "selected"
+                    : ""
+                }
+              >
+                closed
+              </option>
 
-          </select>
+              <option
+                ${
+                  x.status === "spam"
+                    ? "selected"
+                    : ""
+                }
+              >
+                spam
+              </option>
 
-        </article>
+            </select>
 
-      `).join('')}
+          </article>
+
+        `
+        )
+        .join("")}
 
     </div>
 
@@ -995,25 +1466,28 @@ async function enquiries() {
 
 
   document
-    .querySelectorAll('.status')
-    .forEach(select => {
+    .querySelectorAll(".status")
+    .forEach(
+      (select) => {
 
-      select.onchange =
-        async () => {
+        select.onchange =
+          async () => {
 
-          await sb
-            .from('enquiries')
-            .update({
-              status: select.value
-            })
-            .eq(
-              'id',
-              select.dataset.id
-            );
+            await sb
+              .from("enquiries")
+              .update({
+                status:
+                  select.value
+              })
+              .eq(
+                "id",
+                select.dataset.id
+              );
 
-        };
+          };
 
-    });
+      }
+    );
 
 }
 
@@ -1026,81 +1500,105 @@ async function reviews() {
 
   const {
     data
-  } = await sb
-    .from('reviews')
-    .select('*')
-    .order('created_at', {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("reviews")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-5">
       Reviews
     </h2>
 
+
     <div class="space-y-3">
 
-      ${(data || []).map(x => `
+      ${(data || [])
+        .map(
+          (x) => `
 
-        <article
-          class="border rounded-2xl p-4"
-        >
-
-          <b>
-            ${esc(x.customer_name)}
-          </b>
-
-          ·
-
-          ${'★'.repeat(x.rating)}
-
-          <p class="mt-2">
-            ${esc(x.message)}
-          </p>
-
-          <select
-            class="rv mt-3 border rounded-lg p-2"
-            data-id="${x.id}"
+          <article
+            class="border rounded-2xl p-4"
           >
 
-            <option
-              ${x.status === 'pending'
-                ? 'selected'
-                : ''}
+            <b>
+              ${esc(
+                x.customer_name
+              )}
+            </b>
+
+            ·
+
+            ${
+              "★".repeat(
+                x.rating || 0
+              )
+            }
+
+
+            <p class="mt-2">
+              ${esc(x.message)}
+            </p>
+
+
+            <select
+              class="rv mt-3 border rounded-lg p-2"
+              data-id="${x.id}"
             >
-              pending
-            </option>
 
-            <option
-              ${x.status === 'approved'
-                ? 'selected'
-                : ''}
+              <option
+                ${
+                  x.status === "pending"
+                    ? "selected"
+                    : ""
+                }
+              >
+                pending
+              </option>
+
+              <option
+                ${
+                  x.status === "approved"
+                    ? "selected"
+                    : ""
+                }
+              >
+                approved
+              </option>
+
+              <option
+                ${
+                  x.status === "rejected"
+                    ? "selected"
+                    : ""
+                }
+              >
+                rejected
+              </option>
+
+            </select>
+
+
+            <button
+              class="rdel text-rose-600 ml-3"
+              data-id="${x.id}"
             >
-              approved
-            </option>
+              Delete
+            </button>
 
-            <option
-              ${x.status === 'rejected'
-                ? 'selected'
-                : ''}
-            >
-              rejected
-            </option>
+          </article>
 
-          </select>
-
-          <button
-            class="rdel text-rose-600 ml-3"
-            data-id="${x.id}"
-          >
-            Delete
-          </button>
-
-        </article>
-
-      `).join('')}
+        `
+        )
+        .join("")}
 
     </div>
 
@@ -1108,76 +1606,87 @@ async function reviews() {
 
 
   document
-    .querySelectorAll('.rv')
-    .forEach(select => {
+    .querySelectorAll(".rv")
+    .forEach(
+      (select) => {
 
-      select.onchange =
-        async () => {
+        select.onchange =
+          async () => {
 
-          await sb
-            .from('reviews')
-            .update({
-              status: select.value
-            })
-            .eq(
-              'id',
-              select.dataset.id
-            );
+            await sb
+              .from("reviews")
+              .update({
+                status:
+                  select.value
+              })
+              .eq(
+                "id",
+                select.dataset.id
+              );
 
-        };
+          };
 
-    });
+      }
+    );
 
 
   document
-    .querySelectorAll('.rdel')
-    .forEach(button => {
+    .querySelectorAll(".rdel")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        if (
-          confirm('Delete review?')
-        ) {
+            if (
+              confirm(
+                "Delete review?"
+              )
+            ) {
 
-          await sb
-            .from('reviews')
-            .delete()
-            .eq(
-              'id',
-              button.dataset.id
-            );
+              await sb
+                .from("reviews")
+                .delete()
+                .eq(
+                  "id",
+                  button.dataset.id
+                );
 
-          render();
 
-        }
+              render();
 
-      };
+            }
 
-    });
+          };
+
+      }
+    );
 
 }
 
 
 /* =========================
-   COMPANY
+   COMPANY / CONTACT
 ========================= */
 
 async function company() {
 
   const {
     data
-  } = await sb
-    .from('company_info')
-    .select('*')
-    .eq('id', 1)
-    .single();
+  } =
+    await sb
+      .from("company_info")
+      .select("*")
+      .eq("id", 1)
+      .single();
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-5">
       Company / Contact
     </h2>
+
 
     <form
       id="co"
@@ -1186,23 +1695,30 @@ async function company() {
 
       ${
         [
-          'company_name',
-          'email',
-          'phone',
-          'whatsapp',
-          'address',
-          'website'
-        ].map(k => `
+          "company_name",
+          "email",
+          "phone",
+          "whatsapp",
+          "address",
+          "website"
+        ]
+          .map(
+            (key) => `
 
-          <input
-            name="${k}"
-            value="${esc(data?.[k])}"
-            placeholder="${k}"
-            class="w-full border rounded-xl p-3"
-          >
+            <input
+              name="${key}"
+              value="${esc(
+                data?.[key]
+              )}"
+              placeholder="${key}"
+              class="w-full border rounded-xl p-3"
+            >
 
-        `).join('')
+          `
+          )
+          .join("")
       }
+
 
       <button
         class="bg-slate-900 text-white px-5 py-3 rounded-xl"
@@ -1215,21 +1731,25 @@ async function company() {
   `;
 
 
-  $('#co').onsubmit =
-    async e => {
+  $("#co").onsubmit =
+    async (event) => {
 
-      e.preventDefault();
+      event.preventDefault();
+
 
       await sb
-        .from('company_info')
+        .from("company_info")
         .update(
           Object.fromEntries(
-            new FormData(e.target)
+            new FormData(
+              event.target
+            )
           )
         )
-        .eq('id', 1);
+        .eq("id", 1);
 
-      alert('Saved.');
+
+      alert("Saved.");
 
     };
 
@@ -1244,19 +1764,24 @@ async function documents() {
 
   const {
     data
-  } = await sb
-    .from('documents')
-    .select('*')
-    .order('created_at', {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("documents")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <h2 class="text-3xl font-black mb-5">
       PDF / Brochure / TDS / MSDS
     </h2>
+
 
     <form
       id="doc"
@@ -1270,18 +1795,34 @@ async function documents() {
         class="border rounded-xl p-3"
       >
 
+
       <select
         name="category"
         class="border rounded-xl p-3"
       >
 
-        <option>PDF</option>
-        <option>Brochure</option>
-        <option>TDS</option>
-        <option>MSDS</option>
-        <option>Other</option>
+        <option>
+          PDF
+        </option>
+
+        <option>
+          Brochure
+        </option>
+
+        <option>
+          TDS
+        </option>
+
+        <option>
+          MSDS
+        </option>
+
+        <option>
+          Other
+        </option>
 
       </select>
+
 
       <input
         name="file_url"
@@ -1289,6 +1830,7 @@ async function documents() {
         placeholder="Public file URL"
         class="border rounded-xl p-3 md:col-span-2"
       >
+
 
       <button
         class="bg-slate-900 text-white px-5 py-3 rounded-xl md:col-span-2"
@@ -1301,46 +1843,61 @@ async function documents() {
 
     <div class="space-y-2">
 
-      ${(data || []).map(x => `
+      ${(data || [])
+        .map(
+          (x) => `
 
-        <div
-          class="border rounded-xl p-3 flex justify-between"
-        >
-
-          <span>
-            <b>${esc(x.title)}</b>
-            ·
-            ${esc(x.category)}
-          </span>
-
-          <button
-            class="dd text-rose-600"
-            data-id="${x.id}"
+          <div
+            class="border rounded-xl p-3 flex justify-between"
           >
-            Delete
-          </button>
 
-        </div>
+            <span>
 
-      `).join('')}
+              <b>
+                ${esc(x.title)}
+              </b>
+
+              ·
+
+              ${esc(x.category)}
+
+            </span>
+
+
+            <button
+              class="dd text-rose-600"
+              data-id="${x.id}"
+            >
+              Delete
+            </button>
+
+          </div>
+
+        `
+        )
+        .join("")}
 
     </div>
 
   `;
 
 
-  $('#doc').onsubmit =
-    async e => {
+  $("#doc").onsubmit =
+    async (event) => {
 
-      e.preventDefault();
+      event.preventDefault();
+
 
       await sb
-        .from('documents')
+        .from("documents")
         .insert(
           Object.fromEntries(
-            new FormData(e.target)
+            new FormData(
+              event.target
+            )
           )
         );
+
 
       render();
 
@@ -1348,24 +1905,28 @@ async function documents() {
 
 
   document
-    .querySelectorAll('.dd')
-    .forEach(button => {
+    .querySelectorAll(".dd")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        await sb
-          .from('documents')
-          .delete()
-          .eq(
-            'id',
-            button.dataset.id
-          );
+            await sb
+              .from("documents")
+              .delete()
+              .eq(
+                "id",
+                button.dataset.id
+              );
 
-        render();
 
-      };
+            render();
 
-    });
+          };
+
+      }
+    );
 
 }
 
@@ -1378,21 +1939,26 @@ async function tracking() {
 
   const {
     data
-  } = await sb
-    .from('tracking')
-    .select('*')
-    .order('created_at', {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("tracking")
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
-  $('#main').innerHTML = `
+  $("#main").innerHTML = `
 
     <div class="flex justify-between mb-5">
 
       <h2 class="text-3xl font-black">
         Tracking
       </h2>
+
 
       <button
         id="newT"
@@ -1412,112 +1978,136 @@ async function tracking() {
 
     <div class="space-y-2">
 
-      ${(data || []).map(x => `
+      ${(data || [])
+        .map(
+          (x) => `
 
-        <div
-          class="border rounded-xl p-3 flex justify-between"
-        >
+          <div
+            class="border rounded-xl p-3 flex justify-between"
+          >
 
-          <span>
+            <span>
 
-            <b>
-              ${esc(x.reference_no)}
-            </b>
+              <b>
+                ${esc(
+                  x.reference_no
+                )}
+              </b>
 
-            ·
+              ·
 
-            ${esc(x.status)}
+              ${esc(x.status)}
 
-            ·
+              ·
 
-            ${esc(x.product)}
+              ${esc(x.product)}
 
-          </span>
+            </span>
 
 
-          <span>
+            <span>
 
-            <button
-              class="teb text-blue-700 mr-3"
-              data-id="${x.id}"
-            >
-              Edit
-            </button>
+              <button
+                class="teb text-blue-700 mr-3"
+                data-id="${x.id}"
+              >
+                Edit
+              </button>
 
-            <button
-              class="td text-rose-600"
-              data-id="${x.id}"
-            >
-              Delete
-            </button>
 
-          </span>
+              <button
+                class="td text-rose-600"
+                data-id="${x.id}"
+              >
+                Delete
+              </button>
 
-        </div>
+            </span>
 
-      `).join('')}
+          </div>
+
+        `
+        )
+        .join("")}
 
     </div>
 
   `;
 
 
-  $('#newT').onclick =
+  $("#newT").onclick =
     () => trackForm({});
 
 
   document
-    .querySelectorAll('.teb')
-    .forEach(button => {
+    .querySelectorAll(".teb")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        const {
-          data
-        } = await sb
-          .from('tracking')
-          .select('*')
-          .eq(
-            'id',
-            button.dataset.id
-          )
-          .single();
+            const {
+              data
+            } =
+              await sb
+                .from("tracking")
+                .select("*")
+                .eq(
+                  "id",
+                  button.dataset.id
+                )
+                .single();
 
-        trackForm(data);
 
-      };
+            trackForm(data);
 
-    });
+          };
+
+      }
+    );
 
 
   document
-    .querySelectorAll('.td')
-    .forEach(button => {
+    .querySelectorAll(".td")
+    .forEach(
+      (button) => {
 
-      button.onclick = async () => {
+        button.onclick =
+          async () => {
 
-        await sb
-          .from('tracking')
-          .delete()
-          .eq(
-            'id',
-            button.dataset.id
-          );
+            await sb
+              .from("tracking")
+              .delete()
+              .eq(
+                "id",
+                button.dataset.id
+              );
 
-        render();
 
-      };
+            render();
 
-    });
+          };
+
+      }
+    );
 
 }
 
 
+/* =========================
+   TRACKING FORM
+========================= */
+
 function trackForm(x) {
 
-  const editor = $('#te');
+  const editor =
+    $("#te");
 
-  editor.classList.remove('hidden');
+
+  editor.classList.remove(
+    "hidden"
+  );
 
 
   editor.innerHTML = `
@@ -1529,33 +2119,43 @@ function trackForm(x) {
 
       ${
         [
-          'id',
-          'reference_no',
-          'customer_name',
-          'product',
-          'status',
-          'location',
-          'eta',
-          'step1',
-          'step2',
-          'step3',
-          'step4'
-        ].map(k => `
+          "id",
+          "reference_no",
+          "customer_name",
+          "product",
+          "status",
+          "location",
+          "eta",
+          "step1",
+          "step2",
+          "step3",
+          "step4"
+        ]
+          .map(
+            (key) => `
 
-          <input
-            name="${k}"
-            ${k === 'id'
-              ? 'type="hidden"'
-              : ''}
-            placeholder="${k}"
-            value="${esc(x[k])}"
-            ${k === 'reference_no'
-              ? 'required'
-              : ''}
-            class="border rounded-xl p-3"
-          >
+            <input
+              name="${key}"
+              ${
+                key === "id"
+                  ? 'type="hidden"'
+                  : ""
+              }
+              placeholder="${key}"
+              value="${esc(
+                x[key]
+              )}"
+              ${
+                key === "reference_no"
+                  ? "required"
+                  : ""
+              }
+              class="border rounded-xl p-3"
+            >
 
-        `).join('')
+          `
+          )
+          .join("")
       }
 
 
@@ -1570,33 +2170,43 @@ function trackForm(x) {
   `;
 
 
-  $('#tf').onsubmit =
-    async event => {
+  $("#tf").onsubmit =
+    async (event) => {
 
       event.preventDefault();
 
-      const obj =
+
+      const object =
         Object.fromEntries(
-          new FormData(event.target)
+          new FormData(
+            event.target
+          )
         );
 
 
-      if (obj.id) {
+      if (object.id) {
 
         await sb
-          .from('tracking')
-          .update(obj)
-          .eq('id', obj.id);
+          .from("tracking")
+          .update(object)
+          .eq(
+            "id",
+            object.id
+          );
 
       } else {
 
-        delete obj.id;
+        delete object.id;
+
 
         await sb
-          .from('tracking')
-          .insert(obj);
+          .from("tracking")
+          .insert(
+            object
+          );
 
       }
+
 
       render();
 
@@ -1605,6 +2215,8 @@ function trackForm(x) {
 }
 
 
-/* START */
+/* =========================
+   START
+========================= */
 
 boot();
