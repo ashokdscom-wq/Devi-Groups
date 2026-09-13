@@ -371,7 +371,7 @@
                     <div class="text-center mb-6">
                         <span class="bg-accent text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">Live Cargo & Dispatch Tracker</span>
                         <h3 class="text-xl sm:text-2xl font-black mt-2">Check Where Is Your Product?</h3>
-                        <p class="text-slate-300 text-xs mt-1">Enter your verified Bill / Invoice or Tracking No. (Try: <strong class="text-amber-400">DEVI-8924</strong>, <strong class="text-amber-400">INV-2026</strong>, or <strong class="text-amber-400">DEVI-9042</strong>)</p>
+                        <p class="text-slate-300 text-xs mt-1">Enter your verified Bill / Invoice or Tracking No. (e.g. <strong class="text-amber-400">DEVI-8924</strong>, <strong class="text-amber-400">INV-2026</strong>, or <strong class="text-amber-400">DEVI-9042</strong>)</p>
                     </div>
 
                     <div class="max-w-md mx-auto flex gap-2">
@@ -551,26 +551,34 @@
                     </div>
                 </div>
 
-                <!-- Global Client Testimonials & Live Review Submitter Section -->
-                <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-6">
-                    <div class="text-center">
-                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Feedback & Live Ratings</span>
-                        <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white mt-1">Client Reviews & Rating Wall</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Verified global buyer ratings stored directly in your system.</p>
+                <!-- Global Client Testimonials & Review Section -->
+                <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-6 text-center">
+                    <div>
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Customer Ratings & Trust</span>
+                        <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white mt-1">Verified Client Reviews & Rating Score</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Direct feedback from international chemical and packaging importers.</p>
                         
                         <!-- Dynamic Overall Rating Score Banner -->
-                        <div class="mt-4 inline-flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-2xl">
-                            <div class="text-2xl font-black text-amber-500" id="avg-rating-score">5.0</div>
+                        <div class="mt-4 inline-flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 px-5 py-2.5 rounded-2xl shadow-sm">
+                            <div class="text-3xl font-black text-amber-500" id="avg-rating-score">5.0</div>
                             <div class="text-left">
-                                <div id="avg-rating-stars" class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
-                                <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Based on <span id="total-reviews-count">3</span> customer ratings</span>
+                                <div id="avg-rating-stars" class="text-amber-400 text-sm">⭐⭐⭐⭐⭐</div>
+                                <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400">Average Rating (<span id="total-reviews-count">3</span> Reviews)</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- HIGHLIGHTED INTERACTIVE BUTTON TO OPEN REVIEWS MODAL -->
+                    <div class="py-2">
+                        <button onclick="openReviewsModal()" class="bg-gradient-to-r from-primary via-slate-800 to-primary hover:from-slate-800 hover:to-primary text-amber-300 font-black text-sm sm:text-base px-8 py-3.5 rounded-2xl border-2 border-amber-400 shadow-xl transition transform hover:scale-105 flex items-center justify-center gap-3 mx-auto">
+                            <i class="fa-solid fa-star text-amber-400 text-lg animate-spin" style="animation-duration: 6s;"></i>
+                            <span>📖 View All Customer Reviews & Ratings (Click to Read)</span>
+                        </button>
+                    </div>
+
                     <!-- Review Submission Form -->
-                    <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-xl mx-auto shadow-sm">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-primary dark:text-amber-400 mb-3"><i class="fa-solid fa-pen-nib text-amber-500 mr-1"></i> Add Your Review & Rating</h4>
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-xl mx-auto shadow-sm text-left">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-primary dark:text-amber-400 mb-3"><i class="fa-solid fa-pen-nib text-amber-500 mr-1"></i> Submit Your Review & Rating</h4>
                         <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-3">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <input type="text" id="rev-name" required placeholder="Your Name / Organization" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
@@ -586,16 +594,11 @@
                                     <option value="1">⭐ (1 / 5 - Poor)</option>
                                 </select>
                             </div>
-                            <textarea id="rev-msg" rows="2" required placeholder="Write your valuable feedback regarding product quality and shipping..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary"></textarea>
+                            <textarea id="rev-msg" rows="2" required placeholder="Write your feedback regarding product quality and shipping..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary"></textarea>
                             <button type="submit" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-paper-plane"></i> Publish Review
+                                <i class="fa-solid fa-paper-plane"></i> Submit & Save Review
                             </button>
                         </form>
-                    </div>
-
-                    <!-- Reviews List Container -->
-                    <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
-                        <!-- Loaded Dynamically by JS with LocalStorage -->
                     </div>
                 </div>
 
@@ -1008,7 +1011,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. TOYS -->
+                        <!-- 6. TOYS (BROCHURE FIXED - OPENS PDF / IMAGE) -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
                                 <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
@@ -1150,9 +1153,10 @@
                                 Complete Range of Heavy-Duty Corrugated Boxes, Protective Envelopes, Foils & Containers
                             </p>
                             
+                            <!-- MAIN BUTTON OPENS PDF ONLY -->
                             <div class="mt-4 flex justify-center">
-                                <button onclick="openBrochureViewer('Devi Packaging Brochure', 'Devi-packaging.pdf')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
-                                    <i class="fa-solid fa-file-pdf text-base text-rose-700"></i> View Devi Packaging Brochure
+                                <button onclick="openBrochureViewer('Devi Packaging Complete Brochure', 'Devi-packaging.pdf')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg transform hover:scale-105 border border-amber-200">
+                                    <i class="fa-solid fa-file-pdf text-base text-rose-700"></i> View Devi Packaging Brochure (PDF)
                                 </button>
                             </div>
                         </div>
@@ -1168,8 +1172,9 @@
                         </div>
                     </div>
 
-                    <!-- 12 PACKAGING PRODUCT CARDS -->
+                    <!-- 12 PACKAGING PRODUCT CARDS (ALL 12 OPEN ONLY SINGLE IMAGES IN LIGHTBOX) -->
                     <div class="space-y-4 product-group">
+                        
                         <!-- 1. CORRUGATED BOX -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-box.png')">
@@ -1187,7 +1192,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Corrugated Box Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-box.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Corrugated Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1210,7 +1215,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Paper Cup Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-paper-cup.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Paper Cup (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1233,7 +1238,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Paper Bag Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-paper-bag.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Paper Bag (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1256,7 +1261,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Aluminum Foil Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-aluminum-foil.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Aluminum Foil (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1279,7 +1284,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Hinj Box Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-hinj-box.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Hinj Box (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1302,7 +1307,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Bubble Envelope Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-plastic-bubble-envelope.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1325,7 +1330,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Hard Board Envelope Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-hard-board-envelope.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Hard Board Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1348,7 +1353,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Paper Bubble Envelope Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-bubble-roll.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Paper Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1371,7 +1376,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Plastic Bubble Envelope Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-plastic-bubble-envelope.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Plastic Bubble Envelope (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1394,7 +1399,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Bubble Roll and Sheet Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-bubble-roll.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Bubble Roll and Sheet (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1417,7 +1422,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Biodegree Bags Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-biodegree-bags.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Biodegree Bags (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1440,7 +1445,7 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                                    <button onclick="openBrochureViewer('Plastic Container Brochure', 'Devi-packaging.pdf')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-file-pdf"></i> Brochure</button>
+                                    <button onclick="openLightbox('packaging-hinj-box.png')" class="bg-secondary hover:bg-cyan-800 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-image"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Plastic Container (Devi Packaging)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-5 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1717,6 +1722,74 @@
         </a>
     </div>
 
+    <!-- ==================== REVIEWS READ MODAL (WALL OF REVIEWS) ==================== -->
+    <div id="reviews-modal" class="fixed inset-0 bg-black/85 z-[140] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-comments text-amber-500 text-xl"></i>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-primary dark:text-white">Customer Reviews & Testimonials</h3>
+                        <span class="text-xs text-slate-500 dark:text-slate-400">Authentic client feedback across international trade destinations</span>
+                    </div>
+                </div>
+                <button onclick="closeReviewsModal()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Scrollable List of All Reviews -->
+            <div id="modal-reviews-grid" class="flex-grow overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+                <!-- Loaded dynamically by JavaScript -->
+            </div>
+
+            <div class="pt-4 border-t dark:border-slate-800 mt-2 flex justify-end">
+                <button onclick="closeReviewsModal()" class="bg-primary hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition">
+                    Close Reviews
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TERMS & CONDITIONS MODAL ==================== -->
+    <div id="terms-modal" class="fixed inset-0 bg-black/85 z-[140] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
+                <h3 class="text-base sm:text-lg font-black text-primary dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-scale-balanced text-accent"></i> Terms & Conditions of Trade | DEVI GROUPS
+                </h3>
+                <button onclick="closeTermsModal()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto space-y-4 text-xs text-slate-600 dark:text-slate-300 pr-2 leading-relaxed">
+                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <strong class="text-primary dark:text-amber-400 text-sm block mb-1">1. Commercial Terms & Pricing (Incoterms 2020)</strong>
+                    <p>All global exports, quotations, and proforma invoices issued by DEVI GROUPS are based on standard FOB (Indian Ports), CIF, or CFR terms agreed mutually. Prices remain valid for the period specified on official proformas.</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <strong class="text-primary dark:text-amber-400 text-sm block mb-1">2. Quality Assurance & Lab Approvals</strong>
+                    <p>Chemicals, Food Colours, Intermediates, and Packaging materials adhere to strict certified specifications (FSSAI, APEDA, EN 71-3). Pre-shipment batch analysis and sample testing approvals are provided before container dispatch.</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <strong class="text-primary dark:text-amber-400 text-sm block mb-1">3. Export Packing & Cargo Integrity</strong>
+                    <p>Heavy duty multi-ply corrugated cartons, poly-lined moisture proof HDPE bags, and tamper-evident shrink wrapping are utilized for all containerized shipments to eliminate transit damage.</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <strong class="text-primary dark:text-amber-400 text-sm block mb-1">4. Payment & Documentation</strong>
+                    <p>Payments are handled via Letter of Credit (L/C at sight), Bank Wire Transfer (T/T), or advance terms as confirmed in the sales contract. Full shipping documentation including Bill of Lading, Certificate of Origin, and Invoice/Packing list are promptly couriered.</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <strong class="text-primary dark:text-amber-400 text-sm block mb-1">5. Jurisdiction & Governance</strong>
+                    <p>DEVI GROUPS operates as a registered single-proprietor enterprise established in 1989. All legal agreements and commercial contracts are subject to the jurisdiction of Ahmedabad, Gujarat (India).</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t dark:border-slate-800 mt-3 flex justify-end">
+                <button onclick="closeTermsModal()" class="bg-primary hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition">
+                    I Understand & Agree
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== WHATSAPP AUTOMATED CHATBOT MODAL ==================== -->
     <div id="chatbot-modal" class="fixed bottom-24 right-4 sm:right-8 w-full max-w-[360px] sm:max-w-[390px] bg-slate-100 dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 z-50 hidden flex-col overflow-hidden transition-all duration-300">
         <!-- Chatbot Header -->
@@ -1776,7 +1849,7 @@
             
             <div class="flex-grow overflow-y-auto mb-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex flex-col items-center justify-center text-center min-h-[220px]">
                 <div class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-inner">
-                    <i class="fa-solid fa-file-lines"></i>
+                    <i class="fa-solid fa-file-pdf"></i>
                 </div>
                 <h4 id="modal-brochure-name" class="font-black text-slate-800 dark:text-white text-sm sm:text-base">Product Brochure</h4>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">Detailed product specifications, export packing volume, and purity analysis are ready.</p>
@@ -1841,11 +1914,17 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer with Terms & Conditions -->
     <footer class="bg-primary dark:bg-slate-900 text-slate-400 py-6 border-t border-slate-700 text-center text-xs">
-        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
             <p>© 2026 DEVI GROUPS. All Rights Reserved. | Sole Proprietorship</p>
-            <p class="text-slate-300 font-semibold">Email: <a href="mailto:devigroup1989@gmail.com" class="hover:text-amber-400">devigroup1989@gmail.com</a></p>
+            <div class="flex items-center gap-4">
+                <button onclick="openTermsModal()" class="text-amber-400 hover:underline font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-scale-balanced text-[11px]"></i> Terms & Conditions
+                </button>
+                <span class="text-slate-600">|</span>
+                <p class="text-slate-300 font-semibold">Email: <a href="mailto:devigroup1989@gmail.com" class="hover:text-amber-400">devigroup1989@gmail.com</a></p>
+            </div>
         </div>
     </footer>
 
@@ -1895,7 +1974,6 @@
                 return;
             }
 
-            // Verify with Live Database
             if (shipmentDB[rawVal]) {
                 const data = shipmentDB[rawVal];
                 errBox.classList.add('hidden');
@@ -1906,7 +1984,6 @@
                 document.getElementById('tr-status-text').innerText = 'Live Status: ' + data.status;
                 document.getElementById('tr-eta').innerText = data.eta;
 
-                // Update 4-Step Visual Progress Bars
                 for (let i = 1; i <= 4; i++) {
                     const stepEl = document.getElementById(`step-${i}`);
                     const iconEl = document.getElementById(`step-${i}-icon`);
@@ -1924,7 +2001,6 @@
 
                 resBox.classList.remove('hidden');
             } else {
-                // Reject invalid or wrong tracking ID
                 resBox.classList.add('hidden');
                 errBox.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Reference <strong>"${rawVal}"</strong> not found in live cargo records! Please check your invoice.`;
                 errBox.classList.remove('hidden');
@@ -1987,26 +2063,28 @@
         }
 
         function loadReviews() {
-            const grid = document.getElementById('reviews-grid');
             let userReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
             const allReviews = [...userReviews, ...defaultReviews];
 
-            // Render Review Cards
-            grid.innerHTML = allReviews.map(r => `
-                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between card-lift">
-                    <div>
-                        <div class="text-amber-500 text-xs mb-2 tracking-widest">${'⭐'.repeat(r.stars)}</div>
-                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${r.msg}"</p>
-                    </div>
-                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <div class="w-9 h-9 rounded-full ${r.color || 'bg-primary'} text-white font-black flex items-center justify-center text-xs shadow-sm">${r.initials}</div>
+            // Render inside Modal Grid
+            const modalGrid = document.getElementById('modal-reviews-grid');
+            if (modalGrid) {
+                modalGrid.innerHTML = allReviews.map(r => `
+                    <div class="bg-slate-50 dark:bg-slate-800/80 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
                         <div>
-                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">${r.name}</strong>
-                            <span class="text-[10px] text-slate-500 dark:text-slate-400">${r.country}</span>
+                            <div class="text-amber-500 text-xs mb-2 tracking-widest">${'⭐'.repeat(r.stars)}</div>
+                            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 italic mb-4">"${r.msg}"</p>
+                        </div>
+                        <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                            <div class="w-9 h-9 rounded-full ${r.color || 'bg-primary'} text-white font-black flex items-center justify-center text-xs shadow-sm">${r.initials}</div>
+                            <div>
+                                <strong class="text-xs font-bold text-slate-800 dark:text-white block">${r.name}</strong>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400">${r.country}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             // Calculate Overall Rating Score
             const totalScore = allReviews.reduce((sum, r) => sum + r.stars, 0);
@@ -2014,6 +2092,22 @@
             document.getElementById('avg-rating-score').innerText = avgScore;
             document.getElementById('total-reviews-count').innerText = allReviews.length;
             document.getElementById('avg-rating-stars').innerText = '⭐'.repeat(Math.round(avgScore));
+        }
+
+        function openReviewsModal() {
+            document.getElementById('reviews-modal').classList.remove('hidden');
+        }
+
+        function closeReviewsModal() {
+            document.getElementById('reviews-modal').classList.add('hidden');
+        }
+
+        function openTermsModal() {
+            document.getElementById('terms-modal').classList.remove('hidden');
+        }
+
+        function closeTermsModal() {
+            document.getElementById('terms-modal').classList.add('hidden');
         }
 
         // ==================== 3. WHATSAPP AI AUTOMATED CHATBOT LOGIC ====================
@@ -2072,7 +2166,6 @@
         }
 
         function respondChatbot(text) {
-            // Update WhatsApp Link with User's Context
             const waLink = document.getElementById('chat-wa-direct-link');
             waLink.href = `https://wa.me/919727726216?text=${encodeURIComponent('Hello DEVI GROUPS, Inquiring about: ' + text)}`;
 
