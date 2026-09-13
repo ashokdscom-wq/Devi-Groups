@@ -1011,7 +1011,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. TOYS (BROCHURE FIXED - OPENS PDF / IMAGE) -->
+                        <!-- 6. TOYS (FIXED WITH YOUR GOOGLE DRIVE DIRECT LINK) -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
                                 <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
@@ -1032,7 +1032,8 @@
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                                     <button onclick="openTechSpecs('Toys', 'Non-Toxic Toy Grade Safe Colors', 'EN 71-3 / ASTM F963 Compliant', '25Kg Bag / 10Kg / 25Kg Box')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition border border-slate-300 dark:border-slate-700">TDS</button>
-                                    <button onclick="openBrochureViewer('Toys Brochure', 'devi-product-toys.pdf')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
+                                    <!-- Google Drive Direct Link Integration -->
+                                    <button onclick="openBrochureViewer('Toys Certified Brochure', 'https://drive.google.com/file/d/1b2-kEVaWl7qCT2dGGiG90ihiYY0GTQCV/view?usp=sharing')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
                                     <button onclick="toggleProductInQuote(this, 'Toys (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1854,7 +1855,7 @@
                 <h4 id="modal-brochure-name" class="font-black text-slate-800 dark:text-white text-sm sm:text-base">Product Brochure</h4>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">Detailed product specifications, export packing volume, and purity analysis are ready.</p>
                 <div class="mt-4 flex flex-wrap gap-2 justify-center">
-                    <a id="modal-brochure-download-btn" href="#" download class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                    <a id="modal-brochure-download-btn" href="#" target="_blank" class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
                         <i class="fa-solid fa-download"></i> Download PDF Brochure
                     </a>
                     <a id="modal-brochure-view-btn" href="#" target="_blank" class="bg-primary hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
@@ -2254,11 +2255,26 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Updated Universal Brochure Viewer supporting Google Drive Direct links
         function openBrochureViewer(title, filePath) {
             document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
             document.getElementById('modal-brochure-name').innerText = title;
-            document.getElementById('modal-brochure-download-btn').href = filePath;
-            document.getElementById('modal-brochure-view-btn').href = filePath;
+            
+            let viewUrl = filePath;
+            let downloadUrl = filePath;
+
+            // Handle Google Drive Links Automatically
+            if (filePath.includes('drive.google.com')) {
+                const match = filePath.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    viewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+                    downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+            }
+
+            document.getElementById('modal-brochure-download-btn').href = downloadUrl;
+            document.getElementById('modal-brochure-view-btn').href = viewUrl;
             document.getElementById('brochure-modal').classList.remove('hidden');
         }
 
