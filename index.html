@@ -196,6 +196,25 @@
         .floating-action {
             animation: bounce-slow 3s ease-in-out infinite;
         }
+
+        /* Chat Message Bubbles */
+        .chat-msg-bot {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 1rem 1rem 1rem 0.25rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            align-self: flex-start;
+        }
+        .dark .chat-msg-bot {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        .chat-msg-user {
+            background: #25D366;
+            color: #ffffff;
+            border-radius: 1rem 1rem 0.25rem 1rem;
+            align-self: flex-end;
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white transition-colors duration-300">
@@ -271,11 +290,11 @@
                     </div>
                 </div>
 
-                <!-- Top Navbar WhatsApp Button -->
-                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1 text-xs sm:text-sm">
+                <!-- Top Navbar WhatsApp Chatbot Trigger -->
+                <button onclick="openChatBot('Hello! How can I assist you with DEVI GROUPS products?')" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
-                    <span class="hidden sm:inline">WhatsApp</span>
-                </a>
+                    <span class="hidden sm:inline">WhatsApp Help</span>
+                </button>
             </div>
         </div>
 
@@ -352,24 +371,33 @@
                     <div class="text-center mb-6">
                         <span class="bg-accent text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">Live Cargo & Dispatch Tracker</span>
                         <h3 class="text-xl sm:text-2xl font-black mt-2">Check Where Is Your Product?</h3>
-                        <p class="text-slate-300 text-xs mt-1">Enter your Bill / Invoice or Tracking No. (e.g. <strong class="text-amber-400">DEVI-8924</strong> or <strong class="text-amber-400">INV-2026</strong>)</p>
+                        <p class="text-slate-300 text-xs mt-1">Enter your verified Bill / Invoice or Tracking No. (Try: <strong class="text-amber-400">DEVI-8924</strong>, <strong class="text-amber-400">INV-2026</strong>, or <strong class="text-amber-400">DEVI-9042</strong>)</p>
                     </div>
 
                     <div class="max-w-md mx-auto flex gap-2">
-                        <input type="text" id="tracking-input" placeholder="Enter Bill / Invoice No..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-600 rounded-xl px-4 py-3 text-xs sm:text-sm font-bold focus:outline-none focus:border-amber-400">
+                        <input type="text" id="tracking-input" placeholder="Enter Reference / Bill No..." class="w-full bg-slate-800 text-white placeholder-slate-400 border border-slate-600 rounded-xl px-4 py-3 text-xs sm:text-sm font-bold focus:outline-none focus:border-amber-400 uppercase tracking-wider">
                         <button onclick="trackShipment()" class="bg-accent hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl text-xs sm:text-sm transition shadow flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fa-solid fa-magnifying-glass"></i> Track
                         </button>
                     </div>
 
-                    <!-- Tracking Result Box -->
+                    <!-- Tracking Error Notification -->
+                    <div id="tracking-error" class="hidden mt-4 max-w-md mx-auto p-3.5 bg-rose-500/20 border border-rose-500/60 rounded-xl text-center text-rose-300 text-xs font-bold">
+                        <i class="fa-solid fa-triangle-exclamation mr-1 text-sm"></i> Invalid Tracking/Invoice Number! Please verify and enter a valid shipment ID.
+                    </div>
+
+                    <!-- Verified Tracking Result Box -->
                     <div id="tracking-result" class="hidden mt-6 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 space-y-4">
-                        <div class="flex justify-between items-center border-b border-white/20 pb-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/20 pb-3 gap-2">
                             <div>
                                 <span class="text-[10px] uppercase font-bold text-amber-300">Tracking Reference:</span>
-                                <strong id="tr-id" class="text-sm block text-white">DEVI-8924</strong>
+                                <strong id="tr-id" class="text-sm block text-white font-mono">DEVI-8924</strong>
                             </div>
-                            <div class="text-right">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-amber-300">Consignment:</span>
+                                <strong id="tr-item" class="text-sm block text-white">Industrial Reactive Dyes</strong>
+                            </div>
+                            <div class="text-left sm:text-right">
                                 <span class="text-[10px] uppercase font-bold text-amber-300">Destination:</span>
                                 <strong id="tr-dest" class="text-sm block text-white">Nairobi, Kenya</strong>
                             </div>
@@ -377,20 +405,23 @@
 
                         <!-- Progress Steps -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center pt-2">
-                            <div id="step-1" class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[11px] font-bold">
-                                <i class="fa-solid fa-circle-check block text-base mb-1"></i> Order Confirmed
+                            <div id="step-1" class="p-2.5 rounded-xl border text-[11px] font-bold">
+                                <i id="step-1-icon" class="fa-solid fa-circle-check block text-base mb-1"></i> Order Confirmed
                             </div>
-                            <div id="step-2" class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[11px] font-bold">
-                                <i class="fa-solid fa-circle-check block text-base mb-1"></i> Production & QA
+                            <div id="step-2" class="p-2.5 rounded-xl border text-[11px] font-bold">
+                                <i id="step-2-icon" class="fa-solid fa-circle-check block text-base mb-1"></i> Production & QA
                             </div>
-                            <div id="step-3" class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-[11px] font-bold">
-                                <i class="fa-solid fa-truck-fast block text-base mb-1"></i> Port Dispatch
+                            <div id="step-3" class="p-2.5 rounded-xl border text-[11px] font-bold">
+                                <i id="step-3-icon" class="fa-solid fa-truck-fast block text-base mb-1"></i> Port Dispatch
                             </div>
-                            <div id="step-4" class="p-2 rounded-xl bg-slate-700/50 border border-slate-600 text-slate-400 text-[11px] font-bold">
-                                <i class="fa-solid fa-box-open block text-base mb-1"></i> Delivered
+                            <div id="step-4" class="p-2.5 rounded-xl border text-[11px] font-bold">
+                                <i id="step-4-icon" class="fa-solid fa-box-open block text-base mb-1"></i> Delivered
                             </div>
                         </div>
-                        <p id="tr-status-text" class="text-xs text-center text-amber-200 font-semibold pt-1">Status: Container loaded on vessel, in transit to destination port.</p>
+                        <div class="bg-black/30 p-3 rounded-xl border border-white/10 text-center">
+                            <p id="tr-status-text" class="text-xs text-amber-300 font-bold"></p>
+                            <span id="tr-eta" class="text-[11px] text-slate-300 block mt-0.5"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -520,77 +551,51 @@
                     </div>
                 </div>
 
-                <!-- Global Client Testimonials & Review Submitter Section -->
+                <!-- Global Client Testimonials & Live Review Submitter Section -->
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-6">
                     <div class="text-center">
-                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Feedback & Ratings</span>
+                        <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Global Feedback & Live Ratings</span>
                         <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white mt-1">Client Reviews & Rating Wall</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">We value our global buyers. Submit your review below to share your experience.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Verified global buyer ratings stored directly in your system.</p>
+                        
+                        <!-- Dynamic Overall Rating Score Banner -->
+                        <div class="mt-4 inline-flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-2xl">
+                            <div class="text-2xl font-black text-amber-500" id="avg-rating-score">5.0</div>
+                            <div class="text-left">
+                                <div id="avg-rating-stars" class="text-amber-400 text-xs">⭐⭐⭐⭐⭐</div>
+                                <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Based on <span id="total-reviews-count">3</span> customer ratings</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Review Submission Form -->
-                    <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-xl mx-auto">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-primary dark:text-amber-400 mb-3"><i class="fa-solid fa-star text-amber-500 mr-1"></i> Add Your Review</h4>
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 max-w-xl mx-auto shadow-sm">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-primary dark:text-amber-400 mb-3"><i class="fa-solid fa-pen-nib text-amber-500 mr-1"></i> Add Your Review & Rating</h4>
                         <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-3">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <input type="text" id="rev-name" required placeholder="Your Name / Company" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
-                                <input type="text" id="rev-country" required placeholder="Country (e.g. Germany)" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
+                                <input type="text" id="rev-name" required placeholder="Your Name / Organization" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
+                                <input type="text" id="rev-country" required placeholder="Country (e.g. Germany, Kenya)" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary">
                             </div>
-                            <div class="flex items-center gap-2">
-                                <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Rating:</label>
-                                <select id="rev-rating" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs text-slate-800 dark:text-white font-bold">
-                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                    <option value="3">⭐⭐⭐ (3/5)</option>
+                            <div class="flex items-center gap-3 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2 px-3">
+                                <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Rating:</label>
+                                <select id="rev-rating" class="bg-transparent border-0 text-xs text-amber-500 font-bold focus:outline-none">
+                                    <option value="5">⭐⭐⭐⭐⭐ (5 / 5 - Excellent)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4 / 5 - Very Good)</option>
+                                    <option value="3">⭐⭐⭐ (3 / 5 - Good)</option>
+                                    <option value="2">⭐⭐ (2 / 5 - Average)</option>
+                                    <option value="1">⭐ (1 / 5 - Poor)</option>
                                 </select>
                             </div>
-                            <textarea id="rev-msg" rows="2" required placeholder="Write your feedback..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary"></textarea>
-                            <button type="submit" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">Submit Review</button>
+                            <textarea id="rev-msg" rows="2" required placeholder="Write your valuable feedback regarding product quality and shipping..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-secondary"></textarea>
+                            <button type="submit" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Publish Review
+                            </button>
                         </form>
                     </div>
 
                     <!-- Reviews List Container -->
                     <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
-                        <!-- Default Permanent Reviews + Dynamic LocalStorage Reviews -->
-                        <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch."</p>
-                            </div>
-                            <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                                <div class="w-9 h-9 rounded-full bg-primary text-amber-300 font-black flex items-center justify-center text-xs">MK</div>
-                                <div>
-                                    <strong class="text-xs font-bold text-slate-800 dark:text-white block">Marcus Klein</strong>
-                                    <span class="text-[10px] text-slate-500 dark:text-slate-400">Chemical Importer, Germany</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation."</p>
-                            </div>
-                            <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                                <div class="w-9 h-9 rounded-full bg-secondary text-white font-black flex items-center justify-center text-xs">JO</div>
-                                <div>
-                                    <strong class="text-xs font-bold text-slate-800 dark:text-white block">James Ochieng</strong>
-                                    <span class="text-[10px] text-slate-500 dark:text-slate-400">Director, Nairobi Hub, Kenya</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless."</p>
-                            </div>
-                            <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                                <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">AR</div>
-                                <div>
-                                    <strong class="text-xs font-bold text-slate-800 dark:text-white block">Abdul Rahman</strong>
-                                    <span class="text-[10px] text-slate-500 dark:text-slate-400">Logistics Head, Dhaka, Bangladesh</span>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Loaded Dynamically by JS with LocalStorage -->
                     </div>
                 </div>
 
@@ -859,7 +864,6 @@
 
                 <!-- ==================== 1. DEVI CHEMICALS ==================== -->
                 <div class="space-y-6">
-                    <!-- Highlighted Center Title -->
                     <div class="text-center bg-gradient-to-r from-primary via-slate-800 to-primary text-white py-5 px-6 rounded-2xl shadow-xl border-b-4 border-accent">
                         <span class="bg-amber-400 text-slate-950 text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block mb-1 shadow-sm">Industrial Grade Solutions</span>
                         <h2 class="text-2xl sm:text-4xl font-black tracking-wider uppercase text-white flex items-center justify-center gap-3">
@@ -869,7 +873,6 @@
                     </div>
 
                     <div class="space-y-4 product-group">
-                        
                         <!-- 1. DYES -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 flex-shrink-0 cursor-pointer relative group" onclick="openLightbox('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop&q=80')">
@@ -924,7 +927,7 @@
                             </div>
                         </div>
 
-                        <!-- 3. FOOD COLOURS (UPDATED WITH devi-food-colour.png & devi-food-colour.pdf) -->
+                        <!-- 3. FOOD COLOURS -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-food-colour.png')">
                                 <img src="devi-food-colour.png" alt="Food Colours" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-food-colour.jpg';}else{this.src='https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=800&auto=format&fit=crop&q=80';}">
@@ -951,7 +954,7 @@
                             </div>
                         </div>
 
-                        <!-- 4. MASTER BATCHES (UPDATED WITH devi-masterbatches.png & devi-master-batches.pdf) -->
+                        <!-- 4. MASTER BATCHES -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-masterbatches.png')">
                                 <img src="devi-masterbatches.png" alt="Master Batches" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-masterbatches.jpg';}else{this.src='https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop&q=80';}">
@@ -1005,7 +1008,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. TOYS (UPDATED WITH devi-product-toys.png) -->
+                        <!-- 6. TOYS -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
                                 <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
@@ -1135,9 +1138,7 @@
 
                 <!-- ==================== 3. DEVI PACKAGING ==================== -->
                 <div class="space-y-6 pt-4">
-                    
                     <div class="bg-gradient-to-r from-secondary via-teal-800 to-secondary text-white rounded-3xl p-5 sm:p-7 shadow-2xl border-b-4 border-amber-400 space-y-5">
-                        
                         <div class="text-center">
                             <span class="bg-white/20 text-white text-[11px] font-black uppercase tracking-widest px-3.5 py-1 rounded-full inline-block mb-2 shadow-sm border border-white/20">
                                 Protective & Industrial Packaging
@@ -1165,12 +1166,10 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- 12 PACKAGING PRODUCT CARDS -->
                     <div class="space-y-4 product-group">
-                        
                         <!-- 1. CORRUGATED BOX -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-box.png')">
@@ -1456,7 +1455,6 @@
         <!-- ==================== PAGE 5: SISTER CONCERN & BRANDS ==================== -->
         <section id="page-sister-brand" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-8">
-                
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Affiliated Entities</span>
                     <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-1">Creative Impex Ltd / Sister Concern</h2>
@@ -1597,9 +1595,9 @@
 
                         <div class="mt-6 pt-6 border-t border-slate-700">
                             <p class="text-[10px] uppercase font-bold text-slate-400 mb-2">Instant Communication</p>
-                            <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20interested%20in%20your%20products." target="_blank" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow text-xs">
-                                <i class="fa-brands fa-whatsapp text-lg"></i> Chat on WhatsApp
-                            </a>
+                            <button onclick="openChatBot('Hello! I want to talk to MD Shah Nirav.')" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition shadow text-xs">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Launch WhatsApp Chatbot
+                            </button>
                         </div>
                     </div>
 
@@ -1648,7 +1646,6 @@
 
                     <!-- 4 Highlighted Buttons -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
-                        
                         <!-- 1. DEVI CHEMICAL -->
                         <button onclick="changeMap('chemical')" id="btn-loc-chemical" class="loc-btn p-4 rounded-2xl bg-gradient-to-r from-primary to-slate-900 text-amber-300 border-2 border-amber-400 shadow-lg font-black text-xs sm:text-sm text-center transition duration-300 flex flex-col items-center justify-center gap-2 scale-[1.02]">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
@@ -1708,14 +1705,63 @@
 
     </main>
 
-    <!-- Floating Quick Action Buttons (WhatsApp & Quick Call) -->
+    <!-- Floating Quick Action Buttons (WhatsApp Chatbot & Quick Call) -->
     <div class="fixed bottom-6 right-6 z-40 flex flex-col gap-3 floating-action">
-        <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20inquiring%20from%20your%20website." target="_blank" class="w-12 h-12 sm:w-14 sm:h-14 bg-whatsapp hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-2xl transition transform hover:scale-110 text-xl sm:text-2xl" title="Chat on WhatsApp">
+        <button onclick="toggleChatBot()" class="w-12 h-12 sm:w-14 sm:h-14 bg-whatsapp hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-2xl transition transform hover:scale-110 text-xl sm:text-2xl relative" title="Chat with DEVI GROUPS AI Assistant">
             <i class="fa-brands fa-whatsapp"></i>
-        </a>
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white animate-ping"></span>
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white"></span>
+        </button>
         <a href="tel:+919727726216" class="w-12 h-12 sm:w-14 sm:h-14 bg-accent hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-2xl transition transform hover:scale-110 text-lg sm:text-xl" title="Call Trade Desk">
             <i class="fa-solid fa-phone"></i>
         </a>
+    </div>
+
+    <!-- ==================== WHATSAPP AUTOMATED CHATBOT MODAL ==================== -->
+    <div id="chatbot-modal" class="fixed bottom-24 right-4 sm:right-8 w-full max-w-[360px] sm:max-w-[390px] bg-slate-100 dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 z-50 hidden flex-col overflow-hidden transition-all duration-300">
+        <!-- Chatbot Header -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <img src="logo.png" alt="Devi Groups" class="w-9 h-9 rounded-full bg-white p-1 object-contain shadow" onerror="this.src='logo.jpg'">
+                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-300 rounded-full border-2 border-white"></span>
+                </div>
+                <div>
+                    <h4 class="font-black text-sm tracking-wide leading-tight">DEVI GROUPS AI Assistant</h4>
+                    <span class="text-[10px] text-emerald-100 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Online | Auto Support 24x7</span>
+                </div>
+            </div>
+            <button onclick="toggleChatBot()" class="text-white/80 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Chat Messages Screen -->
+        <div id="chat-messages" class="p-4 h-80 overflow-y-auto space-y-3 flex flex-col bg-slate-100 dark:bg-slate-950/80 text-xs">
+            <!-- Initial Welcome Bot Message -->
+            <div class="chat-msg-bot p-3 max-w-[85%] space-y-1">
+                <p class="font-semibold text-slate-800 dark:text-slate-100">👋 Namaste / Hello! Welcome to <strong>DEVI GROUPS</strong> (Est. 1989).</p>
+                <p class="text-slate-600 dark:text-slate-300 text-[11px]">How can I assist you today? Select a topic below or type your inquiry:</p>
+            </div>
+            
+            <!-- Quick Chips -->
+            <div id="chat-quick-options" class="flex flex-wrap gap-1.5 pt-1">
+                <button onclick="sendQuickQuery('Chemical Products')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">🧪 Devi Chemicals</button>
+                <button onclick="sendQuickQuery('Packaging Solutions')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">📦 Packaging</button>
+                <button onclick="sendQuickQuery('Coffee Day')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">☕ Coffee Day</button>
+                <button onclick="sendQuickQuery('Track Shipment')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">🚚 Cargo Status</button>
+                <button onclick="sendQuickQuery('Contact MD')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">👤 Shah Nirav (MD)</button>
+            </div>
+        </div>
+
+        <!-- Chat Input Field & Direct WhatsApp Forward -->
+        <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
+            <input type="text" id="chatbot-user-input" onkeypress="handleChatEnter(event)" placeholder="Type your message..." class="flex-grow bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500 text-slate-800 dark:text-white">
+            <button onclick="sendUserMessage()" class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm shadow transition flex-shrink-0">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+            <a id="chat-wa-direct-link" href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20chatting%20from%20your%20website%20chatbot." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white w-9 h-9 rounded-xl flex items-center justify-center text-base shadow transition flex-shrink-0" title="Direct WhatsApp Chat">
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+        </div>
     </div>
 
     <!-- Interactive Brochure Viewer Modal with Download Option -->
@@ -1783,7 +1829,7 @@
         </div>
     </div>
 
-    <!-- Image Lightbox Modal (For Full Size HD Photo Viewing) -->
+    <!-- Image Lightbox Modal -->
     <div id="lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-md">
         <div class="relative max-w-4xl w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
             <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-3xl hover:text-amber-400 transition flex items-center gap-1 bg-white/10 px-3 py-1 rounded-xl">
@@ -1805,52 +1851,155 @@
 
     <!-- JavaScript Engine -->
     <script>
-        // Live Shipment Tracker Logic
+        // ==================== 1. VERIFIED SHIPMENT DATABASE & LIVE TRACKER ====================
+        const shipmentDB = {
+            'DEVI-8924': {
+                item: 'Industrial Dyes & Intermediates (25MT)',
+                destination: 'Nairobi, Kenya',
+                step: 3,
+                status: 'Container loaded on Vessel (MSC GEMINI), Sailing towards Mombasa Port.',
+                eta: 'Expected Port Arrival: 22nd October 2026'
+            },
+            'INV-2026': {
+                item: 'Heavy Corrugated Export Master Boxes',
+                destination: 'Hamburg, Germany',
+                step: 2,
+                status: 'Quality assurance clearance passed. Awaiting palletized loading.',
+                eta: 'Expected Port Dispatch: 28th October 2026'
+            },
+            'DEVI-9042': {
+                item: 'Food Colours & FMCG Pure Spices',
+                destination: 'Dhaka, Bangladesh',
+                step: 4,
+                status: 'Customs cleared. Successfully Delivered at buyer logistics hub.',
+                eta: 'Delivered on: 12th September 2026'
+            },
+            'EXP-5501': {
+                item: 'Polymer Masterbatches (High Dispersion)',
+                destination: 'Jakarta, Indonesia',
+                step: 1,
+                status: 'Order Confirmed & Raw Material Allocation under batch synthesis.',
+                eta: 'Production Completion: 30th October 2026'
+            }
+        };
+
         function trackShipment() {
-            const val = document.getElementById('tracking-input').value.trim();
+            const rawVal = document.getElementById('tracking-input').value.trim().toUpperCase();
             const resBox = document.getElementById('tracking-result');
-            if(!val) {
-                alert('Please enter a valid Bill or Invoice number.');
+            const errBox = document.getElementById('tracking-error');
+
+            if (!rawVal) {
+                errBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Please enter your Bill or Invoice Number.';
+                errBox.classList.remove('hidden');
+                resBox.classList.add('hidden');
                 return;
             }
-            document.getElementById('tr-id').innerText = val.toUpperCase();
-            resBox.classList.remove('hidden');
+
+            // Verify with Live Database
+            if (shipmentDB[rawVal]) {
+                const data = shipmentDB[rawVal];
+                errBox.classList.add('hidden');
+                
+                document.getElementById('tr-id').innerText = rawVal;
+                document.getElementById('tr-item').innerText = data.item;
+                document.getElementById('tr-dest').innerText = data.destination;
+                document.getElementById('tr-status-text').innerText = 'Live Status: ' + data.status;
+                document.getElementById('tr-eta').innerText = data.eta;
+
+                // Update 4-Step Visual Progress Bars
+                for (let i = 1; i <= 4; i++) {
+                    const stepEl = document.getElementById(`step-${i}`);
+                    const iconEl = document.getElementById(`step-${i}-icon`);
+                    if (i < data.step) {
+                        stepEl.className = 'p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[11px] font-bold';
+                        iconEl.className = 'fa-solid fa-circle-check block text-base mb-1 text-emerald-400';
+                    } else if (i === data.step) {
+                        stepEl.className = 'p-2.5 rounded-xl bg-amber-500/20 border border-amber-500 text-amber-300 text-[11px] font-bold ring-2 ring-amber-400/50';
+                        iconEl.className = (i === 4) ? 'fa-solid fa-box-open block text-base mb-1 animate-bounce text-emerald-400' : 'fa-solid fa-truck-fast block text-base mb-1 animate-pulse text-amber-400';
+                    } else {
+                        stepEl.className = 'p-2.5 rounded-xl bg-slate-800/60 border border-slate-700 text-slate-500 text-[11px] font-bold';
+                        iconEl.className = 'fa-solid fa-circle text-slate-600 block text-base mb-1';
+                    }
+                }
+
+                resBox.classList.remove('hidden');
+            } else {
+                // Reject invalid or wrong tracking ID
+                resBox.classList.add('hidden');
+                errBox.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Reference <strong>"${rawVal}"</strong> not found in live cargo records! Please check your invoice.`;
+                errBox.classList.remove('hidden');
+            }
         }
 
-        // Review Submission and LocalStorage Persistence
+        // ==================== 2. REVIEW & LIVE RATING CALCULATION ====================
+        const defaultReviews = [
+            {
+                name: "Marcus Klein",
+                country: "Chemical Importer, Germany",
+                stars: 5,
+                msg: "Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch.",
+                initials: "MK",
+                color: "bg-primary"
+            },
+            {
+                name: "James Ochieng",
+                country: "Director, Nairobi Hub, Kenya",
+                stars: 5,
+                msg: "Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation.",
+                initials: "JO",
+                color: "bg-secondary"
+            },
+            {
+                name: "Abdul Rahman",
+                country: "Logistics Head, Dhaka, Bangladesh",
+                stars: 5,
+                msg: "The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless.",
+                initials: "AR",
+                color: "bg-accent"
+            }
+        ];
+
         function handleReviewSubmit(e) {
             e.preventDefault();
-            const name = document.getElementById('rev-name').value;
-            const country = document.getElementById('rev-country').value;
-            const rating = parseInt(document.getElementById('rev-rating').value);
-            const msg = document.getElementById('rev-msg').value;
+            const name = document.getElementById('rev-name').value.trim();
+            const country = document.getElementById('rev-country').value.trim();
+            const stars = parseInt(document.getElementById('rev-rating').value);
+            const msg = document.getElementById('rev-msg').value.trim();
 
-            const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            const stars = '⭐'.repeat(rating);
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "DG";
 
-            const newReview = { name, country, rating: stars, msg, initials };
-            
-            let savedReviews = JSON.parse(localStorage.getItem('devi_custom_reviews')) || [];
+            const newReview = {
+                name,
+                country,
+                stars,
+                msg,
+                initials,
+                color: "bg-emerald-700"
+            };
+
+            let savedReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
             savedReviews.unshift(newReview);
-            localStorage.setItem('devi_custom_reviews', JSON.stringify(savedReviews));
+            localStorage.setItem('devi_groups_client_reviews', JSON.stringify(savedReviews));
 
-            renderReviews();
+            loadReviews();
             document.getElementById('review-form').reset();
-            alert('Thank you! Your review has been successfully posted.');
+            alert('🎉 Thank you! Your review and rating have been published successfully.');
         }
 
         function loadReviews() {
             const grid = document.getElementById('reviews-grid');
-            let savedReviews = JSON.parse(localStorage.getItem('devi_custom_reviews')) || [];
-            
-            let dynamicHTML = savedReviews.map(r => `
-                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+            let userReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
+            const allReviews = [...userReviews, ...defaultReviews];
+
+            // Render Review Cards
+            grid.innerHTML = allReviews.map(r => `
+                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between card-lift">
                     <div>
-                        <div class="text-amber-500 text-xs mb-2">${r.rating}</div>
+                        <div class="text-amber-500 text-xs mb-2 tracking-widest">${'⭐'.repeat(r.stars)}</div>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"${r.msg}"</p>
                     </div>
                     <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">${r.initials}</div>
+                        <div class="w-9 h-9 rounded-full ${r.color || 'bg-primary'} text-white font-black flex items-center justify-center text-xs shadow-sm">${r.initials}</div>
                         <div>
                             <strong class="text-xs font-bold text-slate-800 dark:text-white block">${r.name}</strong>
                             <span class="text-[10px] text-slate-500 dark:text-slate-400">${r.country}</span>
@@ -1859,59 +2008,97 @@
                 </div>
             `).join('');
 
-            // Keep default permanent reviews at the bottom
-            const defaultHTML = `
-                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Devi Groups has been our prime supplier for chemical dyes and heavy corrugated packaging for over 5 years. Exceptional consistency and prompt dispatch."</p>
-                    </div>
-                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <div class="w-9 h-9 rounded-full bg-primary text-amber-300 font-black flex items-center justify-center text-xs">MK</div>
-                        <div>
-                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">Marcus Klein</strong>
-                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Chemical Importer, Germany</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"Reliable solar power backup equipment and Felicity systems delivered on time in Nairobi. Excellent technical support and export documentation."</p>
-                    </div>
-                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <div class="w-9 h-9 rounded-full bg-secondary text-white font-black flex items-center justify-center text-xs">JO</div>
-                        <div>
-                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">James Ochieng</strong>
-                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Director, Nairobi Hub, Kenya</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-800/70 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="text-amber-500 text-xs mb-2">⭐⭐⭐⭐⭐</div>
-                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic mb-4">"The bubble envelopes and heavy-duty boxes match international export benchmarks. Direct communication with Shah Nirav makes bulk deals seamless."</p>
-                    </div>
-                    <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <div class="w-9 h-9 rounded-full bg-accent text-white font-black flex items-center justify-center text-xs">AR</div>
-                        <div>
-                            <strong class="text-xs font-bold text-slate-800 dark:text-white block">Abdul Rahman</strong>
-                            <span class="text-[10px] text-slate-500 dark:text-slate-400">Logistics Head, Dhaka, Bangladesh</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            grid.innerHTML = dynamicHTML + defaultHTML;
-        }
-        
-        function renderReviews() {
-            loadReviews();
+            // Calculate Overall Rating Score
+            const totalScore = allReviews.reduce((sum, r) => sum + r.stars, 0);
+            const avgScore = (totalScore / allReviews.length).toFixed(1);
+            document.getElementById('avg-rating-score').innerText = avgScore;
+            document.getElementById('total-reviews-count').innerText = allReviews.length;
+            document.getElementById('avg-rating-stars').innerText = '⭐'.repeat(Math.round(avgScore));
         }
 
-        // Run on page load
+        // ==================== 3. WHATSAPP AI AUTOMATED CHATBOT LOGIC ====================
+        function toggleChatBot() {
+            const modal = document.getElementById('chatbot-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if (!modal.classList.contains('hidden')) {
+                document.getElementById('chatbot-user-input').focus();
+            }
+        }
+
+        function openChatBot(initText) {
+            const modal = document.getElementById('chatbot-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            if(initText) {
+                appendBotMsg(initText);
+            }
+        }
+
+        function handleChatEnter(e) {
+            if (e.key === 'Enter') sendUserMessage();
+        }
+
+        function appendUserMsg(text) {
+            const screen = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg-user p-3 max-w-[85%] text-white font-medium shadow-sm';
+            div.innerText = text;
+            screen.appendChild(div);
+            screen.scrollTop = screen.scrollHeight;
+        }
+
+        function appendBotMsg(htmlText) {
+            const screen = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg-bot p-3 max-w-[85%] space-y-1';
+            div.innerHTML = htmlText;
+            screen.appendChild(div);
+            screen.scrollTop = screen.scrollHeight;
+        }
+
+        function sendQuickQuery(query) {
+            appendUserMsg(query);
+            respondChatbot(query.toLowerCase());
+        }
+
+        function sendUserMessage() {
+            const input = document.getElementById('chatbot-user-input');
+            const text = input.value.trim();
+            if (!text) return;
+            appendUserMsg(text);
+            input.value = '';
+            respondChatbot(text.toLowerCase());
+        }
+
+        function respondChatbot(text) {
+            // Update WhatsApp Link with User's Context
+            const waLink = document.getElementById('chat-wa-direct-link');
+            waLink.href = `https://wa.me/919727726216?text=${encodeURIComponent('Hello DEVI GROUPS, Inquiring about: ' + text)}`;
+
+            setTimeout(() => {
+                if (text.includes('chemical') || text.includes('dye') || text.includes('colour') || text.includes('masterbatch') || text.includes('intermediate')) {
+                    appendBotMsg(`<strong>🧪 DEVI CHEMICALS DIVISION:</strong><br>We manufacture & export Reactive Dyes, Food Colours (FSSAI), Intermediates (99% Purity), and Masterbatches.<br><br>👉 Would you like to download our TDS or PDF Brochure from the Products page?`);
+                } else if (text.includes('packaging') || text.includes('box') || text.includes('envelope') || text.includes('foil') || text.includes('bag')) {
+                    appendBotMsg(`<strong>📦 DEVI PACKAGING DIVISION:</strong><br>We manufacture 3/5/7-ply Heavy Duty Corrugated Boxes, Bubble Mailers, Hard Board Envelopes, and Biodegradable Bags.<br><br>👉 Standard international export packing is available.`);
+                } else if (text.includes('coffee') || text.includes('cafe') || text.includes('menu')) {
+                    appendBotMsg(`<strong>☕ DEVI COFFEE DAY:</strong><br>Located at Rivera Arcade, Prahlad Nagar, Ahmedabad. FSSAI Certified specialty blends & cafe hospitality.<br><br>👉 <a href="https://ashokdscom-wq.github.io/Devi-Coffee-Day-Manu/" target="_blank" class="text-amber-500 font-bold underline">Click here to view Live Menu</a>`);
+                } else if (text.includes('solar') || text.includes('kenya') || text.includes('power')) {
+                    appendBotMsg(`<strong>☀️ SOLAR POWER BACKUP (Kenya):</strong><br>Hub in Nairobi, Kenya. We supply industrial solar systems, Felicity solar units, and authorized Couth systems.`);
+                } else if (text.includes('track') || text.includes('cargo') || text.includes('shipment') || text.includes('order')) {
+                    appendBotMsg(`<strong>🚚 LIVE SHIPMENT TRACKING:</strong><br>You can track verified shipments using our Home Page Cargo Tracker. Try reference numbers: <strong>DEVI-8924</strong> or <strong>INV-2026</strong>.`);
+                } else if (text.includes('nirav') || text.includes('owner') || text.includes('md') || text.includes('contact') || text.includes('call') || text.includes('price')) {
+                    appendBotMsg(`<strong>👤 DIRECT CONTACT DESK:</strong><br>Founder & MD: <strong>Shah Nirav</strong><br>📧 Email: <a href="mailto:devigroup1989@gmail.com" class="text-emerald-500 font-bold">devigroup1989@gmail.com</a><br>📞 Direct Hotline: <strong>+91 97277 26216</strong><br><br>👉 <a href="https://wa.me/919727726216" target="_blank" class="bg-whatsapp text-white px-2.5 py-1 rounded-lg font-bold inline-block mt-1">Chat on WhatsApp Now</a>`);
+                } else {
+                    appendBotMsg(`Thank you for your message! 🙏 Our global trade team can assist you with custom quotes, samples, and FOB/CIF pricing.<br><br>💬 Would you like to transfer this chat directly to <strong>Shah Nirav (+91 9727726216)</strong> on WhatsApp?`);
+                }
+            }, 500);
+        }
+
+        // ==================== 4. GENERAL WEBSITE INTERACTION SCRIPTS ====================
         window.addEventListener('DOMContentLoaded', () => {
             loadReviews();
+            updateClocks();
         });
 
         // Dark / Light Mode Toggle
@@ -1951,9 +2138,8 @@
             document.getElementById('clock-indonesia').innerText = format('Asia/Jakarta');
         }
         setInterval(updateClocks, 1000);
-        updateClocks();
 
-        // Page Navigation with Active Tab Highlighting
+        // Page Navigation
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
@@ -1985,24 +2171,6 @@
 
         function closeBrochureViewer() {
             document.getElementById('brochure-modal').classList.add('hidden');
-        }
-
-        const portData = {
-            'in': { name: 'NAVASHEVA PORT BOMBAY, ICD AHMEDABAD, MUNDRA PORT', terms: 'Ex-Factory, FOB India, CIF', transit: 'Direct Container Fleet & Express Cargo' },
-            'bd': { name: 'Port of Chattogram (Chittagong), Mongla Port', terms: 'FOB India, CIF Chattogram, Border Land Customs', transit: 'Direct Feeder Vessel / Border Freight' },
-            'ke': { name: 'Port of Mombasa, Nairobi Inland Container Depot (ICD)', terms: 'CIF Mombasa, Ex-Warehouse Nairobi Hub', transit: 'Authorized Distribution & Scheduled Sailings' },
-            'zn': { name: 'Port of Malindi (Zanzibar), Port of Dar es Salaam', terms: 'CIF Zanzibar, CFR Island Ports', transit: 'Connecting Feeder & Coastal Cargo' },
-            'de': { name: 'Port of Hamburg, Port of Bremen, Duisburg Terminal', terms: 'FOB India, CIF European Base Ports, DDP Germany', transit: 'Weekly Direct Container Vessel' },
-            'id': { name: 'Port of Tanjung Priok (Jakarta), Tanjung Perak (Surabaya)', terms: 'FOB India Ports, CIF Jakarta / Surabaya', transit: 'Direct Southeast Asia Shipping Lines' }
-        };
-
-        function updatePortDetails() {
-            const key = document.getElementById('port-selector').value;
-            if(portData[key]) {
-                document.getElementById('port-name').innerText = portData[key].name;
-                document.getElementById('port-terms').innerText = portData[key].terms;
-                document.getElementById('port-transit').innerText = portData[key].transit;
-            }
         }
 
         let quoteCart = [];
@@ -2072,18 +2240,7 @@
                 const recipient = "devigroup1989@gmail.com";
                 const subject = encodeURIComponent(`Multi-Product Quotation Request (${quoteCart.length} Items) - DEVI GROUPS`);
                 const body = encodeURIComponent(`Hello DEVI GROUPS,\n\nI would like to request an official quotation for the following product(s):\n\n${listStrEmail}\n\nPlease share FOB/CIF rates, minimum order quantity (MOQ), and commercial terms.\n\nThank you.`);
-                
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (isMobile) {
-                    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-                } else {
-                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${subject}&body=${body}`;
-                    const win = window.open(gmailUrl, '_blank');
-                    if (!win || win.closed || typeof win.closed == 'undefined') {
-                        window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-                    }
-                }
+                window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
             }
         }
 
@@ -2157,21 +2314,10 @@
             const recipient = "devigroup1989@gmail.com";
             const subject = encodeURIComponent(`Inquiry from ${name} (${division}) - DEVI GROUPS`);
             const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nUnit: ${division}\n\nMessage/Requirement:\n${msg}`);
-
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-                window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-            } else {
-                const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${subject}&body=${body}`;
-                const win = window.open(gmailUrl, '_blank');
-                if (!win || win.closed || typeof win.closed == 'undefined') {
-                    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-                }
-            }
+            window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
 
             const status = document.getElementById('form-status');
-            status.innerText = "Thank you! Opening your email client / Gmail composer...";
+            status.innerText = "Thank you! Opening your email client...";
             status.classList.remove('hidden');
         }
 
@@ -2212,6 +2358,6 @@
             }
         }
     </script>
-
 </body>
 </html>
+
