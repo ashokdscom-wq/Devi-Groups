@@ -789,9 +789,17 @@
                                 <img src="company-packaging.png" alt="Devi Packaging Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
-                            <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+                            <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
                                 Corrugated Boxes, Bubble Envelopes, Biodegradable Bags, Aluminum Foils & Heavy Duty Plastic Containers.
                             </p>
+                            <!-- Address & Live Map Link Button -->
+                            <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                                <p class="font-bold text-secondary dark:text-teal-400"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Address:</p>
+                                <p class="text-slate-600 dark:text-slate-300">Godown no.18, Pushkar Ind estate -2, Opp. National Raifale, Phase - I, GIDC, Vatva, Ahmedabad - 382445</p>
+                                <a href="https://maps.app.goo.gl/MW4szWamZTt3QEhE8?g_st=ac" target="_blank" class="mt-2 inline-flex items-center gap-1.5 bg-secondary hover:bg-cyan-800 text-white font-bold px-3 py-1.5 rounded-lg text-[11px] transition shadow">
+                                    <i class="fa-solid fa-map-location-dot"></i> Open Live Map
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -1582,7 +1590,7 @@
                     </div>
                     <div class="relative w-full h-72 sm:h-80 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-inner">
                         <iframe class="w-full h-full border-0" 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127641.87974421298!2d36.75546599824623!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sin!4v1700000000004" 
+                            src="https://maps.google.com/maps?q=Ask+Showground+Nakuru+Kenya&t=&z=15&ie=UTF8&iwloc=&output=embed" 
                             allowfullscreen="" loading="lazy">
                         </iframe>
                     </div>
@@ -1809,7 +1817,7 @@
 
                 </div>
 
-                <!-- Interactive Multi-Location Map Hub with User's Provided Accurate Addresses -->
+                <!-- Interactive Multi-Location Map Hub (Accurate coffee-style embed links added) -->
                 <div class="bg-white dark:bg-slate-900 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-900/50">Interactive Location Navigator</span>
@@ -1870,7 +1878,7 @@
                     <!-- Interactive Map Frame -->
                     <div class="relative w-full h-80 sm:h-96 rounded-2xl overflow-hidden border-2 border-slate-300 dark:border-slate-700 shadow-inner bg-slate-100 dark:bg-slate-800">
                         <iframe id="location-map-frame" class="w-full h-full border-0" 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3671.85908953186!2d72.500000!3d23.020000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDAxJzEyLjAiTiA3MsKwMzAnMDAuMCJF!5e0!3m2!1sen!2sin!4v1700000000000" 
+                            src="https://maps.google.com/maps?q=Shiv+Tenament+Ghodasar+Ahmedabad&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                             allowfullscreen="" loading="lazy">
                         </iframe>
                     </div>
@@ -2625,19 +2633,19 @@
             status.classList.remove('hidden');
         }
 
-        // Updated Map Location Embed URLs with exact user addresses
+        // Exact Coffee-style Map Embed URLs matching Devi Coffee Day format
         const locationData = {
             'chemical': { 
-                name: 'DEVI CHEMICALS (C/3, Shiv Tenament, Ghodasar, Ahmedabad - 380050)', 
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.645512702758!2d72.6012!3d22.9912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU5JzI4LjQiTiA3MsKwMzYnMDQuMyJF!5e0!3m2!1sen!2sin!4v1700000000000' 
+                name: 'DEVI CHEMICALS (C/3, Shiv Tenament, Ghodasar, Ahmedabad)', 
+                url: 'https://maps.google.com/maps?q=Shiv+Tenament+Ghodasar+Ahmedabad&t=&z=16&ie=UTF8&iwloc=&output=embed' 
             },
             'devigroup': {
-                name: 'DEVI GROUPS (Godown no.18, Pushkar Ind estate -2, Vatva, Ahmedabad 382445)',
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.5!2d72.64!3d22.95!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU3JzAwLjAiTiA3MsKwMzgnMzAuMCJF!5e0!3m2!1sen!2sin!4v1700000000002'
+                name: 'DEVI GROUPS (Pushkar Ind estate -2, Vatva, Ahmedabad)',
+                url: 'https://maps.google.com/maps?q=Pushkar+Ind+estate+Vatva+Ahmedabad&t=&z=16&ie=UTF8&iwloc=&output=embed'
             },
             'packaging': { 
                 name: 'DEVI PACKAGING MANUFACTURING UNIT (Gujarat, India)', 
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001' 
+                url: 'https://maps.google.com/maps?q=Devi+Packaging+Ahmedabad+Gujarat&t=&z=16&ie=UTF8&iwloc=&output=embed' 
             },
             'coffee': { 
                 name: 'DEVI COFFEE DAY (Rivera Arcade, Prahlad Nagar, Ahmedabad, Gujarat)', 
@@ -2645,7 +2653,7 @@
             },
             'creative': { 
                 name: 'CREATIVE INPEX SOLAR PRIVATE LIMITED (Ask Showground, Nakuru, Kenya)', 
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.5!2d36.06!3d-0.28!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMKKwMTcnMTguMCJTIDM2wrAwMyczNi4wIkU!5e0!3m2!1sen!2sin!4v1700000000004' 
+                url: 'https://maps.google.com/maps?q=Ask+Showground+Nakuru+Kenya&t=&z=15&ie=UTF8&iwloc=&output=embed' 
             }
         };
 
