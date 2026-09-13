@@ -1624,13 +1624,47 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 mb-1">Select Unit</label>
-                                <select id="form-division" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2.5 text-xs focus:outline-none focus:border-secondary text-slate-800 dark:text-white">
-                                    <option value="DEVI CHEMICALS">DEVI CHEMICALS (India)</option>
-                                    <option value="DEVI PACKAGING">DEVI PACKAGING (India)</option>
-                                    <option value="DEVI COFFEE DAY">DEVI COFFEE DAY (India)</option>
-                                    <option value="FMCG FOOD PRODUCTS">FMCG FOOD PRODUCTS</option>
-                                    <option value="SOLAR POWER BACKUP SERVICES (Kenya)">SOLAR POWER BACKUP SERVICES (Kenya)</option>
+                                <label class="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300 mb-1">Select Products / Units (Multi-Select: Hold Ctrl / Cmd to pick multiple)</label>
+                                <select id="form-division" multiple size="7" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 text-xs focus:outline-none focus:border-secondary text-slate-800 dark:text-white">
+                                    <optgroup label="1. DEVI CHEMICALS (India)" class="font-bold text-primary dark:text-amber-400">
+                                        <option value="Devi Chemicals - All Products">-- All Products (Devi Chemicals) --</option>
+                                        <option value="Devi Chemicals: DYES">Dyes</option>
+                                        <option value="Devi Chemicals: INTERMEDIATES">Intermediates</option>
+                                        <option value="Devi Chemicals: FOOD COLOURS">Food Colours</option>
+                                        <option value="Devi Chemicals: MASTER BATCHES">Master Batches</option>
+                                        <option value="Devi Chemicals: PAPER DYES">Paper Dyes</option>
+                                        <option value="Devi Chemicals: TOYS GRADE COLOURS">Toys Grade Colours</option>
+                                    </optgroup>
+                                    <optgroup label="2. FMCG FOOD PRODUCTS" class="font-bold text-amber-600 dark:text-amber-400">
+                                        <option value="FMCG Food - All Products">-- All Products (FMCG Food) --</option>
+                                        <option value="FMCG Food: SPICES">Spices</option>
+                                        <option value="FMCG Food: SEASONING">Seasoning</option>
+                                        <option value="FMCG Food: FARFAR">Farfar (Ready-to-Fry Pellets)</option>
+                                        <option value="FMCG Food: TOMATO SAUCE">Tomato Sauce</option>
+                                        <option value="FMCG Food: CHILLI SAUCE">Chilli Sauce</option>
+                                        <option value="FMCG Food: VINEGAR">Vinegar</option>
+                                    </optgroup>
+                                    <optgroup label="3. DEVI PACKAGING (India)" class="font-bold text-secondary dark:text-teal-400">
+                                        <option value="Devi Packaging - All Products">-- All Products (Devi Packaging) --</option>
+                                        <option value="Devi Packaging: CORRUGATED BOX">Corrugated Box</option>
+                                        <option value="Devi Packaging: PAPER CUP">Paper Cup</option>
+                                        <option value="Devi Packaging: PAPER BAG">Paper Bag</option>
+                                        <option value="Devi Packaging: ALUMINUM FOIL">Aluminum Foil</option>
+                                        <option value="Devi Packaging: HINJ BOX">Hinj Box</option>
+                                        <option value="Devi Packaging: BUBBLE ENVELOPE">Bubble Envelope</option>
+                                        <option value="Devi Packaging: HARD BOARD ENVELOPE">Hard Board Envelope</option>
+                                        <option value="Devi Packaging: PAPER BUBBLE ENVELOPE">Paper Bubble Envelope</option>
+                                        <option value="Devi Packaging: PLASTIC BUBBLE ENVELOPE">Plastic Bubble Envelope</option>
+                                        <option value="Devi Packaging: BUBBLE ROLL AND SHEET">Bubble Roll and Sheet</option>
+                                        <option value="Devi Packaging: BIODEGREE BAGS">Biodegree Bags</option>
+                                        <option value="Devi Packaging: PLASTIC CONTAINER">Plastic Container</option>
+                                    </optgroup>
+                                    <optgroup label="4. SOLAR POWER BACKUP SERVICES (Kenya)" class="font-bold text-amber-500">
+                                        <option value="Solar Power - All Services">-- All Services (Solar Power) --</option>
+                                        <option value="Solar Power: Solar Backup Solutions">Solar Backup Solutions</option>
+                                        <option value="Solar Power: Felicity Solar Equipment">Felicity Solar Equipment</option>
+                                        <option value="Solar Power: Couth Distributor Distribution">Couth Distributor Distribution</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div>
@@ -2419,12 +2453,14 @@
             e.preventDefault();
             const name = document.getElementById('form-name').value;
             const email = document.getElementById('form-email').value;
-            const division = document.getElementById('form-division').value;
+            const selectEl = document.getElementById('form-division');
+            const selectedOptions = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+            const division = selectedOptions.join(', ');
             const msg = document.getElementById('form-message').value;
 
             const recipient = "devigroup1989@gmail.com";
-            const subject = encodeURIComponent(`Inquiry from ${name} (${division}) - DEVI GROUPS`);
-            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nUnit: ${division}\n\nMessage/Requirement:\n${msg}`);
+            const subject = encodeURIComponent(`Inquiry from ${name} (${selectedOptions.length} Items Selected) - DEVI GROUPS`);
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSelected Products / Divisions:\n${selectedOptions.map(p => ' - ' + p).join('\n')}\n\nMessage/Requirement:\n${msg}`);
             window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
 
             const status = document.getElementById('form-status');
@@ -2471,4 +2507,3 @@
     </script>
 </body>
 </html>
-
