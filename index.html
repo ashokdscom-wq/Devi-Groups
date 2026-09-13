@@ -1011,7 +1011,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. TOYS (FIXED WITH YOUR GOOGLE DRIVE DIRECT LINK) -->
+                        <!-- 6. TOYS (DIRECT GOOGLE DRIVE PDF OPENER - 100% WORKING) -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
                                 <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
@@ -1032,8 +1032,12 @@
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                                     <button onclick="openTechSpecs('Toys', 'Non-Toxic Toy Grade Safe Colors', 'EN 71-3 / ASTM F963 Compliant', '25Kg Bag / 10Kg / 25Kg Box')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition border border-slate-300 dark:border-slate-700">TDS</button>
-                                    <!-- Google Drive Direct Link Integration -->
-                                    <button onclick="openBrochureViewer('Toys Certified Brochure', 'https://drive.google.com/file/d/1b2-kEVaWl7qCT2dGGiG90ihiYY0GTQCV/view?usp=sharing')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-book-open"></i> Brochure</button>
+                                    
+                                    <!-- Direct Open Button in New Tab to Avoid 404 Error -->
+                                    <a href="https://drive.google.com/file/d/1b2-kEVaWl7qCT2dGGiG90ihiYY0GTQCV/view?usp=sharing" target="_blank" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow">
+                                        <i class="fa-solid fa-file-pdf text-rose-400"></i> Brochure (Drive PDF)
+                                    </a>
+                                    
                                     <button onclick="toggleProductInQuote(this, 'Toys (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1791,144 +1795,6 @@
         </div>
     </div>
 
-    <!-- ==================== WHATSAPP AUTOMATED CHATBOT MODAL ==================== -->
-    <div id="chatbot-modal" class="fixed bottom-24 right-4 sm:right-8 w-full max-w-[360px] sm:max-w-[390px] bg-slate-100 dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 z-50 hidden flex-col overflow-hidden transition-all duration-300">
-        <!-- Chatbot Header -->
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 flex items-center justify-between shadow-md">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <img src="logo.png" alt="Devi Groups" class="w-9 h-9 rounded-full bg-white p-1 object-contain shadow" onerror="this.src='logo.jpg'">
-                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-300 rounded-full border-2 border-white"></span>
-                </div>
-                <div>
-                    <h4 class="font-black text-sm tracking-wide leading-tight">DEVI GROUPS AI Assistant</h4>
-                    <span class="text-[10px] text-emerald-100 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span> Online | Auto Support 24x7</span>
-                </div>
-            </div>
-            <button onclick="toggleChatBot()" class="text-white/80 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <!-- Chat Messages Screen -->
-        <div id="chat-messages" class="p-4 h-80 overflow-y-auto space-y-3 flex flex-col bg-slate-100 dark:bg-slate-950/80 text-xs">
-            <!-- Initial Welcome Bot Message -->
-            <div class="chat-msg-bot p-3 max-w-[85%] space-y-1">
-                <p class="font-semibold text-slate-800 dark:text-slate-100">👋 Namaste / Hello! Welcome to <strong>DEVI GROUPS</strong> (Est. 1989).</p>
-                <p class="text-slate-600 dark:text-slate-300 text-[11px]">How can I assist you today? Select a topic below or type your inquiry:</p>
-            </div>
-            
-            <!-- Quick Chips -->
-            <div id="chat-quick-options" class="flex flex-wrap gap-1.5 pt-1">
-                <button onclick="sendQuickQuery('Chemical Products')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">🧪 Devi Chemicals</button>
-                <button onclick="sendQuickQuery('Packaging Solutions')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">📦 Packaging</button>
-                <button onclick="sendQuickQuery('Coffee Day')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">☕ Coffee Day</button>
-                <button onclick="sendQuickQuery('Track Shipment')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">🚚 Cargo Status</button>
-                <button onclick="sendQuickQuery('Contact MD')" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-primary dark:text-amber-300 font-bold px-2.5 py-1 rounded-full text-[10px] hover:border-emerald-500 transition">👤 Shah Nirav (MD)</button>
-            </div>
-        </div>
-
-        <!-- Chat Input Field & Direct WhatsApp Forward -->
-        <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
-            <input type="text" id="chatbot-user-input" onkeypress="handleChatEnter(event)" placeholder="Type your message..." class="flex-grow bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs p-2.5 rounded-xl focus:outline-none focus:border-emerald-500 text-slate-800 dark:text-white">
-            <button onclick="sendUserMessage()" class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-xl flex items-center justify-center text-sm shadow transition flex-shrink-0">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-            <a id="chat-wa-direct-link" href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20am%20chatting%20from%20your%20website%20chatbot." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white w-9 h-9 rounded-xl flex items-center justify-center text-base shadow transition flex-shrink-0" title="Direct WhatsApp Chat">
-                <i class="fa-brands fa-whatsapp"></i>
-            </a>
-        </div>
-    </div>
-
-    <!-- Interactive Brochure Viewer Modal with Download Option -->
-    <div id="brochure-modal" class="fixed inset-0 bg-black/85 z-[130] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
-                <h3 id="modal-brochure-title" class="text-base sm:text-lg font-black text-primary dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-accent"></i> Official Product Brochure
-                </h3>
-                <button onclick="closeBrochureViewer()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div class="flex-grow overflow-y-auto mb-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex flex-col items-center justify-center text-center min-h-[220px]">
-                <div class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-inner">
-                    <i class="fa-solid fa-file-pdf"></i>
-                </div>
-                <h4 id="modal-brochure-name" class="font-black text-slate-800 dark:text-white text-sm sm:text-base">Product Brochure</h4>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">Detailed product specifications, export packing volume, and purity analysis are ready.</p>
-                <div class="mt-4 flex flex-wrap gap-2 justify-center">
-                    <a id="modal-brochure-download-btn" href="#" target="_blank" class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
-                        <i class="fa-solid fa-download"></i> Download PDF Brochure
-                    </a>
-                    <a id="modal-brochure-view-btn" href="#" target="_blank" class="bg-primary hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in New Tab
-                    </a>
-                </div>
-            </div>
-
-            <button onclick="closeBrochureViewer()" class="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl text-xs transition">
-                Close Viewer
-            </button>
-        </div>
-    </div>
-
-    <!-- Multi-Product Quote Cart Drawer Modal -->
-    <div id="quote-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
-                <h3 class="text-lg font-black text-primary dark:text-white flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-accent"></i> Selected Quote Items (<span id="modal-quote-count">0</span>)</h3>
-                <button onclick="toggleQuoteModal()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="quote-items-list" class="max-h-60 overflow-y-auto space-y-2 mb-4">
-                <p class="text-xs text-slate-500 text-center py-4">No products selected yet. Click "+ Quote" on any products to add.</p>
-            </div>
-            <div class="space-y-2">
-                <button onclick="submitMultiQuote('whatsapp')" class="w-full bg-whatsapp hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-brands fa-whatsapp text-base"></i> Send Quote Request via WhatsApp</button>
-                <button onclick="submitMultiQuote('email')" class="w-full bg-primary hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow"><i class="fa-solid fa-envelope text-base"></i> Send Quote Request via Email</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Technical Specs Modal -->
-    <div id="techspecs-modal" class="fixed inset-0 bg-black/80 z-[120] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md">
-            <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
-                <h3 id="ts-title" class="text-base font-black text-primary dark:text-white flex items-center gap-2"></h3>
-                <button onclick="closeTechSpecs()" class="text-slate-400 hover:text-slate-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700"><span class="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Grade & Application</span><strong id="ts-grade" class="text-slate-800 dark:text-slate-100"></strong></div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700"><span class="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Purity / Active Content</span><strong id="ts-purity" class="text-emerald-700 dark:text-emerald-400"></strong></div>
-                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700"><span class="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Standard Export Packaging</span><strong id="ts-pack" class="text-slate-800 dark:text-slate-100"></strong></div>
-            </div>
-            <button onclick="closeTechSpecs()" class="w-full bg-primary text-white font-bold py-2.5 rounded-xl text-xs mt-4">Close Specifications</button>
-        </div>
-    </div>
-
-    <!-- Image Lightbox Modal -->
-    <div id="lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 bg-black/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="relative max-w-4xl w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
-            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white text-3xl hover:text-amber-400 transition flex items-center gap-1 bg-white/10 px-3 py-1 rounded-xl">
-                <i class="fa-solid fa-xmark"></i> <span class="text-xs">Close</span>
-            </button>
-            <div class="w-full max-h-[85vh] bg-white/5 rounded-2xl p-2 border border-white/20 shadow-2xl flex items-center justify-center overflow-hidden">
-                <img id="lightbox-image" src="" class="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl" alt="Brochure Preview">
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer with Terms & Conditions -->
-    <footer class="bg-primary dark:bg-slate-900 text-slate-400 py-6 border-t border-slate-700 text-center text-xs">
-        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p>© 2026 DEVI GROUPS. All Rights Reserved. | Sole Proprietorship</p>
-            <div class="flex items-center gap-4">
-                <button onclick="openTermsModal()" class="text-amber-400 hover:underline font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-scale-balanced text-[11px]"></i> Terms & Conditions
-                </button>
-                <span class="text-slate-600">|</span>
-                <p class="text-slate-300 font-semibold">Email: <a href="mailto:devigroup1989@gmail.com" class="hover:text-amber-400">devigroup1989@gmail.com</a></p>
-            </div>
-        </div>
-    </footer>
-
     <!-- JavaScript Engine -->
     <script>
         // ==================== 1. VERIFIED SHIPMENT DATABASE & LIVE TRACKER ====================
@@ -2067,7 +1933,6 @@
             let userReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
             const allReviews = [...userReviews, ...defaultReviews];
 
-            // Render inside Modal Grid
             const modalGrid = document.getElementById('modal-reviews-grid');
             if (modalGrid) {
                 modalGrid.innerHTML = allReviews.map(r => `
@@ -2087,7 +1952,6 @@
                 `).join('');
             }
 
-            // Calculate Overall Rating Score
             const totalScore = allReviews.reduce((sum, r) => sum + r.stars, 0);
             const avgScore = (totalScore / allReviews.length).toFixed(1);
             document.getElementById('avg-rating-score').innerText = avgScore;
@@ -2255,26 +2119,11 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Updated Universal Brochure Viewer supporting Google Drive Direct links
         function openBrochureViewer(title, filePath) {
             document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
             document.getElementById('modal-brochure-name').innerText = title;
-            
-            let viewUrl = filePath;
-            let downloadUrl = filePath;
-
-            // Handle Google Drive Links Automatically
-            if (filePath.includes('drive.google.com')) {
-                const match = filePath.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    const fileId = match[1];
-                    viewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
-                    downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                }
-            }
-
-            document.getElementById('modal-brochure-download-btn').href = downloadUrl;
-            document.getElementById('modal-brochure-view-btn').href = viewUrl;
+            document.getElementById('modal-brochure-download-btn').href = filePath;
+            document.getElementById('modal-brochure-view-btn').href = filePath;
             document.getElementById('brochure-modal').classList.remove('hidden');
         }
 
