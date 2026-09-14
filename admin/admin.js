@@ -1,1997 +1,570 @@
 ```javascript
-const cfg = window.DEVI_CMS_CONFIG;
+/* =========================================================
+   DEVI GROUPS ADMIN PANEL
+   Supabase Connected + Password Reset Diagnostic Version
+   ========================================================= */
 
-const sb = supabase.createClient(
-  cfg.supabaseUrl,
-  cfg.supabaseKey
+const SUPABASE_URL = 'https://bgkymxdbmvbplnlehakd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
+
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
 
-let currentView = "dashboard";
-
-
-// =====================================================
-// HELPERS
-// =====================================================
+/* =========================================================
+   BASIC HELPERS
+   ========================================================= */
 
 function $(id) {
   return document.getElementById(id);
 }
 
-function show(id) {
-  const el = $(id);
-  if (el) el.classList.remove("hidden");
+function showMessage(message, type = 'info') {
+  const box = $('message');
+
+  if (!box) {
+    console.log(message);
+    return;
+  }
+
+  box.textContent = message;
+  box.style.display = 'block';
+
+  if (type === 'error') {
+    box.style.color = '#b00020';
+    box.style.background = '#ffe8e8';
+  } else if (type === 'success') {
+    box.style.color = '#087f23';
+    box.style.background = '#e8f7ec';
+  } else {
+    box.style.color = '#333';
+    box.style.background = '#eeeeee';
+  }
 }
 
-function hide(id) {
-  const el = $(id);
-  if (el) el.classList.add("hidden");
+function hideMessage() {
+  const box = $('message');
+
+  if (box) {
+    box.style.display = 'none';
+    box.textContent = '';
+  }
 }
-
-function message(id, text, error = false) {
-  const el = $(id);
-
-  if (!el) return;
-
-  el.textContent = text;
-
-  el.className =
-    "text-sm mt-3 text-center " +
-    (error ? "text-red-600" : "text-green-600");
-}
-
-
-// =====================================================
-// ADMIN URL
-// =====================================================
 
 function adminUrl() {
   return window.location.origin +
-    window.location.pathname;
+    window.location.pathname.replace(/\/+$/, '') +
+    '/';
 }
 
-
-// =====================================================
-// LOGIN
-// =====================================================
-
-async function login(e) {
-
-  e.preventDefault();
-
-  const email =
-    $("email").value.trim();
-
-  const password =
-    $("password").value;
-
-  if (!email || !password) {
-
-    message(
-      "loginMessage",
-      "Enter email and password.",
-      true
-    );
-
-    return;
-  }
-
-  message(
-    "loginMessage",
-    "Signing in..."
-  );
-
-  const {
-    data,
-    error
-  } = await sb.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-  if (error) {
-
-    message(
-      "loginMessage",
-      error.message,
-      true
-    );
-
-    return;
-  }
-
-  if (!data.session) {
-
-    message(
-      "loginMessage",
-      "Login failed. No session created.",
-      true
-    );
-
-    return;
-  }
-
-  await bootAdmin();
-}
-
-
-// =====================================================
-// SHOW RESET BOX
-// =====================================================
+/* =========================================================
+   PASSWORD RESET BOX
+   ========================================================= */
 
 function showResetBox() {
+  const box = $('resetBox');
 
-  const box =
-    $("resetBox");
-
-  if (box) {
-    box.classList.remove("hidden");
+  if (!box) {
+    alert('Reset box not found. Please check admin/index.html');
+    return;
   }
 
-  const email =
-    $("email").value.trim();
+  box.classList.remove('hidden');
+  box.style.display = 'block';
 
-  if (email) {
+  const loginEmail = $('email')?.value || '';
 
-    $("resetEmail").value =
-      email;
-
+  if ($('resetEmail')) {
+    $('resetEmail').value = loginEmail;
   }
 
-  message(
-    "loginMessage",
-    "Enter your email below to reset your password."
-  );
+  hideMessage();
+
+  setTimeout(() => {
+    $('resetEmail')?.focus();
+  }, 100);
 }
 
-
-// =====================================================
-// SEND RESET EMAIL
-// =====================================================
+/* =========================================================
+   SEND PASSWORD RESET EMAIL
+   ========================================================= */
 
 async function sendReset() {
+  const emailInput = $('resetEmail');
 
-  const email =
-    $("resetEmail").value.trim();
+  if (!emailInput) {
+    showMessage('Reset email field not found.', 'error');
+    return;
+  }
+
+  const email = emailInput.value.trim();
 
   if (!email) {
-
-    message(
-      "resetMessage",
-      "Please enter your email.",
-      true
-    );
-
+    showMessage('Please enter your admin email address.', 'error');
+    emailInput.focus();
     return;
   }
 
-  message(
-    "resetMessage",
-    "Sending reset email..."
-  );
+  const button = $('sendResetBtn');
 
-
-  const {
-    error
-  } =
-    await sb.auth.resetPasswordForEmail(
-      email,
-      {
-        redirectTo: adminUrl()
-      }
-    );
-
-
-  if (error) {
-
-    message(
-      "resetMessage",
-      error.message,
-      true
-    );
-
-    return;
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Sending...';
   }
 
+  showMessage('Sending reset email...');
 
-  message(
-    "resetMessage",
-    "Password reset email sent. Check your inbox."
-  );
+  console.log('=================================');
+  console.log('DEVI PASSWORD RESET START');
+  console.log('Email:', email);
+  console.log('Supabase URL:', SUPABASE_URL);
+  console.log('Redirect URL:', adminUrl());
+  console.log('=================================');
 
+  try {
+    /*
+      Timeout protection:
+      If Supabase does not respond within 15 seconds,
+      we show a useful error instead of staying on
+      "Sending reset email..." forever.
+    */
+
+    const resetPromise = sb.auth.resetPasswordForEmail(email, {
+      redirectTo: adminUrl()
+    });
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(
+          new Error(
+            'Request timed out after 15 seconds. Supabase did not return a response.'
+          )
+        );
+      }, 15000);
+    });
+
+    const result = await Promise.race([
+      resetPromise,
+      timeoutPromise
+    ]);
+
+    console.log('Supabase reset result:', result);
+
+    if (result && result.error) {
+      console.error('PASSWORD RESET ERROR:', result.error);
+
+      showMessage(
+        'Password reset failed: ' +
+        (result.error.message || 'Unknown Supabase error'),
+        'error'
+      );
+
+      return;
+    }
+
+    showMessage(
+      'Reset email sent successfully. Please check your email inbox and Spam/Junk folder.',
+      'success'
+    );
+
+    if ($('resetBox')) {
+      $('resetBox').style.display = 'block';
+    }
+
+  } catch (error) {
+    console.error('PASSWORD RESET EXCEPTION:', error);
+
+    let errorText = 'Unknown error';
+
+    if (error && error.message) {
+      errorText = error.message;
+    } else {
+      errorText = String(error);
+    }
+
+    showMessage(
+      'Password reset error: ' + errorText,
+      'error'
+    );
+
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Send Reset Email';
+    }
+  }
 }
 
-
-// =====================================================
-// SHOW RECOVERY PAGE
-// =====================================================
-
-function showRecovery() {
-
-  hide("loginPage");
-  hide("adminPage");
-
-  show("recoveryPage");
-
-}
-
-
-// =====================================================
-// UPDATE PASSWORD
-// =====================================================
+/* =========================================================
+   UPDATE PASSWORD
+   ========================================================= */
 
 async function updatePassword() {
+  const passwordInput = $('newPassword');
 
-  const password =
-    $("newPassword").value;
-
-  const confirm =
-    $("confirmPassword").value;
-
-
-  if (!password) {
-
-    message(
-      "recoveryMessage",
-      "Enter new password.",
-      true
-    );
-
+  if (!passwordInput) {
+    showMessage('New password field not found.', 'error');
     return;
   }
 
+  const password = passwordInput.value;
 
-  if (password.length < 6) {
-
-    message(
-      "recoveryMessage",
-      "Password must be at least 6 characters.",
-      true
+  if (!password || password.length < 6) {
+    showMessage(
+      'Password must be at least 6 characters.',
+      'error'
     );
-
     return;
   }
 
+  const button = $('updatePasswordBtn');
 
-  if (password !== confirm) {
-
-    message(
-      "recoveryMessage",
-      "Passwords do not match.",
-      true
-    );
-
-    return;
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Updating...';
   }
 
+  showMessage('Updating password...');
 
-  message(
-    "recoveryMessage",
-    "Updating password..."
-  );
-
-
-  const {
-    error
-  } =
-    await sb.auth.updateUser({
+  try {
+    const { data, error } = await sb.auth.updateUser({
       password: password
     });
 
+    console.log('Password update result:', data);
 
-  if (error) {
+    if (error) {
+      console.error('PASSWORD UPDATE ERROR:', error);
 
-    message(
-      "recoveryMessage",
-      error.message,
-      true
-    );
-
-    return;
-  }
-
-
-  message(
-    "recoveryMessage",
-    "Password updated successfully."
-  );
-
-
-  setTimeout(
-    () => {
-
-      window.location.href =
-        adminUrl();
-
-    },
-    1500
-  );
-
-}
-
-
-// =====================================================
-// AUTH STATE
-// =====================================================
-
-sb.auth.onAuthStateChange(
-  async (event, session) => {
-
-    console.log(
-      "Auth event:",
-      event
-    );
-
-
-    if (
-      event === "PASSWORD_RECOVERY"
-    ) {
-
-      showRecovery();
-
-      return;
-    }
-
-
-    if (
-      session &&
-      event !== "SIGNED_OUT"
-    ) {
-
-      await bootAdmin();
-
-    }
-
-  }
-);
-
-
-// =====================================================
-// BOOT
-// =====================================================
-
-async function boot() {
-
-  try {
-
-    const {
-      data: {
-        session
-      }
-    } =
-      await sb.auth.getSession();
-
-
-    const hash =
-      window.location.hash || "";
-
-
-    if (
-      hash.includes("type=recovery")
-    ) {
-
-      showRecovery();
-
-      return;
-    }
-
-
-    if (session) {
-
-      await bootAdmin();
-
-    } else {
-
-      show("loginPage");
-
-      hide("adminPage");
-
-      hide("recoveryPage");
-
-    }
-
-  } catch (err) {
-
-    console.error(err);
-
-    show("loginPage");
-
-  }
-
-}
-
-
-// =====================================================
-// ADMIN BOOT
-// =====================================================
-
-async function bootAdmin() {
-
-  hide("loginPage");
-
-  hide("recoveryPage");
-
-  show("adminPage");
-
-  await renderView(
-    currentView
-  );
-
-}
-
-
-// =====================================================
-// LOGOUT
-// =====================================================
-
-async function logout() {
-
-  await sb.auth.signOut();
-
-  hide("adminPage");
-
-  hide("recoveryPage");
-
-  show("loginPage");
-
-}
-
-
-// =====================================================
-// NAVIGATION
-// =====================================================
-
-async function renderView(view) {
-
-  currentView = view;
-
-
-  const titleMap = {
-
-    dashboard: "Dashboard",
-    products: "Products",
-    business: "Business Units",
-    homepage: "Homepage",
-    enquiries: "Customer Enquiries",
-    reviews: "Reviews",
-    company: "Company / Contact",
-    documents: "Documents",
-    tracking: "Tracking"
-
-  };
-
-
-  $("pageTitle").textContent =
-    titleMap[view] || "Dashboard";
-
-
-  document
-    .querySelectorAll(".navBtn")
-    .forEach(btn => {
-
-      btn.classList.remove(
-        "bg-gray-700"
+      showMessage(
+        'Password update failed: ' + error.message,
+        'error'
       );
 
+      return;
+    }
 
-      if (
-        btn.dataset.view === view
-      ) {
+    showMessage(
+      'Password updated successfully. You can now login with your new password.',
+      'success'
+    );
 
-        btn.classList.add(
-          "bg-gray-700"
-        );
+    passwordInput.value = '';
 
-      }
+  } catch (error) {
+    console.error('PASSWORD UPDATE EXCEPTION:', error);
 
-    });
+    showMessage(
+      'Password update error: ' +
+      (error.message || String(error)),
+      'error'
+    );
 
-
-  if (view === "dashboard")
-    return dashboard();
-
-  if (view === "products")
-    return products();
-
-  if (view === "business")
-    return business();
-
-  if (view === "homepage")
-    return homepage();
-
-  if (view === "enquiries")
-    return enquiries();
-
-  if (view === "reviews")
-    return reviews();
-
-  if (view === "company")
-    return company();
-
-  if (view === "documents")
-    return documents();
-
-  if (view === "tracking")
-    return tracking();
-
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Update Password';
+    }
+  }
 }
 
+/* =========================================================
+   LOGIN
+   ========================================================= */
 
-// =====================================================
-// DASHBOARD
-// =====================================================
+async function login() {
+  const email = $('email')?.value.trim();
+  const password = $('password')?.value;
 
-async function dashboard() {
+  if (!email || !password) {
+    showMessage(
+      'Please enter email and password.',
+      'error'
+    );
+    return;
+  }
 
-  const [
-    productsResult,
-    businessResult,
-    enquiriesResult,
-    reviewsResult
-  ] = await Promise.all([
+  const button = $('loginBtn');
 
-    sb.from("products")
-      .select("*", {
-        count: "exact",
-        head: true
-      }),
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Logging in...';
+  }
 
-    sb.from("business_units")
-      .select("*", {
-        count: "exact",
-        head: true
-      }),
+  showMessage('Logging in...');
 
-    sb.from("enquiries")
-      .select("*", {
-        count: "exact",
-        head: true
-      }),
-
-    sb.from("reviews")
-      .select("*", {
-        count: "exact",
-        head: true
-      })
-
-  ]);
-
-
-  $("app").innerHTML = `
-
-    <div class="grid md:grid-cols-4 gap-5">
-
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">
-          Products
-        </div>
-
-        <div class="text-3xl font-bold mt-2">
-          ${productsResult.count || 0}
-        </div>
-      </div>
-
-
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">
-          Business Units
-        </div>
-
-        <div class="text-3xl font-bold mt-2">
-          ${businessResult.count || 0}
-        </div>
-      </div>
-
-
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">
-          Enquiries
-        </div>
-
-        <div class="text-3xl font-bold mt-2">
-          ${enquiriesResult.count || 0}
-        </div>
-      </div>
-
-
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">
-          Reviews
-        </div>
-
-        <div class="text-3xl font-bold mt-2">
-          ${reviewsResult.count || 0}
-        </div>
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-// =====================================================
-// PRODUCTS
-// =====================================================
-
-async function products() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("products")
-      .select("*")
-      .order("id", {
-        ascending: false
+  try {
+    const { data, error } =
+      await sb.auth.signInWithPassword({
+        email: email,
+        password: password
       });
 
+    console.log('Login result:', data);
 
-  if (error) {
+    if (error) {
+      console.error('LOGIN ERROR:', error);
 
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
+      showMessage(
+        'Login failed: ' + error.message,
+        'error'
+      );
 
-    return;
-  }
+      return;
+    }
 
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <div class="flex justify-between items-center mb-5">
-
-        <h2 class="text-xl font-bold">
-          Products
-        </h2>
-
-        <button
-          onclick="addProduct()"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          + Add Product
-        </button>
-
-      </div>
-
-
-      <div class="overflow-x-auto">
-
-        <table class="w-full text-sm">
-
-          <thead>
-
-            <tr class="border-b">
-
-              <th class="text-left p-3">
-                ID
-              </th>
-
-              <th class="text-left p-3">
-                Name
-              </th>
-
-              <th class="text-left p-3">
-                Packing
-              </th>
-
-              <th class="text-left p-3">
-                Active
-              </th>
-
-              <th class="text-left p-3">
-                Action
-              </th>
-
-            </tr>
-
-          </thead>
-
-
-          <tbody>
-
-            ${data.map(p => `
-
-              <tr class="border-b">
-
-                <td class="p-3">
-                  ${p.id}
-                </td>
-
-                <td class="p-3 font-medium">
-                  ${p.name || ""}
-                </td>
-
-                <td class="p-3">
-                  ${p.packing || ""}
-                </td>
-
-                <td class="p-3">
-                  ${p.active ? "Yes" : "No"}
-                </td>
-
-                <td class="p-3 space-x-2">
-
-                  <button
-                    onclick='editProduct(${JSON.stringify(p)})'
-                    class="bg-yellow-500 text-white px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onclick="deleteProduct(${p.id})"
-                    class="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `).join("")}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-async function addProduct() {
-
-  const name =
-    prompt("Product name:");
-
-  if (!name) return;
-
-
-  const description =
-    prompt("Description:") || "";
-
-
-  const packing =
-    prompt("Packing:") || "";
-
-
-  const photo_url =
-    prompt("Photo URL:") || "";
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("products")
-      .insert({
-        name,
-        description,
-        packing,
-        photo_url,
-        active: true
-      });
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await products();
-
-}
-
-
-async function editProduct(p) {
-
-  const name =
-    prompt(
-      "Product name:",
-      p.name || ""
+    showMessage(
+      'Login successful.',
+      'success'
     );
 
+    setTimeout(() => {
+      showDashboard();
+    }, 500);
 
-  if (name === null)
-    return;
+  } catch (error) {
+    console.error('LOGIN EXCEPTION:', error);
 
-
-  const description =
-    prompt(
-      "Description:",
-      p.description || ""
+    showMessage(
+      'Login error: ' +
+      (error.message || String(error)),
+      'error'
     );
 
-
-  const packing =
-    prompt(
-      "Packing:",
-      p.packing || ""
-    );
-
-
-  const photo_url =
-    prompt(
-      "Photo URL:",
-      p.photo_url || ""
-    );
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("products")
-      .update({
-        name,
-        description,
-        packing,
-        photo_url
-      })
-      .eq("id", p.id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Login';
+    }
   }
-
-
-  await products();
-
 }
 
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
-async function deleteProduct(id) {
+async function logout() {
+  await sb.auth.signOut();
 
-  if (
-    !confirm(
-      "Delete this product?"
-    )
-  )
-    return;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("products")
-      .delete()
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await products();
-
+  window.location.href = './';
 }
 
+/* =========================================================
+   SHOW DASHBOARD
+   ========================================================= */
 
-// =====================================================
-// BUSINESS UNITS
-// =====================================================
+function showDashboard() {
+  const loginPage = $('loginPage');
+  const dashboard = $('dashboard');
 
-async function business() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("business_units")
-      .select("*")
-      .order("sort_order", {
-        ascending: true
-      });
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
-
-    return;
+  if (loginPage) {
+    loginPage.style.display = 'none';
   }
 
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <div class="flex justify-between mb-5">
-
-        <h2 class="text-xl font-bold">
-          Business Units
-        </h2>
-
-        <button
-          onclick="addBusiness()"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          + Add
-        </button>
-
-      </div>
-
-
-      ${data.map(b => `
-
-        <div class="border-b py-4 flex justify-between">
-
-          <div>
-
-            <div class="font-bold">
-              ${b.name || ""}
-            </div>
-
-            <div class="text-gray-500 text-sm">
-              ${b.description || ""}
-            </div>
-
-          </div>
-
-
-          <div class="space-x-2">
-
-            <button
-              onclick='editBusiness(${JSON.stringify(b)})'
-              class="bg-yellow-500 text-white px-3 py-1 rounded"
-            >
-              Edit
-            </button>
-
-            <button
-              onclick="deleteBusiness('${b.id}')"
-              class="bg-red-600 text-white px-3 py-1 rounded"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
+  if (dashboard) {
+    dashboard.style.display = 'block';
+  }
 }
 
+/* =========================================================
+   SHOW LOGIN
+   ========================================================= */
 
-async function addBusiness() {
+function showLogin() {
+  const loginPage = $('loginPage');
+  const dashboard = $('dashboard');
 
-  const name =
-    prompt(
-      "Business unit name:"
-    );
-
-
-  if (!name) return;
-
-
-  const description =
-    prompt(
-      "Description:"
-    ) || "";
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("business_units")
-      .insert({
-        name,
-        description,
-        active: true
-      });
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
+  if (dashboard) {
+    dashboard.style.display = 'none';
   }
 
-
-  await business();
-
+  if (loginPage) {
+    loginPage.style.display = 'block';
+  }
 }
 
+/* =========================================================
+   PASSWORD RECOVERY DETECTION
+   ========================================================= */
 
-async function editBusiness(b) {
+function isRecoveryMode() {
+  const hash = window.location.hash || '';
+  const search = window.location.search || '';
 
-  const name =
-    prompt(
-      "Business unit name:",
-      b.name || ""
-    );
-
-
-  if (name === null)
-    return;
-
-
-  const description =
-    prompt(
-      "Description:",
-      b.description || ""
-    );
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("business_units")
-      .update({
-        name,
-        description
-      })
-      .eq("id", b.id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await business();
-
-}
-
-
-async function deleteBusiness(id) {
-
-  if (
-    !confirm(
-      "Delete this business unit?"
-    )
-  )
-    return;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("business_units")
-      .delete()
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await business();
-
-}
-
-
-// =====================================================
-// HOMEPAGE
-// =====================================================
-
-async function homepage() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("site_content")
-      .select("*")
-      .order("id", {
-        ascending: true
-      });
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
-
-    return;
-  }
-
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <h2 class="text-xl font-bold mb-5">
-        Homepage Content
-      </h2>
-
-
-      ${data.map(x => `
-
-        <div class="border-b py-4">
-
-          <div class="font-semibold">
-            ${x.key || x.section_key || ""}
-          </div>
-
-
-          <textarea
-            id="content_${x.id}"
-            class="w-full border rounded-lg p-3 mt-2"
-            rows="3"
-          >${x.value || x.title || ""}</textarea>
-
-
-          <button
-            onclick="saveContent('${x.id}')"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg mt-2"
-          >
-            Save
-          </button>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
-}
-
-
-async function saveContent(id) {
-
-  const value =
-    $("content_" + id).value;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("site_content")
-      .update({
-        value: value
-      })
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  alert(
-    "Saved successfully."
+  return (
+    hash.includes('type=recovery') ||
+    search.includes('type=recovery')
   );
-
 }
 
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
 
-// =====================================================
-// ENQUIRIES
-// =====================================================
+sb.auth.onAuthStateChange((event, session) => {
 
-async function enquiries() {
+  console.log('AUTH EVENT:', event);
+  console.log('SESSION:', session);
 
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("enquiries")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
+  if (event === 'PASSWORD_RECOVERY') {
 
+    console.log('PASSWORD RECOVERY MODE');
 
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
+    showRecoveryPage();
 
     return;
   }
 
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <h2 class="text-xl font-bold mb-5">
-        Customer Enquiries
-      </h2>
-
-
-      ${data.map(e => `
-
-        <div class="border-b py-5">
-
-          <div class="font-bold">
-            ${e.name || ""}
-          </div>
-
-          <div class="text-sm text-gray-500">
-            ${e.email || ""}
-          </div>
-
-          <div class="mt-2">
-            ${e.message || e.enquiry || ""}
-          </div>
-
-          <div class="text-xs text-gray-400 mt-2">
-            ${e.created_at || ""}
-          </div>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
-}
-
-
-// =====================================================
-// REVIEWS
-// =====================================================
-
-async function reviews() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("reviews")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
-
-    return;
-  }
-
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <h2 class="text-xl font-bold mb-5">
-        Reviews
-      </h2>
-
-
-      ${data.map(r => `
-
-        <div class="border-b py-5">
-
-          <div class="font-bold">
-            ${r.name || r.customer_name || ""}
-          </div>
-
-          <div class="mt-2">
-            ${r.review || r.message || ""}
-          </div>
-
-          <div class="text-sm text-gray-500 mt-2">
-            Status:
-            ${r.approved ? "Approved" : "Pending"}
-          </div>
-
-          <button
-            onclick="toggleReview('${r.id}', ${!r.approved})"
-            class="bg-blue-600 text-white px-3 py-1 rounded mt-3"
-          >
-            ${r.approved ? "Hide" : "Approve"}
-          </button>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
-}
-
-
-async function toggleReview(
-  id,
-  approved
-) {
-
-  const {
-    error
-  } =
-    await sb
-      .from("reviews")
-      .update({
-        approved
-      })
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await reviews();
-
-}
-
-
-// =====================================================
-// COMPANY / CONTACT
-// =====================================================
-
-async function company() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("company_info")
-      .select("*")
-      .limit(1);
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
-
-    return;
-  }
-
-
-  const c =
-    data && data.length
-      ? data[0]
-      : {};
-
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6 max-w-3xl">
-
-      <h2 class="text-xl font-bold mb-5">
-        Company / Contact
-      </h2>
-
-
-      <input
-        id="companyName"
-        class="w-full border rounded-lg px-4 py-3 mb-3"
-        placeholder="Company Name"
-        value="${c.company_name || c.name || ""}"
-      >
-
-
-      <textarea
-        id="companyAddress"
-        class="w-full border rounded-lg px-4 py-3 mb-3"
-        rows="3"
-        placeholder="Address"
-      >${c.address || ""}</textarea>
-
-
-      <input
-        id="companyPhone"
-        class="w-full border rounded-lg px-4 py-3 mb-3"
-        placeholder="Phone"
-        value="${c.phone || ""}"
-      >
-
-
-      <input
-        id="companyEmail"
-        class="w-full border rounded-lg px-4 py-3 mb-3"
-        placeholder="Email"
-        value="${c.email || ""}"
-      >
-
-
-      <button
-        onclick="saveCompany('${c.id || ""}')"
-        class="bg-blue-600 text-white px-5 py-3 rounded-lg"
-      >
-        Save Changes
-      </button>
-
-    </div>
-
-  `;
-
-}
-
-
-async function saveCompany(id) {
-
-  const payload = {
-
-    company_name:
-      $("companyName").value,
-
-    address:
-      $("companyAddress").value,
-
-    phone:
-      $("companyPhone").value,
-
-    email:
-      $("companyEmail").value
-
-  };
-
-
-  let result;
-
-
-  if (id) {
-
-    result =
-      await sb
-        .from("company_info")
-        .update(payload)
-        .eq("id", id);
+  if (session && session.user) {
+
+    console.log(
+      'Authenticated user:',
+      session.user.email
+    );
+
+    if (!isRecoveryMode()) {
+      showDashboard();
+    }
 
   } else {
 
-    result =
-      await sb
-        .from("company_info")
-        .insert(payload);
+    if (!isRecoveryMode()) {
+      showLogin();
+    }
+  }
+});
 
+/* =========================================================
+   RECOVERY PAGE
+   ========================================================= */
+
+function showRecoveryPage() {
+
+  const loginPage = $('loginPage');
+  const dashboard = $('dashboard');
+  const recoveryPage = $('recoveryPage');
+
+  if (loginPage) {
+    loginPage.style.display = 'none';
   }
 
-
-  if (result.error) {
-
-    alert(
-      result.error.message
-    );
-
-    return;
+  if (dashboard) {
+    dashboard.style.display = 'none';
   }
 
+  if (recoveryPage) {
+    recoveryPage.style.display = 'block';
+  }
 
-  alert(
-    "Company information saved."
+  const passwordInput = $('newPassword');
+
+  if (passwordInput) {
+    passwordInput.focus();
+  }
+}
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+
+async function boot() {
+
+  console.log('DEVI GROUPS ADMIN BOOT');
+
+  console.log(
+    'Current URL:',
+    window.location.href
   );
 
-}
+  console.log(
+    'Admin redirect URL:',
+    adminUrl()
+  );
 
+  /*
+    If this is a password recovery link,
+    show recovery UI.
+  */
 
-// =====================================================
-// DOCUMENTS
-// =====================================================
+  if (isRecoveryMode()) {
 
-async function documents() {
+    console.log(
+      'Recovery URL detected.'
+    );
 
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("documents")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
+    showRecoveryPage();
 
     return;
   }
 
+  /*
+    Otherwise check current session.
+  */
 
-  $("app").innerHTML = `
+  try {
 
-    <div class="bg-white rounded-xl shadow p-6">
+    const { data, error } =
+      await sb.auth.getSession();
 
-      <div class="flex justify-between mb-5">
+    if (error) {
 
-        <h2 class="text-xl font-bold">
-          Documents
-        </h2>
+      console.error(
+        'GET SESSION ERROR:',
+        error
+      );
 
+      showLogin();
 
-        <button
-          onclick="addDocument()"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          + Add Document
-        </button>
+      return;
+    }
 
-      </div>
+    if (data.session) {
 
+      console.log(
+        'Existing session found.'
+      );
 
-      ${data.map(d => `
+      showDashboard();
 
-        <div class="border-b py-4 flex justify-between">
+    } else {
 
-          <div>
+      console.log(
+        'No existing session.'
+      );
 
-            <div class="font-bold">
-              ${d.title || ""}
-            </div>
+      showLogin();
+    }
 
-            <div class="text-sm text-gray-500">
-              ${d.category || ""}
-            </div>
+  } catch (error) {
 
-          </div>
-
-
-          <div class="space-x-2">
-
-            <a
-              href="${d.file_url || "#"}"
-              target="_blank"
-              class="bg-green-600 text-white px-3 py-1 rounded"
-            >
-              Open
-            </a>
-
-
-            <button
-              onclick="deleteDocument('${d.id}')"
-              class="bg-red-600 text-white px-3 py-1 rounded"
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
-}
-
-
-async function addDocument() {
-
-  const title =
-    prompt(
-      "Document title:"
+    console.error(
+      'BOOT ERROR:',
+      error
     );
 
-
-  if (!title) return;
-
-
-  const category =
-    prompt(
-      "Category: PDF / Brochure / TDS / MSDS / Other"
-    );
-
-
-  if (!category) return;
-
-
-  const file_url =
-    prompt(
-      "File URL:"
-    );
-
-
-  if (!file_url) return;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("documents")
-      .insert({
-        title,
-        category,
-        file_url,
-        active: true
-      });
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
+    showLogin();
   }
-
-
-  await documents();
-
 }
 
-
-async function deleteDocument(id) {
-
-  if (
-    !confirm(
-      "Delete this document?"
-    )
-  )
-    return;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("documents")
-      .delete()
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await documents();
-
-}
-
-
-// =====================================================
-// TRACKING
-// =====================================================
-
-async function tracking() {
-
-  const {
-    data,
-    error
-  } =
-    await sb
-      .from("tracking")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-
-  if (error) {
-
-    $("app").innerHTML =
-      `<div class="bg-white p-6 rounded-xl text-red-600">
-        ${error.message}
-      </div>`;
-
-    return;
-  }
-
-
-  $("app").innerHTML = `
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-      <div class="flex justify-between mb-5">
-
-        <h2 class="text-xl font-bold">
-          Tracking
-        </h2>
-
-
-        <button
-          onclick="addTracking()"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          + Add Tracking
-        </button>
-
-      </div>
-
-
-      ${data.map(t => `
-
-        <div class="border-b py-5">
-
-          <div class="font-bold">
-            ${t.tracking_number || t.reference_no || ""}
-          </div>
-
-
-          <div class="text-sm text-gray-500">
-            ${t.courier || ""}
-          </div>
-
-
-          <div class="mt-2">
-            Status:
-            ${t.status || ""}
-          </div>
-
-
-          <button
-            onclick='editTracking(${JSON.stringify(t)})'
-            class="bg-yellow-500 text-white px-3 py-1 rounded mt-3"
-          >
-            Edit
-          </button>
-
-
-          <button
-            onclick="deleteTracking('${t.id}')"
-            class="bg-red-600 text-white px-3 py-1 rounded mt-3 ml-2"
-          >
-            Delete
-          </button>
-
-        </div>
-
-      `).join("")}
-
-    </div>
-
-  `;
-
-}
-
-
-async function addTracking() {
-
-  const tracking_number =
-    prompt(
-      "Tracking number:"
-    );
-
-
-  if (!tracking_number)
-    return;
-
-
-  const courier =
-    prompt(
-      "Courier:"
-    );
-
-
-  const status =
-    prompt(
-      "Status:"
-    ) || "Pending";
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("tracking")
-      .insert({
-        tracking_number,
-        courier,
-        status
-      });
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await tracking();
-
-}
-
-
-async function editTracking(t) {
-
-  const tracking_number =
-    prompt(
-      "Tracking number:",
-      t.tracking_number || ""
-    );
-
-
-  if (tracking_number === null)
-    return;
-
-
-  const courier =
-    prompt(
-      "Courier:",
-      t.courier || ""
-    );
-
-
-  const status =
-    prompt(
-      "Status:",
-      t.status || ""
-    );
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("tracking")
-      .update({
-        tracking_number,
-        courier,
-        status
-      })
-      .eq("id", t.id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await tracking();
-
-}
-
-
-async function deleteTracking(id) {
-
-  if (
-    !confirm(
-      "Delete this tracking record?"
-    )
-  )
-    return;
-
-
-  const {
-    error
-  } =
-    await sb
-      .from("tracking")
-      .delete()
-      .eq("id", id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  await tracking();
-
-}
-
-
-// =====================================================
-// START
-// =====================================================
+/* =========================================================
+   GLOBAL BUTTON FALLBACKS
+   ========================================================= */
+
+window.showResetBox = showResetBox;
+window.sendReset = sendReset;
+window.updatePassword = updatePassword;
+window.login = login;
+window.logout = logout;
+
+/* =========================================================
+   START
+   ========================================================= */
 
 document.addEventListener(
-  "DOMContentLoaded",
+  'DOMContentLoaded',
   () => {
-
-    const loginForm =
-      $("loginForm");
-
-    if (loginForm) {
-
-      loginForm.addEventListener(
-        "submit",
-        login
-      );
-
-    }
-
-
-    const logoutBtn =
-      $("logoutBtn");
-
-    if (logoutBtn) {
-
-      logoutBtn.addEventListener(
-        "click",
-        logout
-      );
-
-    }
-
-
-    document
-      .querySelectorAll(".navBtn")
-      .forEach(btn => {
-
-        btn.addEventListener(
-          "click",
-          () => {
-
-            renderView(
-              btn.dataset.view
-            );
-
-          }
-        );
-
-      });
-
-
     boot();
-
   }
 );
 ```
