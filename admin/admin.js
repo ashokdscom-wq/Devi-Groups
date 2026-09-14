@@ -6171,9 +6171,6 @@ function getStoragePublicUrl(path) {
    GENERAL UTILITY HELPERS
    ========================================================= */
 
-function $(selector, parent = document) {
-  return parent.querySelector(selector);
-}
 
 
 function $$(selector, parent = document) {
