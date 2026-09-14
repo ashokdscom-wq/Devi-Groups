@@ -1652,3 +1652,1008 @@ async function deleteUnit(id) {
 /* =========================================================
    PART 2 END
    ========================================================= */
+/* =========================================================
+   PART 3 — HOMEPAGE + ENQUIRIES + REVIEWS
+   ========================================================= */
+
+
+/* =========================
+   HOMEPAGE
+   ========================= */
+
+async function homepage() {
+
+  main.innerHTML = `
+    <div class="page-head">
+      <div>
+        <h2>Homepage</h2>
+        <p>Manage homepage content</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="homepageContent">
+        Loading homepage content...
+      </div>
+    </div>
+  `;
+
+  await loadHomepage();
+}
+
+
+async function loadHomepage() {
+
+  const box =
+    document.getElementById("homepageContent");
+
+  if (!box) return;
+
+  const { data, error } = await sb
+    .from("site_content")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No homepage content found.
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+            <th>Type</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${data.map(item => `
+
+            <tr>
+
+              <td>
+                <strong>
+                  ${esc(item.key || item.section_key || "")}
+                </strong>
+              </td>
+
+              <td>
+                <div style="
+                  max-width:500px;
+                  white-space:pre-wrap;
+                  word-break:break-word;
+                ">
+                  ${esc(item.value || item.title || "")}
+                </div>
+              </td>
+
+              <td>
+                ${esc(item.value_type || "text")}
+              </td>
+
+              <td>
+
+                <button
+                  class="btn small"
+                  onclick="editHomepage(${item.id})"
+                >
+                  Edit
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+async function editHomepage(id) {
+
+  const { data, error } = await sb
+    .from("site_content")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+  showHomepageForm(data);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+function showHomepageForm(item) {
+
+  const wrap =
+    document.getElementById("homepageContent");
+
+  if (!wrap) return;
+
+  const key =
+    item.key ||
+    item.section_key ||
+    "";
+
+  const value =
+    item.value ||
+    item.title ||
+    "";
+
+  wrap.innerHTML = `
+
+    <div class="card form-card">
+
+      <div class="page-head">
+
+        <h3>
+          Edit Homepage Content
+        </h3>
+
+        <button
+          class="btn"
+          onclick="loadHomepage()"
+        >
+          Close
+        </button>
+
+      </div>
+
+
+      <form id="homepageForm">
+
+        <label>Key</label>
+
+        <input
+          type="text"
+          id="homepageKey"
+          value="${esc(key)}"
+          readonly
+        >
+
+
+        <label>Content</label>
+
+        <textarea
+          id="homepageValue"
+          rows="8"
+        >${esc(value)}</textarea>
+
+
+        <label>Value Type</label>
+
+        <select id="homepageType">
+
+          <option
+            value="text"
+            ${
+              (item.value_type || "text") === "text"
+                ? "selected"
+                : ""
+            }
+          >
+            Text
+          </option>
+
+          <option
+            value="image"
+            ${
+              item.value_type === "image"
+                ? "selected"
+                : ""
+            }
+          >
+            Image
+          </option>
+
+          <option
+            value="html"
+            ${
+              item.value_type === "html"
+                ? "selected"
+                : ""
+            }
+          >
+            HTML
+          </option>
+
+        </select>
+
+
+        <div style="margin-top:20px;">
+
+          <button
+            type="submit"
+            class="btn primary"
+          >
+            Save Homepage
+          </button>
+
+        </div>
+
+
+        <p id="homepageMsg"></p>
+
+      </form>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("homepageForm")
+    .addEventListener(
+      "submit",
+      saveHomepage
+    );
+}
+
+
+async function saveHomepage(e) {
+
+  e.preventDefault();
+
+  const msg =
+    document.getElementById(
+      "homepageMsg"
+    );
+
+  if (msg) {
+    msg.textContent = "Saving...";
+  }
+
+
+  const id =
+    document.getElementById(
+      "homepageForm"
+    )
+    ? null
+    : null;
+
+
+  const key =
+    document
+      .getElementById("homepageKey")
+      .value;
+
+
+  const value =
+    document
+      .getElementById("homepageValue")
+      .value;
+
+
+  const value_type =
+    document
+      .getElementById("homepageType")
+      .value;
+
+
+  const { error } = await sb
+    .from("site_content")
+    .update({
+      value,
+      value_type
+    })
+    .eq("key", key);
+
+
+  if (error) {
+
+    if (msg) {
+      msg.textContent =
+        "Error: " + error.message;
+    }
+
+    return;
+  }
+
+
+  if (msg) {
+    msg.textContent =
+      "Homepage updated successfully.";
+  }
+
+
+  setTimeout(
+    loadHomepage,
+    700
+  );
+}
+
+
+/* =========================
+   ENQUIRIES
+   ========================= */
+
+async function enquiries() {
+
+  main.innerHTML = `
+
+    <div class="page-head">
+
+      <div>
+        <h2>Customer Enquiries</h2>
+        <p>View and manage customer enquiries</p>
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div id="enquiriesTable">
+        Loading enquiries...
+      </div>
+
+    </div>
+  `;
+
+
+  await loadEnquiries();
+}
+
+
+async function loadEnquiries() {
+
+  const box =
+    document.getElementById(
+      "enquiriesTable"
+    );
+
+  if (!box) return;
+
+
+  const { data, error } = await sb
+    .from("enquiries")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No enquiries found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Products</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${data.map(item => `
+
+            <tr>
+
+              <td>
+                ${formatDate(item.created_at)}
+              </td>
+
+
+              <td>
+                <strong>
+                  ${esc(item.name || "-")}
+                </strong>
+              </td>
+
+
+              <td>
+                ${esc(item.email || "-")}
+              </td>
+
+
+              <td>
+                ${esc(item.phone || "-")}
+              </td>
+
+
+              <td>
+                ${formatProducts(item.products)}
+              </td>
+
+
+              <td>
+
+                <select
+                  onchange="
+                    updateEnquiryStatus(
+                      ${item.id},
+                      this.value
+                    )
+                  "
+                >
+
+                  <option
+                    value="new"
+                    ${
+                      item.status === "new"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    New
+                  </option>
+
+                  <option
+                    value="contacted"
+                    ${
+                      item.status === "contacted"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Contacted
+                  </option>
+
+                  <option
+                    value="quoted"
+                    ${
+                      item.status === "quoted"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Quoted
+                  </option>
+
+                  <option
+                    value="closed"
+                    ${
+                      item.status === "closed"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Closed
+                  </option>
+
+                  <option
+                    value="spam"
+                    ${
+                      item.status === "spam"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Spam
+                  </option>
+
+                </select>
+
+              </td>
+
+
+              <td>
+
+                <button
+                  class="btn small"
+                  onclick="viewEnquiry(${item.id})"
+                >
+                  View
+                </button>
+
+                <button
+                  class="btn small danger"
+                  onclick="deleteEnquiry(${item.id})"
+                >
+                  Delete
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+function formatProducts(products) {
+
+  if (!products) return "-";
+
+  if (Array.isArray(products)) {
+
+    return products
+      .map(x => esc(String(x)))
+      .join(", ");
+  }
+
+  if (typeof products === "object") {
+
+    return esc(
+      JSON.stringify(products)
+    );
+  }
+
+  return esc(String(products));
+}
+
+
+function formatDate(date) {
+
+  if (!date) return "-";
+
+  try {
+
+    return new Date(date)
+      .toLocaleString();
+
+  } catch {
+
+    return esc(String(date));
+
+  }
+}
+
+
+async function viewEnquiry(id) {
+
+  const { data, error } = await sb
+    .from("enquiries")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+
+  const message =
+    `
+Name: ${data.name || "-"}
+
+Email: ${data.email || "-"}
+
+Phone: ${data.phone || "-"}
+
+Products:
+${formatProducts(data.products)}
+
+Message:
+${data.message || "-"}
+
+Status:
+${data.status || "-"}
+    `;
+
+
+  alert(message);
+}
+
+
+async function updateEnquiryStatus(
+  id,
+  status
+) {
+
+  const { error } = await sb
+    .from("enquiries")
+    .update({ status })
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Status update failed: " +
+      error.message
+    );
+
+    await loadEnquiries();
+
+    return;
+  }
+}
+
+
+async function deleteEnquiry(id) {
+
+  const ok = confirm(
+    "Are you sure you want to delete this enquiry?"
+  );
+
+
+  if (!ok) return;
+
+
+  const { error } = await sb
+    .from("enquiries")
+    .delete()
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadEnquiries();
+}
+
+
+/* =========================
+   REVIEWS
+   ========================= */
+
+async function reviews() {
+
+  main.innerHTML = `
+
+    <div class="page-head">
+
+      <div>
+        <h2>Reviews</h2>
+        <p>Manage customer reviews</p>
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div id="reviewsTable">
+        Loading reviews...
+      </div>
+
+    </div>
+  `;
+
+
+  await loadReviews();
+}
+
+
+async function loadReviews() {
+
+  const box =
+    document.getElementById(
+      "reviewsTable"
+    );
+
+  if (!box) return;
+
+
+  const { data, error } = await sb
+    .from("reviews")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No reviews found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Rating</th>
+            <th>Review</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${data.map(review => `
+
+            <tr>
+
+              <td>
+                ${formatDate(review.created_at)}
+              </td>
+
+
+              <td>
+                <strong>
+                  ${esc(
+                    review.customer_name || "-"
+                  )}
+                </strong>
+              </td>
+
+
+              <td>
+                ${renderStars(review.rating)}
+              </td>
+
+
+              <td>
+
+                <div style="
+                  max-width:400px;
+                  white-space:pre-wrap;
+                ">
+                  ${esc(review.message || "-")}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <select
+                  onchange="
+                    updateReviewStatus(
+                      ${review.id},
+                      this.value
+                    )
+                  "
+                >
+
+                  <option
+                    value="pending"
+                    ${
+                      review.status === "pending"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Pending
+                  </option>
+
+                  <option
+                    value="approved"
+                    ${
+                      review.status === "approved"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Approved
+                  </option>
+
+                  <option
+                    value="rejected"
+                    ${
+                      review.status === "rejected"
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    Rejected
+                  </option>
+
+                </select>
+
+              </td>
+
+
+              <td>
+
+                <button
+                  class="btn small danger"
+                  onclick="
+                    deleteReview(${review.id})
+                  "
+                >
+                  Delete
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+function renderStars(rating) {
+
+  const n =
+    Math.max(
+      0,
+      Math.min(
+        5,
+        Number(rating || 0)
+      )
+    );
+
+
+  return `
+    <span
+      aria-label="${n} out of 5"
+      style="font-size:18px;"
+    >
+      ${"★".repeat(n)}
+      ${"☆".repeat(5 - n)}
+    </span>
+  `;
+}
+
+
+async function updateReviewStatus(
+  id,
+  status
+) {
+
+  const { error } = await sb
+    .from("reviews")
+    .update({ status })
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Status update failed: " +
+      error.message
+    );
+
+    await loadReviews();
+
+    return;
+  }
+}
+
+
+async function deleteReview(id) {
+
+  const ok = confirm(
+    "Are you sure you want to delete this review?"
+  );
+
+
+  if (!ok) return;
+
+
+  const { error } = await sb
+    .from("reviews")
+    .delete()
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadReviews();
+}
+
+
+/* =========================================================
+   PART 3 END
+   ========================================================= */
