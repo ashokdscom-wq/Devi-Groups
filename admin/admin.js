@@ -1,3 +1,4 @@
+```javascript
 const cfg = window.DEVI_CMS_CONFIG;
 
 const sb = supabase.createClient(
@@ -26,12 +27,13 @@ function hide(id) {
   if (el) el.classList.add("hidden");
 }
 
-function msg(id, text, error = false) {
+function message(id, text, error = false) {
   const el = $(id);
 
   if (!el) return;
 
   el.textContent = text;
+
   el.className =
     "text-sm mt-3 text-center " +
     (error ? "text-red-600" : "text-green-600");
@@ -56,25 +58,39 @@ async function login(e) {
 
   e.preventDefault();
 
-  const email = $("email").value.trim();
-  const password = $("password").value;
+  const email =
+    $("email").value.trim();
+
+  const password =
+    $("password").value;
 
   if (!email || !password) {
-    msg("loginMessage", "Enter email and password.", true);
+
+    message(
+      "loginMessage",
+      "Enter email and password.",
+      true
+    );
+
     return;
   }
 
-  msg("loginMessage", "Signing in...");
+  message(
+    "loginMessage",
+    "Signing in..."
+  );
 
-  const { data, error } =
-    await sb.auth.signInWithPassword({
-      email,
-      password
-    });
+  const {
+    data,
+    error
+  } = await sb.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
   if (error) {
 
-    msg(
+    message(
       "loginMessage",
       error.message,
       true
@@ -85,7 +101,7 @@ async function login(e) {
 
   if (!data.session) {
 
-    msg(
+    message(
       "loginMessage",
       "Login failed. No session created.",
       true
@@ -99,25 +115,38 @@ async function login(e) {
 
 
 // =====================================================
-// FORGOT PASSWORD
+// SHOW RESET BOX
 // =====================================================
 
 function showResetBox() {
 
-  show("resetBox");
+  const box =
+    $("resetBox");
 
-  const email = $("email").value.trim();
-
-  if (email) {
-    $("resetEmail").value = email;
+  if (box) {
+    box.classList.remove("hidden");
   }
 
-  msg(
+  const email =
+    $("email").value.trim();
+
+  if (email) {
+
+    $("resetEmail").value =
+      email;
+
+  }
+
+  message(
     "loginMessage",
     "Enter your email below to reset your password."
   );
 }
 
+
+// =====================================================
+// SEND RESET EMAIL
+// =====================================================
 
 async function sendReset() {
 
@@ -126,7 +155,7 @@ async function sendReset() {
 
   if (!email) {
 
-    msg(
+    message(
       "resetMessage",
       "Please enter your email.",
       true
@@ -135,12 +164,15 @@ async function sendReset() {
     return;
   }
 
-  msg(
+  message(
     "resetMessage",
     "Sending reset email..."
   );
 
-  const { error } =
+
+  const {
+    error
+  } =
     await sb.auth.resetPasswordForEmail(
       email,
       {
@@ -148,9 +180,10 @@ async function sendReset() {
       }
     );
 
+
   if (error) {
 
-    msg(
+    message(
       "resetMessage",
       error.message,
       true
@@ -159,15 +192,17 @@ async function sendReset() {
     return;
   }
 
-  msg(
+
+  message(
     "resetMessage",
     "Password reset email sent. Check your inbox."
   );
+
 }
 
 
 // =====================================================
-// PASSWORD RECOVERY
+// SHOW RECOVERY PAGE
 // =====================================================
 
 function showRecovery() {
@@ -176,8 +211,13 @@ function showRecovery() {
   hide("adminPage");
 
   show("recoveryPage");
+
 }
 
+
+// =====================================================
+// UPDATE PASSWORD
+// =====================================================
 
 async function updatePassword() {
 
@@ -187,9 +227,10 @@ async function updatePassword() {
   const confirm =
     $("confirmPassword").value;
 
+
   if (!password) {
 
-    msg(
+    message(
       "recoveryMessage",
       "Enter new password.",
       true
@@ -198,9 +239,10 @@ async function updatePassword() {
     return;
   }
 
+
   if (password.length < 6) {
 
-    msg(
+    message(
       "recoveryMessage",
       "Password must be at least 6 characters.",
       true
@@ -209,9 +251,10 @@ async function updatePassword() {
     return;
   }
 
+
   if (password !== confirm) {
 
-    msg(
+    message(
       "recoveryMessage",
       "Passwords do not match.",
       true
@@ -220,19 +263,24 @@ async function updatePassword() {
     return;
   }
 
-  msg(
+
+  message(
     "recoveryMessage",
     "Updating password..."
   );
 
-  const { error } =
+
+  const {
+    error
+  } =
     await sb.auth.updateUser({
       password: password
     });
 
+
   if (error) {
 
-    msg(
+    message(
       "recoveryMessage",
       error.message,
       true
@@ -241,18 +289,23 @@ async function updatePassword() {
     return;
   }
 
-  msg(
+
+  message(
     "recoveryMessage",
-    "Password updated successfully. Redirecting..."
+    "Password updated successfully."
   );
+
 
   setTimeout(
     () => {
+
       window.location.href =
         adminUrl();
+
     },
     1500
   );
+
 }
 
 
@@ -268,6 +321,7 @@ sb.auth.onAuthStateChange(
       event
     );
 
+
     if (
       event === "PASSWORD_RECOVERY"
     ) {
@@ -277,12 +331,14 @@ sb.auth.onAuthStateChange(
       return;
     }
 
+
     if (
       session &&
       event !== "SIGNED_OUT"
     ) {
 
       await bootAdmin();
+
     }
 
   }
@@ -301,10 +357,13 @@ async function boot() {
       data: {
         session
       }
-    } = await sb.auth.getSession();
+    } =
+      await sb.auth.getSession();
+
 
     const hash =
       window.location.hash || "";
+
 
     if (
       hash.includes("type=recovery")
@@ -315,6 +374,7 @@ async function boot() {
       return;
     }
 
+
     if (session) {
 
       await bootAdmin();
@@ -322,7 +382,9 @@ async function boot() {
     } else {
 
       show("loginPage");
+
       hide("adminPage");
+
       hide("recoveryPage");
 
     }
@@ -334,6 +396,7 @@ async function boot() {
     show("loginPage");
 
   }
+
 }
 
 
@@ -344,12 +407,15 @@ async function boot() {
 async function bootAdmin() {
 
   hide("loginPage");
+
   hide("recoveryPage");
+
   show("adminPage");
 
   await renderView(
     currentView
   );
+
 }
 
 
@@ -362,7 +428,9 @@ async function logout() {
   await sb.auth.signOut();
 
   hide("adminPage");
+
   hide("recoveryPage");
+
   show("loginPage");
 
 }
@@ -375,6 +443,7 @@ async function logout() {
 async function renderView(view) {
 
   currentView = view;
+
 
   const titleMap = {
 
@@ -390,6 +459,7 @@ async function renderView(view) {
 
   };
 
+
   $("pageTitle").textContent =
     titleMap[view] || "Dashboard";
 
@@ -401,6 +471,7 @@ async function renderView(view) {
       btn.classList.remove(
         "bg-gray-700"
       );
+
 
       if (
         btn.dataset.view === view
@@ -490,28 +561,43 @@ async function dashboard() {
     <div class="grid md:grid-cols-4 gap-5">
 
       <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">Products</div>
+        <div class="text-gray-500">
+          Products
+        </div>
+
         <div class="text-3xl font-bold mt-2">
           ${productsResult.count || 0}
         </div>
       </div>
 
+
       <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">Business Units</div>
+        <div class="text-gray-500">
+          Business Units
+        </div>
+
         <div class="text-3xl font-bold mt-2">
           ${businessResult.count || 0}
         </div>
       </div>
 
+
       <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">Enquiries</div>
+        <div class="text-gray-500">
+          Enquiries
+        </div>
+
         <div class="text-3xl font-bold mt-2">
           ${enquiriesResult.count || 0}
         </div>
       </div>
 
+
       <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-gray-500">Reviews</div>
+        <div class="text-gray-500">
+          Reviews
+        </div>
+
         <div class="text-3xl font-bold mt-2">
           ${reviewsResult.count || 0}
         </div>
@@ -533,12 +619,13 @@ async function products() {
   const {
     data,
     error
-  } = await sb
-    .from("products")
-    .select("*")
-    .order("id", {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("products")
+      .select("*")
+      .order("id", {
+        ascending: false
+      });
 
 
   if (error) {
@@ -571,19 +658,39 @@ async function products() {
 
       </div>
 
+
       <div class="overflow-x-auto">
 
         <table class="w-full text-sm">
 
           <thead>
+
             <tr class="border-b">
-              <th class="text-left p-3">ID</th>
-              <th class="text-left p-3">Name</th>
-              <th class="text-left p-3">Packing</th>
-              <th class="text-left p-3">Active</th>
-              <th class="text-left p-3">Action</th>
+
+              <th class="text-left p-3">
+                ID
+              </th>
+
+              <th class="text-left p-3">
+                Name
+              </th>
+
+              <th class="text-left p-3">
+                Packing
+              </th>
+
+              <th class="text-left p-3">
+                Active
+              </th>
+
+              <th class="text-left p-3">
+                Action
+              </th>
+
             </tr>
+
           </thead>
+
 
           <tbody>
 
@@ -649,16 +756,22 @@ async function addProduct() {
 
   if (!name) return;
 
+
   const description =
     prompt("Description:") || "";
+
 
   const packing =
     prompt("Packing:") || "";
 
+
   const photo_url =
     prompt("Photo URL:") || "";
 
-  const { error } =
+
+  const {
+    error
+  } =
     await sb
       .from("products")
       .insert({
@@ -669,12 +782,14 @@ async function addProduct() {
         active: true
       });
 
+
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await products();
 
@@ -689,7 +804,10 @@ async function editProduct(p) {
       p.name || ""
     );
 
-  if (name === null) return;
+
+  if (name === null)
+    return;
+
 
   const description =
     prompt(
@@ -697,11 +815,13 @@ async function editProduct(p) {
       p.description || ""
     );
 
+
   const packing =
     prompt(
       "Packing:",
       p.packing || ""
     );
+
 
   const photo_url =
     prompt(
@@ -710,7 +830,9 @@ async function editProduct(p) {
     );
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("products")
       .update({
@@ -725,9 +847,10 @@ async function editProduct(p) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await products();
 
@@ -740,10 +863,13 @@ async function deleteProduct(id) {
     !confirm(
       "Delete this product?"
     )
-  ) return;
+  )
+    return;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("products")
       .delete()
@@ -753,9 +879,10 @@ async function deleteProduct(id) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await products();
 
@@ -771,12 +898,13 @@ async function business() {
   const {
     data,
     error
-  } = await sb
-    .from("business_units")
-    .select("*")
-    .order("sort_order", {
-      ascending: true
-    });
+  } =
+    await sb
+      .from("business_units")
+      .select("*")
+      .order("sort_order", {
+        ascending: true
+      });
 
 
   if (error) {
@@ -826,6 +954,7 @@ async function business() {
 
           </div>
 
+
           <div class="space-x-2">
 
             <button
@@ -858,14 +987,23 @@ async function business() {
 async function addBusiness() {
 
   const name =
-    prompt("Business unit name:");
+    prompt(
+      "Business unit name:"
+    );
+
 
   if (!name) return;
 
-  const description =
-    prompt("Description:") || "";
 
-  const { error } =
+  const description =
+    prompt(
+      "Description:"
+    ) || "";
+
+
+  const {
+    error
+  } =
     await sb
       .from("business_units")
       .insert({
@@ -878,9 +1016,10 @@ async function addBusiness() {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await business();
 
@@ -895,7 +1034,10 @@ async function editBusiness(b) {
       b.name || ""
     );
 
-  if (name === null) return;
+
+  if (name === null)
+    return;
+
 
   const description =
     prompt(
@@ -904,7 +1046,9 @@ async function editBusiness(b) {
     );
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("business_units")
       .update({
@@ -917,9 +1061,10 @@ async function editBusiness(b) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await business();
 
@@ -932,10 +1077,13 @@ async function deleteBusiness(id) {
     !confirm(
       "Delete this business unit?"
     )
-  ) return;
+  )
+    return;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("business_units")
       .delete()
@@ -945,9 +1093,10 @@ async function deleteBusiness(id) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await business();
 
@@ -963,12 +1112,13 @@ async function homepage() {
   const {
     data,
     error
-  } = await sb
-    .from("site_content")
-    .select("*")
-    .order("id", {
-      ascending: true
-    });
+  } =
+    await sb
+      .from("site_content")
+      .select("*")
+      .order("id", {
+        ascending: true
+      });
 
 
   if (error) {
@@ -990,6 +1140,7 @@ async function homepage() {
         Homepage Content
       </h2>
 
+
       ${data.map(x => `
 
         <div class="border-b py-4">
@@ -998,11 +1149,13 @@ async function homepage() {
             ${x.key || x.section_key || ""}
           </div>
 
+
           <textarea
             id="content_${x.id}"
             class="w-full border rounded-lg p-3 mt-2"
             rows="3"
           >${x.value || x.title || ""}</textarea>
+
 
           <button
             onclick="saveContent('${x.id}')"
@@ -1028,7 +1181,9 @@ async function saveContent(id) {
     $("content_" + id).value;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("site_content")
       .update({
@@ -1040,11 +1195,14 @@ async function saveContent(id) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
 
-  alert("Saved.");
+
+  alert(
+    "Saved successfully."
+  );
 
 }
 
@@ -1058,12 +1216,13 @@ async function enquiries() {
   const {
     data,
     error
-  } = await sb
-    .from("enquiries")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("enquiries")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
 
   if (error) {
@@ -1084,6 +1243,7 @@ async function enquiries() {
       <h2 class="text-xl font-bold mb-5">
         Customer Enquiries
       </h2>
+
 
       ${data.map(e => `
 
@@ -1125,12 +1285,13 @@ async function reviews() {
   const {
     data,
     error
-  } = await sb
-    .from("reviews")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("reviews")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
 
   if (error) {
@@ -1151,6 +1312,7 @@ async function reviews() {
       <h2 class="text-xl font-bold mb-5">
         Reviews
       </h2>
+
 
       ${data.map(r => `
 
@@ -1187,9 +1349,14 @@ async function reviews() {
 }
 
 
-async function toggleReview(id, approved) {
+async function toggleReview(
+  id,
+  approved
+) {
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("reviews")
       .update({
@@ -1201,9 +1368,10 @@ async function toggleReview(id, approved) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await reviews();
 
@@ -1211,7 +1379,7 @@ async function toggleReview(id, approved) {
 
 
 // =====================================================
-// COMPANY
+// COMPANY / CONTACT
 // =====================================================
 
 async function company() {
@@ -1219,10 +1387,11 @@ async function company() {
   const {
     data,
     error
-  } = await sb
-    .from("company_info")
-    .select("*")
-    .limit(1);
+  } =
+    await sb
+      .from("company_info")
+      .select("*")
+      .limit(1);
 
 
   if (error) {
@@ -1250,12 +1419,14 @@ async function company() {
         Company / Contact
       </h2>
 
+
       <input
         id="companyName"
         class="w-full border rounded-lg px-4 py-3 mb-3"
         placeholder="Company Name"
         value="${c.company_name || c.name || ""}"
       >
+
 
       <textarea
         id="companyAddress"
@@ -1264,6 +1435,7 @@ async function company() {
         placeholder="Address"
       >${c.address || ""}</textarea>
 
+
       <input
         id="companyPhone"
         class="w-full border rounded-lg px-4 py-3 mb-3"
@@ -1271,12 +1443,14 @@ async function company() {
         value="${c.phone || ""}"
       >
 
+
       <input
         id="companyEmail"
         class="w-full border rounded-lg px-4 py-3 mb-3"
         placeholder="Email"
         value="${c.email || ""}"
       >
+
 
       <button
         onclick="saveCompany('${c.id || ""}')"
@@ -1334,12 +1508,17 @@ async function saveCompany(id) {
 
   if (result.error) {
 
-    alert(result.error.message);
-    return;
+    alert(
+      result.error.message
+    );
 
+    return;
   }
 
-  alert("Company information saved.");
+
+  alert(
+    "Company information saved."
+  );
 
 }
 
@@ -1353,12 +1532,13 @@ async function documents() {
   const {
     data,
     error
-  } = await sb
-    .from("documents")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("documents")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
 
   if (error) {
@@ -1381,6 +1561,7 @@ async function documents() {
         <h2 class="text-xl font-bold">
           Documents
         </h2>
+
 
         <button
           onclick="addDocument()"
@@ -1408,6 +1589,7 @@ async function documents() {
 
           </div>
 
+
           <div class="space-x-2">
 
             <a
@@ -1417,6 +1599,7 @@ async function documents() {
             >
               Open
             </a>
+
 
             <button
               onclick="deleteDocument('${d.id}')"
@@ -1441,24 +1624,35 @@ async function documents() {
 async function addDocument() {
 
   const title =
-    prompt("Document title:");
+    prompt(
+      "Document title:"
+    );
+
 
   if (!title) return;
+
 
   const category =
     prompt(
       "Category: PDF / Brochure / TDS / MSDS / Other"
     );
 
+
   if (!category) return;
 
+
   const file_url =
-    prompt("File URL:");
+    prompt(
+      "File URL:"
+    );
+
 
   if (!file_url) return;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("documents")
       .insert({
@@ -1472,9 +1666,10 @@ async function addDocument() {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await documents();
 
@@ -1487,10 +1682,13 @@ async function deleteDocument(id) {
     !confirm(
       "Delete this document?"
     )
-  ) return;
+  )
+    return;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("documents")
       .delete()
@@ -1500,9 +1698,10 @@ async function deleteDocument(id) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await documents();
 
@@ -1518,12 +1717,13 @@ async function tracking() {
   const {
     data,
     error
-  } = await sb
-    .from("tracking")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
+  } =
+    await sb
+      .from("tracking")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
 
   if (error) {
@@ -1547,6 +1747,7 @@ async function tracking() {
           Tracking
         </h2>
 
+
         <button
           onclick="addTracking()"
           class="bg-blue-600 text-white px-4 py-2 rounded-lg"
@@ -1565,14 +1766,17 @@ async function tracking() {
             ${t.tracking_number || t.reference_no || ""}
           </div>
 
+
           <div class="text-sm text-gray-500">
             ${t.courier || ""}
           </div>
+
 
           <div class="mt-2">
             Status:
             ${t.status || ""}
           </div>
+
 
           <button
             onclick='editTracking(${JSON.stringify(t)})'
@@ -1580,6 +1784,7 @@ async function tracking() {
           >
             Edit
           </button>
+
 
           <button
             onclick="deleteTracking('${t.id}')"
@@ -1602,18 +1807,30 @@ async function tracking() {
 async function addTracking() {
 
   const tracking_number =
-    prompt("Tracking number:");
+    prompt(
+      "Tracking number:"
+    );
 
-  if (!tracking_number) return;
+
+  if (!tracking_number)
+    return;
+
 
   const courier =
-    prompt("Courier:");
+    prompt(
+      "Courier:"
+    );
+
 
   const status =
-    prompt("Status:") || "Pending";
+    prompt(
+      "Status:"
+    ) || "Pending";
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("tracking")
       .insert({
@@ -1626,9 +1843,10 @@ async function addTracking() {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await tracking();
 
@@ -1643,14 +1861,17 @@ async function editTracking(t) {
       t.tracking_number || ""
     );
 
+
   if (tracking_number === null)
     return;
+
 
   const courier =
     prompt(
       "Courier:",
       t.courier || ""
     );
+
 
   const status =
     prompt(
@@ -1659,7 +1880,9 @@ async function editTracking(t) {
     );
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("tracking")
       .update({
@@ -1673,9 +1896,10 @@ async function editTracking(t) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await tracking();
 
@@ -1688,10 +1912,13 @@ async function deleteTracking(id) {
     !confirm(
       "Delete this tracking record?"
     )
-  ) return;
+  )
+    return;
 
 
-  const { error } =
+  const {
+    error
+  } =
     await sb
       .from("tracking")
       .delete()
@@ -1701,9 +1928,10 @@ async function deleteTracking(id) {
   if (error) {
 
     alert(error.message);
-    return;
 
+    return;
   }
+
 
   await tracking();
 
@@ -1711,46 +1939,37 @@ async function deleteTracking(id) {
 
 
 // =====================================================
-// EVENT LISTENERS
+// START
 // =====================================================
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    $("loginForm")
-      ?.addEventListener(
+    const loginForm =
+      $("loginForm");
+
+    if (loginForm) {
+
+      loginForm.addEventListener(
         "submit",
         login
       );
 
-
-    $("forgotBtn")
-      ?.addEventListener(
-        "click",
-        showResetBox
-      );
+    }
 
 
-    $("sendResetBtn")
-      ?.addEventListener(
-        "click",
-        sendReset
-      );
+    const logoutBtn =
+      $("logoutBtn");
 
+    if (logoutBtn) {
 
-    $("updatePasswordBtn")
-      ?.addEventListener(
-        "click",
-        updatePassword
-      );
-
-
-    $("logoutBtn")
-      ?.addEventListener(
+      logoutBtn.addEventListener(
         "click",
         logout
       );
+
+    }
 
 
     document
@@ -1775,3 +1994,4 @@ document.addEventListener(
 
   }
 );
+```
