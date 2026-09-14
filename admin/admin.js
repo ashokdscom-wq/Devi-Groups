@@ -29,2239 +29,4230 @@ const esc = v =>
   String(v ?? '').replace(
     /[&<>"']/g,
     m => ({
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#039;'
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
     }[m])
   );
 
+const safeJson = value => {
+  try {
+    return JSON.stringify(value ?? {});
+  } catch {
+    return '{}';
+  }
+};
 
-function notice(msg, type = 'ok') {
-  alert(msg);
+function showToast(message, type = 'success') {
+  let toast = $('#devi-toast');
+
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'devi-toast';
+
+    toast.style.cssText = `
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:99999;
+      padding:14px 18px;
+      border-radius:10px;
+      color:#fff;
+      font-family:Arial,sans-serif;
+      font-size:14px;
+      box-shadow:0 8px 30px rgba(0,0,0,.2);
+      max-width:380px;
+    `;
+
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+
+  toast.style.background =
+    type === 'error'
+      ? '#dc2626'
+      : type === 'warning'
+        ? '#d97706'
+        : '#16a34a';
+
+  clearTimeout(toast._timer);
+
+  toast._timer = setTimeout(() => {
+    toast.remove();
+  }, 3500);
 }
 
-
-function setMain(html) {
-  const main = $('#main');
-
-  if (main) {
-    main.innerHTML = html;
-  }
-}
-
-
-/* =========================
-   PASSWORD RESET
-========================= */
-
-const resetLink = $('#forgotPassword');
-const resetBox = $('#resetBox');
-const resetForm = $('#resetForm');
-const resetMsg = $('#resetMsg');
-const backToLogin = $('#backToLogin');
-
-
-resetLink?.addEventListener('click', e => {
-
-  e.preventDefault();
-
-  $('#loginForm')?.classList.add('hidden');
-
-  resetBox?.classList.remove('hidden');
-
-  if (resetMsg) {
-    resetMsg.textContent = '';
-  }
-
-});
-
-
-backToLogin?.addEventListener('click', e => {
-
-  e.preventDefault();
-
-  resetBox?.classList.add('hidden');
-
-  $('#loginForm')?.classList.remove('hidden');
-
-  if (resetMsg) {
-    resetMsg.textContent = '';
-  }
-
-});
-
-
-resetForm?.addEventListener('submit', async e => {
-
-  e.preventDefault();
-
-  const email =
-    $('#resetEmail')?.value.trim();
-
-  if (!email) return;
-
-  if (resetMsg) {
-    resetMsg.textContent =
-      'Sending reset email...';
-  }
-
-  const redirectTo =
-    new URL(
-      'index.html',
-      window.location.href
-    ).href;
-
-  const { error } =
-    await sb.auth.resetPasswordForEmail(
-      email,
-      {
-        redirectTo
-      }
-    );
-
-  if (error) {
-
-    if (resetMsg) {
-      resetMsg.textContent =
-        error.message;
-    }
-
-    return;
-  }
-
-  if (resetMsg) {
-
-    resetMsg.textContent =
-      'Reset email sent. Please check your inbox.';
-
-  }
-
-});
-
-
-sb.auth.onAuthStateChange(
-  async (event) => {
-
-    if (event === 'PASSWORD_RECOVERY') {
-
-      const newPassword =
-        prompt(
-          'Enter your new admin password:'
-        );
-
-      if (!newPassword) return;
-
-      if (newPassword.length < 6) {
-
-        alert(
-          'Password must be at least 6 characters.'
-        );
-
-        return;
-      }
-
-      const { error } =
-        await sb.auth.updateUser({
-          password: newPassword
-        });
-
-      if (error) {
-
-        alert(error.message);
-
-      } else {
-
-        alert(
-          'Password updated successfully. Please login again.'
-        );
-
-      }
-
-    }
-
-  }
-);
-
-
-/* =========================
-   AUTH
-========================= */
-
-async function boot() {
-
-  const {
-    data: { session }
-  } = await sb.auth.getSession();
-
-  if (session) {
-
-    await showApp(session);
-
-  } else {
-
-    $('#login')?.classList.remove('hidden');
-
-  }
-
-
-  sb.auth.onAuthStateChange(
-    async (_event, session) => {
-
-      if (session) {
-
-        await showApp(session);
-
-      } else {
-
-        $('#app')?.classList.add('hidden');
-
-        $('#login')?.classList.remove('hidden');
-
-      }
-
-    }
-  );
-
-}
-
-
-async function showApp(session) {
-
-  $('#login')?.classList.add('hidden');
-
-  $('#app')?.classList.remove('hidden');
-
-  if ($('#userEmail')) {
-
-    $('#userEmail').textContent =
-      session.user.email || 'Admin';
-
-  }
-
-  addMediaTab();
-
-  await render();
-
-}
-
-
-$('#loginForm')?.addEventListener(
-  'submit',
-  async e => {
-
-    e.preventDefault();
-
-    const msg = $('#loginMsg');
-
-    if (msg) {
-      msg.textContent = 'Signing in...';
-    }
-
-    const email =
-      $('#email').value.trim();
-
-    const password =
-      $('#password').value;
-
-    const { error } =
-      await sb.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
-
-      if (msg) {
-        msg.textContent =
-          error.message;
-      }
-
-      return;
-    }
-
-    if (msg) {
-      msg.textContent = '';
-    }
-
-  }
-);
-
-
-$('#logout')?.addEventListener(
-  'click',
-  async () => {
-
-    await sb.auth.signOut();
-
-  }
-);
-
-
-/* =========================
-   NAVIGATION
-========================= */
-
-function addMediaTab() {
-
-  const sidebar =
-    $('.sidebar');
-
-  if (!sidebar) return;
-
-  if (
-    sidebar.querySelector(
-      '[data-view="media"]'
-    )
-  ) return;
-
-  const b =
-    document.createElement('button');
-
-  b.className = 'tab';
-
-  b.type = 'button';
-
-  b.dataset.view = 'media';
-
-  b.textContent =
-    'Media Library';
-
-  sidebar.appendChild(b);
-
-  b.addEventListener(
-    'click',
-    () => selectView('media', b)
-  );
-
-}
-
-
-function selectView(view, button) {
-
-  currentView = view;
-
-  $$('.tab').forEach(x => {
-
-    x.classList.remove('active');
-
-  });
-
-  button?.classList.add('active');
-
-  render();
-
-}
-
-
-$$('.tab').forEach(b => {
-
-  b.addEventListener(
-    'click',
-    () =>
-      selectView(
-        b.dataset.view,
-        b
-      )
-  );
-
-});
-
-
-async function render() {
-
-  setMain(
-    '<div style="padding:40px;text-align:center">Loading...</div>'
-  );
-
-  const fn = {
-
-    dashboard,
-
-    products: crudProducts,
-
-    units: crudUnits,
-
-    homepage,
-
-    enquiries,
-
-    reviews,
-
-    company,
-
-    documents,
-
-    tracking,
-
-    media: mediaLibrary
-
-  }[currentView];
-
-  if (fn) {
-
-    await fn();
-
-  }
-
-}
-
-
-/* =========================
-   DASHBOARD
-========================= */
-
-async function countTable(table) {
-
-  const {
-    count,
-    error
-  } = await sb
-    .from(table)
-    .select('*', {
-      count: 'exact',
-      head: true
-    });
-
-  return error
-    ? 0
-    : (count || 0);
-
-}
-
-
-async function dashboard() {
-
-  const tables = [
-
-    ['products','Products'],
-
-    ['business_units','Business Units'],
-
-    ['enquiries','Enquiries'],
-
-    ['reviews','Reviews'],
-
-    ['documents','Documents'],
-
-    ['tracking','Tracking']
-
-  ];
-
-  const counts =
-    await Promise.all(
-      tables.map(
-        x => countTable(x[0])
-      )
-    );
-
-
-  setMain(`
-
-    <h2 style="
-      font-size:30px;
-      font-weight:800;
-      margin:0 0 25px
-    ">
-      Dashboard
-    </h2>
-
-    <div style="
-      display:grid;
-      grid-template-columns:
-        repeat(auto-fit,minmax(210px,1fr));
-      gap:16px
-    ">
-
-      ${tables.map((x,i) => `
-
+function showLoading(message = 'Loading...') {
+  let loader = $('#devi-loading');
+
+  if (!loader) {
+    loader = document.createElement('div');
+    loader.id = 'devi-loading';
+
+    loader.style.cssText = `
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      z-index:99998;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Arial,sans-serif;
+    `;
+
+    loader.innerHTML = `
+      <div style="
+        background:#fff;
+        padding:25px 30px;
+        border-radius:14px;
+        box-shadow:0 10px 40px rgba(0,0,0,.25);
+        text-align:center;
+      ">
         <div style="
-          background:#fff;
-          border:1px solid #e5e7eb;
-          border-radius:14px;
-          padding:22px
-        ">
+          width:32px;
+          height:32px;
+          border:4px solid #e5e7eb;
+          border-top-color:#2563eb;
+          border-radius:50%;
+          animation:deviSpin 1s linear infinite;
+          margin:0 auto 14px;
+        "></div>
 
-          <div style="
-            font-size:13px;
-            color:#64748b;
-            font-weight:700
-          ">
-            ${esc(x[1])}
-          </div>
-
-          <div style="
-            font-size:38px;
-            font-weight:900;
-            margin-top:7px
-          ">
-            ${counts[i]}
-          </div>
-
+        <div id="devi-loading-text">
+          Loading...
         </div>
+      </div>
+    `;
 
-      `).join('')}
+    if (!$('#devi-spin-style')) {
+      const style = document.createElement('style');
+      style.id = 'devi-spin-style';
+      style.textContent = `
+        @keyframes deviSpin {
+          to { transform:rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
 
-    </div>
+    document.body.appendChild(loader);
+  }
 
-    <div style="
-      margin-top:20px;
-      padding:18px;
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px
-    ">
+  const text = $('#devi-loading-text', loader);
 
-      <b>Media Library</b><br>
+  if (text) {
+    text.textContent = message;
+  }
 
-      Upload photos, videos,
-      brochures, PDFs, TDS/MSDS
-      and other files from the
-      Media Library tab.
-
-    </div>
-
-  `);
-
+  loader.style.display = 'flex';
 }
 
+function hideLoading() {
+  const loader = $('#devi-loading');
 
-/* =========================
-   STORAGE
-========================= */
+  if (loader) {
+    loader.style.display = 'none';
+  }
+}
 
-function safeFileName(name) {
+function formatDate(value) {
+  if (!value) return '-';
 
-  return name
-    .toLowerCase()
-    .replace(
-      /[^a-z0-9._-]+/g,
-      '-'
-    )
-    .replace(
-      /-+/g,
-      '-'
+  try {
+    return new Date(value).toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
+  } catch {
+    return String(value);
+  }
+}
+
+function fileNameFromUrl(url) {
+  if (!url) return '';
+
+  try {
+    const pathname = new URL(url).pathname;
+    return decodeURIComponent(
+      pathname.split('/').pop() || ''
     );
-
+  } catch {
+    return String(url).split('/').pop() || '';
+  }
 }
 
+function publicStorageUrl(path) {
+  if (!path) return '';
 
-async function uploadMedia(
-  file,
-  folder = 'general'
-) {
+  const clean = String(path).replace(/^\/+/, '');
 
-  if (!file) return null;
+  return `${cfg.supabaseUrl}/storage/v1/object/public/${BUCKET}/${clean}`;
+}
 
-  const ext =
+async function uploadMedia(file, folder = 'uploads') {
+  if (!file) return '';
+
+  if (!(file instanceof File)) {
+    throw new Error('Invalid file selected');
+  }
+
+  const extension =
     file.name.includes('.')
-      ? '.' +
-        file.name
-          .split('.')
-          .pop()
-          .toLowerCase()
+      ? file.name.split('.').pop().toLowerCase()
       : '';
 
-  const base =
-    safeFileName(
-      file.name.replace(
-        /\.[^.]+$/,
-        ''
-      )
-    ) || 'file';
+  const baseName =
+    file.name
+      .replace(/\.[^/.]+$/, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'file';
+
+  const random =
+    Math.random().toString(36).slice(2, 10);
+
+  const timestamp = Date.now();
 
   const path =
-    `${folder}/${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2,8)}-${base}${ext}`;
+    `${folder}/${timestamp}-${random}-${baseName}` +
+    (extension ? `.${extension}` : '');
 
+  const { error } = await sb.storage
+    .from(BUCKET)
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
 
-  const { error } =
-    await sb.storage
+  if (error) {
+    console.error('Storage upload error:', error);
+    throw error;
+  }
+
+  return publicStorageUrl(path);
+}
+
+async function deleteMediaByUrl(url) {
+  if (!url) return;
+
+  try {
+    const marker =
+      `/storage/v1/object/public/${BUCKET}/`;
+
+    const index = String(url).indexOf(marker);
+
+    if (index === -1) return;
+
+    const path = String(url).slice(
+      index + marker.length
+    );
+
+    if (!path) return;
+
+    const { error } = await sb.storage
       .from(BUCKET)
-      .upload(
-        path,
-        file,
-        {
-          cacheControl: '3600',
-          upsert: false,
-          contentType:
-            file.type || undefined
-        }
-      );
+      .remove([path]);
 
+    if (error) {
+      console.warn(
+        'Storage delete warning:',
+        error
+      );
+    }
+  } catch (error) {
+    console.warn(
+      'Unable to delete storage file:',
+      error
+    );
+  }
+}
+
+async function listStorageFiles(folder = '') {
+  const { data, error } = await sb.storage
+    .from(BUCKET)
+    .list(folder, {
+      limit: 100,
+      offset: 0,
+      sortBy: {
+        column: 'created_at',
+        order: 'desc'
+      }
+    });
 
   if (error) {
     throw error;
   }
 
-
-  const { data } =
-    sb.storage
-      .from(BUCKET)
-      .getPublicUrl(path);
-
-
-  return {
-    url: data.publicUrl,
-    path
-  };
-
+  return data || [];
 }
 
+async function getSession() {
+  const { data, error } =
+    await sb.auth.getSession();
 
-function storagePathFromUrl(url) {
-
-  if (!url) return null;
-
-  const marker =
-    `/storage/v1/object/public/${BUCKET}/`;
-
-  const i =
-    url.indexOf(marker);
-
-  if (i >= 0) {
-
-    return decodeURIComponent(
-      url.slice(
-        i + marker.length
-      )
-    );
-
+  if (error) {
+    console.error(error);
+    return null;
   }
 
-  return null;
-
+  return data?.session || null;
 }
 
+async function getCurrentUser() {
+  const { data, error } =
+    await sb.auth.getUser();
 
-async function deleteMediaUrl(url) {
+  if (error) {
+    console.error(error);
+    return null;
+  }
 
-  const path =
-    storagePathFromUrl(url);
-
-  if (!path) return;
-
-  await sb.storage
-    .from(BUCKET)
-    .remove([path]);
-
+  return data?.user || null;
 }
 
+async function requireAdmin() {
+  const user = await getCurrentUser();
 
-async function listAllFiles(prefix = '') {
+  if (!user) {
+    return null;
+  }
 
-  const out = [];
+  /*
+   * Primary admin account.
+   * This UID is the authorized DEVI GROUPS admin.
+   */
+  if (
+    user.id ===
+    'c588a994-3fcb-46ed-9991-63ab20d65ac0'
+  ) {
+    return user;
+  }
 
-  const queue = [prefix];
+  /*
+   * Also allow an explicit admin role if later
+   * added to user metadata.
+   */
+  const role =
+    user.user_metadata?.role ||
+    user.app_metadata?.role;
 
+  if (role === 'admin') {
+    return user;
+  }
 
-  while (queue.length) {
+  throw new Error(
+    'This account is not authorized as an admin.'
+  );
+}
 
-    const folder =
-      queue.shift();
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.reload();
+}
 
-    const {
-      data,
+function getAdminRoot() {
+  return $('#admin-app') ||
+    $('#app') ||
+    document.body;
+}
+
+function renderLogin() {
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        linear-gradient(
+          135deg,
+          #0f172a,
+          #1e3a8a
+        );
+      font-family:Arial,sans-serif;
+      padding:20px;
+      box-sizing:border-box;
+    ">
+
+      <div style="
+        width:100%;
+        max-width:430px;
+        background:#fff;
+        border-radius:18px;
+        padding:35px;
+        box-shadow:0 20px 70px rgba(0,0,0,.35);
+        box-sizing:border-box;
+      ">
+
+        <div style="
+          text-align:center;
+          margin-bottom:28px;
+        ">
+
+          <div style="
+            width:70px;
+            height:70px;
+            margin:0 auto 15px;
+            border-radius:18px;
+            background:#1d4ed8;
+            color:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:25px;
+            font-weight:800;
+          ">
+            DG
+          </div>
+
+          <h1 style="
+            margin:0;
+            font-size:25px;
+            color:#0f172a;
+          ">
+            DEVI GROUPS
+          </h1>
+
+          <p style="
+            margin:8px 0 0;
+            color:#64748b;
+          ">
+            Secure Admin Panel
+          </p>
+        </div>
+
+        <form id="login-form">
+
+          <label style="
+            display:block;
+            margin-bottom:7px;
+            font-weight:600;
+            color:#334155;
+          ">
+            Email
+          </label>
+
+          <input
+            id="login-email"
+            type="email"
+            required
+            autocomplete="username"
+            placeholder="Admin email"
+            style="
+              width:100%;
+              padding:13px 14px;
+              border:1px solid #cbd5e1;
+              border-radius:9px;
+              box-sizing:border-box;
+              margin-bottom:18px;
+              font-size:15px;
+            "
+          />
+
+          <label style="
+            display:block;
+            margin-bottom:7px;
+            font-weight:600;
+            color:#334155;
+          ">
+            Password
+          </label>
+
+          <input
+            id="login-password"
+            type="password"
+            required
+            autocomplete="current-password"
+            placeholder="Password"
+            style="
+              width:100%;
+              padding:13px 14px;
+              border:1px solid #cbd5e1;
+              border-radius:9px;
+              box-sizing:border-box;
+              margin-bottom:18px;
+              font-size:15px;
+            "
+          />
+
+          <button
+            type="submit"
+            style="
+              width:100%;
+              border:0;
+              padding:14px;
+              border-radius:9px;
+              background:#1d4ed8;
+              color:#fff;
+              font-size:15px;
+              font-weight:700;
+              cursor:pointer;
+            "
+          >
+            Login
+          </button>
+
+        </form>
+
+        <button
+          id="forgot-password"
+          type="button"
+          style="
+            display:block;
+            width:100%;
+            border:0;
+            background:none;
+            color:#2563eb;
+            margin-top:18px;
+            cursor:pointer;
+            font-size:14px;
+          "
+        >
+          Forgot password?
+        </button>
+
+        <div
+          id="login-message"
+          style="
+            margin-top:15px;
+            text-align:center;
+            font-size:14px;
+          "
+        ></div>
+
+      </div>
+    </div>
+  `;
+
+  const form = $('#login-form');
+
+  if (form) {
+    form.addEventListener(
+      'submit',
+      handleLogin
+    );
+  }
+
+  const forgot =
+    $('#forgot-password');
+
+  if (forgot) {
+    forgot.addEventListener(
+      'click',
+      handleForgotPassword
+    );
+  }
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+
+  const email =
+    $('#login-email')?.value.trim();
+
+  const password =
+    $('#login-password')?.value || '';
+
+  const message =
+    $('#login-message');
+
+  if (!email || !password) {
+    if (message) {
+      message.style.color = '#dc2626';
+      message.textContent =
+        'Please enter email and password.';
+    }
+
+    return;
+  }
+
+  if (message) {
+    message.style.color = '#475569';
+    message.textContent = 'Signing in...';
+  }
+
+  const { data, error } =
+    await sb.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (error) {
+    console.error(
+      'Login error:',
       error
-    } = await sb.storage
-      .from(BUCKET)
-      .list(
-        folder,
+    );
+
+    if (message) {
+      message.style.color = '#dc2626';
+      message.textContent =
+        error.message ||
+        'Invalid login credentials.';
+    }
+
+    return;
+  }
+
+  if (!data?.user) {
+    if (message) {
+      message.style.color = '#dc2626';
+      message.textContent =
+        'Login failed.';
+    }
+
+    return;
+  }
+
+  try {
+    await requireAdmin();
+  } catch (adminError) {
+    await sb.auth.signOut();
+
+    if (message) {
+      message.style.color = '#dc2626';
+      message.textContent =
+        adminError.message ||
+        'This account is not authorized.';
+    }
+
+    return;
+  }
+
+  window.location.reload();
+}
+
+async function handleForgotPassword() {
+  const email =
+    $('#login-email')?.value.trim();
+
+  if (!email) {
+    showToast(
+      'Enter your admin email first.',
+      'warning'
+    );
+    return;
+  }
+
+  showLoading(
+    'Sending password reset email...'
+  );
+
+  try {
+    const redirectTo =
+      `${window.location.origin}` +
+      `${window.location.pathname.replace(
+        /\/?$/,
+        '/'
+      )}`;
+
+    const { error } =
+      await sb.auth.resetPasswordForEmail(
+        email,
         {
-          limit:1000,
-          offset:0,
-          sortBy:{
-            column:'created_at',
-            order:'desc'
-          }
+          redirectTo
         }
       );
-
 
     if (error) {
       throw error;
     }
 
+    showToast(
+      'Password reset email sent. Check your inbox.'
+    );
+  } catch (error) {
+    console.error(
+      'Password reset error:',
+      error
+    );
 
-    for (
-      const item of
-      (data || [])
-    ) {
+    showToast(
+      error.message ||
+      'Unable to send password reset email.',
+      'error'
+    );
+  } finally {
+    hideLoading();
+  }
+}
 
-      if (!item?.name)
-        continue;
+function renderShell(user) {
+  document.body.innerHTML = `
+    <div
+      id="admin-app"
+      style="
+        min-height:100vh;
+        background:#f1f5f9;
+        font-family:Arial,sans-serif;
+        color:#0f172a;
+      "
+    >
 
+      <header style="
+        background:#0f172a;
+        color:#fff;
+        padding:0 22px;
+        min-height:68px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+      ">
 
-      const path =
-        folder
-          ? `${folder}/${item.name}`
-          : item.name;
+        <div>
+          <div style="
+            font-size:20px;
+            font-weight:800;
+          ">
+            DEVI GROUPS
+          </div>
 
+          <div style="
+            font-size:12px;
+            color:#94a3b8;
+            margin-top:3px;
+          ">
+            ADMIN PANEL
+          </div>
+        </div>
 
-      if (
-        !item.id &&
-        !item.metadata
-      ) {
+        <div style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+        ">
 
-        queue.push(path);
+          <span style="
+            color:#cbd5e1;
+            font-size:13px;
+          ">
+            ${esc(user?.email || '')}
+          </span>
 
-      } else {
+          <button
+            id="logout-btn"
+            style="
+              border:1px solid #475569;
+              background:#1e293b;
+              color:#fff;
+              padding:9px 13px;
+              border-radius:8px;
+              cursor:pointer;
+            "
+          >
+            Logout
+          </button>
 
-        out.push({
-          ...item,
-          path
-        });
+        </div>
 
-      }
+      </header>
 
-    }
+      <div style="
+        display:flex;
+        min-height:calc(100vh - 68px);
+      ">
 
+        <aside
+          id="admin-sidebar"
+          style="
+            width:235px;
+            background:#fff;
+            border-right:1px solid #e2e8f0;
+            padding:18px 12px;
+            box-sizing:border-box;
+          "
+        >
+          ${renderNavigation()}
+        </aside>
+
+        <main
+          id="admin-main"
+          style="
+            flex:1;
+            min-width:0;
+            padding:25px;
+            box-sizing:border-box;
+          "
+        >
+        </main>
+
+      </div>
+
+    </div>
+  `;
+
+  const logout =
+    $('#logout-btn');
+
+  if (logout) {
+    logout.addEventListener(
+      'click',
+      signOut
+    );
   }
 
+  setupNavigation();
 
-  return out;
-
+  navigateTo('dashboard');
 }
-/* =========================
+
+function renderNavigation() {
+  const items = [
+    ['dashboard', 'Dashboard'],
+    ['products', 'Products'],
+    ['business-units', 'Business Units'],
+    ['homepage', 'Homepage'],
+    ['enquiries', 'Customer Enquiries'],
+    ['reviews', 'Reviews'],
+    ['company-info', 'Company Info'],
+    ['documents', 'Documents'],
+    ['tracking', 'Tracking'],
+    ['media', 'Media Library']
+  ];
+
+  return `
+    <nav>
+
+      <div style="
+        padding:8px 10px 12px;
+        color:#94a3b8;
+        font-size:11px;
+        font-weight:800;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+      ">
+        Management
+      </div>
+
+      ${items.map(
+        ([key, label]) => `
+          <button
+            class="admin-nav-btn"
+            data-view="${esc(key)}"
+            style="
+              display:block;
+              width:100%;
+              text-align:left;
+              border:0;
+              background:transparent;
+              color:#334155;
+              padding:11px 12px;
+              border-radius:8px;
+              margin-bottom:3px;
+              cursor:pointer;
+              font-size:14px;
+            "
+          >
+            ${esc(label)}
+          </button>
+        `
+      ).join('')}
+
+    </nav>
+  `;
+}
+
+function setupNavigation() {
+  $$('.admin-nav-btn').forEach(
+    button => {
+      button.addEventListener(
+        'click',
+        () => {
+          const view =
+            button.dataset.view;
+
+          navigateTo(view);
+        }
+      );
+    }
+  );
+}
+
+function setActiveNavigation(view) {
+  $$('.admin-nav-btn').forEach(
+    button => {
+      const active =
+        button.dataset.view === view;
+
+      button.style.background =
+        active
+          ? '#dbeafe'
+          : 'transparent';
+
+      button.style.color =
+        active
+          ? '#1d4ed8'
+          : '#334155';
+
+      button.style.fontWeight =
+        active
+          ? '700'
+          : '400';
+    }
+  );
+}
+
+async function navigateTo(view) {
+  currentView = view;
+
+  setActiveNavigation(view);
+
+  const main =
+    $('#admin-main');
+
+  if (!main) return;
+
+  main.innerHTML = `
+    <div style="
+      padding:60px;
+      text-align:center;
+      color:#64748b;
+    ">
+      Loading...
+    </div>
+  `;
+
+  try {
+    switch (view) {
+      case 'dashboard':
+        await renderDashboard();
+        break;
+
+      case 'products':
+        await renderProducts();
+        break;
+
+      case 'business-units':
+        await renderBusinessUnits();
+        break;
+
+      case 'homepage':
+        await renderHomepage();
+        break;
+
+      case 'enquiries':
+        await renderEnquiries();
+        break;
+
+      case 'reviews':
+        await renderReviews();
+        break;
+
+      case 'company-info':
+        await renderCompanyInfo();
+        break;
+
+      case 'documents':
+        await renderDocuments();
+        break;
+
+      case 'tracking':
+        await renderTracking();
+        break;
+
+      case 'media':
+        await renderMediaLibrary();
+        break;
+
+      default:
+        main.innerHTML = `
+          <h2>Page not found</h2>
+        `;
+    }
+  } catch (error) {
+    console.error(
+      `Error loading ${view}:`,
+      error
+    );
+
+    main.innerHTML = `
+      <div style="
+        background:#fee2e2;
+        border:1px solid #fecaca;
+        color:#991b1b;
+        padding:18px;
+        border-radius:10px;
+      ">
+        <strong>
+          Unable to load this section.
+        </strong>
+
+        <div style="
+          margin-top:8px;
+          font-size:13px;
+        ">
+          ${esc(error.message || error)}
+        </div>
+      </div>
+    `;
+  }
+}
+
+function pageHeader(
+  title,
+  description = '',
+  actionHtml = ''
+) {
+  return `
+    <div style="
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:20px;
+      margin-bottom:25px;
+      flex-wrap:wrap;
+    ">
+
+      <div>
+        <h1 style="
+          margin:0;
+          font-size:28px;
+          color:#0f172a;
+        ">
+          ${esc(title)}
+        </h1>
+
+        ${
+          description
+            ? `
+              <p style="
+                margin:7px 0 0;
+                color:#64748b;
+                font-size:14px;
+              ">
+                ${esc(description)}
+              </p>
+            `
+            : ''
+        }
+      </div>
+
+      ${
+        actionHtml
+          ? `
+            <div>
+              ${actionHtml}
+            </div>
+          `
+          : ''
+      }
+
+    </div>
+  `;
+}
+
+function cardHtml(
+  content,
+  extraStyle = ''
+) {
+  return `
+    <div style="
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:20px;
+      box-sizing:border-box;
+      ${extraStyle}
+    ">
+      ${content}
+    </div>
+  `;
+}
+
+function statCard(
+  title,
+  value,
+  subtitle = ''
+) {
+  return `
+    <div style="
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:20px;
+    ">
+
+      <div style="
+        color:#64748b;
+        font-size:13px;
+        font-weight:600;
+      ">
+        ${esc(title)}
+      </div>
+
+      <div style="
+        font-size:30px;
+        font-weight:800;
+        color:#0f172a;
+        margin-top:7px;
+      ">
+        ${esc(value)}
+      </div>
+
+      ${
+        subtitle
+          ? `
+            <div style="
+              color:#94a3b8;
+              font-size:12px;
+              margin-top:5px;
+            ">
+              ${esc(subtitle)}
+            </div>
+          `
+          : ''
+      }
+
+    </div>
+  `;
+}
+
+function inputStyle() {
+  return `
+    width:100%;
+    box-sizing:border-box;
+    padding:11px 12px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    font-size:14px;
+    background:#fff;
+  `;
+}
+
+function buttonStyle(
+  type = 'primary'
+) {
+  if (type === 'danger') {
+    return `
+      border:0;
+      background:#dc2626;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    `;
+  }
+
+  if (type === 'secondary') {
+    return `
+      border:1px solid #cbd5e1;
+      background:#fff;
+      color:#334155;
+      padding:10px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    `;
+  }
+
+  return `
+    border:0;
+    background:#2563eb;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+  `;
+}
+/* =========================================================
+   PART 2 — DASHBOARD + PRODUCTS
+   ========================================================= */
+
+async function renderDashboard() {
+  const main = $('#admin-main');
+
+  const [
+    productsResult,
+    unitsResult,
+    enquiriesResult,
+    reviewsResult,
+    documentsResult,
+    trackingResult
+  ] = await Promise.all([
+    sb.from('products')
+      .select('id', { count: 'exact', head: true }),
+
+    sb.from('business_units')
+      .select('id', { count: 'exact', head: true }),
+
+    sb.from('customer_enquiries')
+      .select('id', { count: 'exact', head: true }),
+
+    sb.from('reviews')
+      .select('id', { count: 'exact', head: true }),
+
+    sb.from('documents')
+      .select('id', { count: 'exact', head: true }),
+
+    sb.from('tracking')
+      .select('id', { count: 'exact', head: true })
+  ]);
+
+  const errors = [
+    productsResult,
+    unitsResult,
+    enquiriesResult,
+    reviewsResult,
+    documentsResult,
+    trackingResult
+  ].filter(x => x.error);
+
+  if (errors.length) {
+    console.error(
+      'Dashboard query errors:',
+      errors
+    );
+  }
+
+  const productsCount =
+    productsResult.count || 0;
+
+  const unitsCount =
+    unitsResult.count || 0;
+
+  const enquiriesCount =
+    enquiriesResult.count || 0;
+
+  const reviewsCount =
+    reviewsResult.count || 0;
+
+  const documentsCount =
+    documentsResult.count || 0;
+
+  const trackingCount =
+    trackingResult.count || 0;
+
+  main.innerHTML = `
+    ${pageHeader(
+      'Dashboard',
+      'DEVI GROUPS CMS overview and management.'
+    )}
+
+    <div style="
+      display:grid;
+      grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+      gap:15px;
+      margin-bottom:25px;
+    ">
+
+      ${statCard(
+        'Products',
+        productsCount,
+        'Products in catalog'
+      )}
+
+      ${statCard(
+        'Business Units',
+        unitsCount,
+        'Active business units'
+      )}
+
+      ${statCard(
+        'Customer Enquiries',
+        enquiriesCount,
+        'Received enquiries'
+      )}
+
+      ${statCard(
+        'Reviews',
+        reviewsCount,
+        'Customer reviews'
+      )}
+
+      ${statCard(
+        'Documents',
+        documentsCount,
+        'Uploaded documents'
+      )}
+
+      ${statCard(
+        'Tracking',
+        trackingCount,
+        'Tracking records'
+      )}
+
+    </div>
+
+    ${cardHtml(`
+      <h2 style="
+        margin:0 0 10px;
+        font-size:20px;
+      ">
+        DEVI GROUPS Admin CMS
+      </h2>
+
+      <p style="
+        margin:0;
+        color:#64748b;
+        line-height:1.7;
+      ">
+        Use the menu to manage products,
+        business units, homepage content,
+        customer enquiries, reviews,
+        company information, documents
+        and shipment tracking.
+      </p>
+    `)}
+  `;
+}
+
+
+/* =========================================================
    PRODUCTS
-========================= */
+   ========================================================= */
 
-async function crudProducts() {
-
-  const {
-    data,
-    error
-  } = await sb
+async function getProducts() {
+  const { data, error } = await sb
     .from('products')
     .select('*')
-    .order('sort_order', {
-      ascending:true,
-      nullsFirst:false
-    })
     .order('id', {
-      ascending:false
+      ascending: false
     });
 
   if (error) {
-
-    setMain(`
-      <div class="card">
-        <h2>Products</h2>
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-      </div>
-    `);
-
-    return;
+    throw error;
   }
 
+  return data || [];
+}
 
-  setMain(`
 
-    <h2 class="page-title">
-      Products
-    </h2>
+async function renderProducts() {
+  const main = $('#admin-main');
 
-    <div class="card">
+  const products =
+    await getProducts();
 
-      <h3>Add / Edit Product</h3>
+  main.innerHTML = `
+    ${pageHeader(
+      'Products',
+      'Add, edit and delete products from the live catalog.',
+      `
+        <button
+          id="add-product-btn"
+          style="${buttonStyle('primary')}"
+        >
+          + Add Product
+        </button>
+      `
+    )}
 
-      <form id="productForm">
+    <div id="product-form-container"></div>
+
+    <div id="products-list">
+
+      ${
+        products.length
+          ? products.map(renderProductRow).join('')
+          : cardHtml(`
+              <div style="
+                text-align:center;
+                color:#64748b;
+                padding:30px;
+              ">
+                No products found.
+              </div>
+            `)
+      }
+
+    </div>
+  `;
+
+  $('#add-product-btn')
+    ?.addEventListener(
+      'click',
+      () => showProductForm()
+    );
+
+  setupProductActions();
+}
+
+
+function renderProductRow(product) {
+  const image =
+    product.image_url || '';
+
+  const name =
+    product.name ||
+    product.product_name ||
+    'Unnamed Product';
+
+  const description =
+    product.description || '';
+
+  const packing =
+    product.packing || '';
+
+  const category =
+    product.category || '';
+
+  return `
+    <div
+      class="product-row"
+      data-id="${esc(product.id)}"
+      style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:18px;
+        margin-bottom:12px;
+        display:flex;
+        gap:18px;
+        align-items:flex-start;
+        flex-wrap:wrap;
+      "
+    >
+
+      <div style="
+        width:100px;
+        height:100px;
+        flex:0 0 100px;
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        border-radius:10px;
+        overflow:hidden;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">
+
+        ${
+          image
+            ? `
+              <img
+                src="${esc(image)}"
+                alt="${esc(name)}"
+                style="
+                  width:100%;
+                  height:100%;
+                  object-fit:cover;
+                "
+              />
+            `
+            : `
+              <span style="
+                color:#94a3b8;
+                font-size:12px;
+              ">
+                No Image
+              </span>
+            `
+        }
+
+      </div>
+
+      <div style="
+        flex:1;
+        min-width:250px;
+      ">
+
+        <div style="
+          font-size:18px;
+          font-weight:700;
+          color:#0f172a;
+          margin-bottom:5px;
+        ">
+          ${esc(name)}
+        </div>
+
+        ${
+          category
+            ? `
+              <div style="
+                display:inline-block;
+                background:#eff6ff;
+                color:#1d4ed8;
+                border-radius:999px;
+                padding:4px 9px;
+                font-size:11px;
+                font-weight:700;
+                margin-bottom:8px;
+              ">
+                ${esc(category)}
+              </div>
+            `
+            : ''
+        }
+
+        <div style="
+          color:#64748b;
+          font-size:13px;
+          line-height:1.6;
+          margin-bottom:7px;
+        ">
+          ${esc(description)}
+        </div>
+
+        ${
+          packing
+            ? `
+              <div style="
+                color:#475569;
+                font-size:12px;
+              ">
+                <strong>Packing:</strong>
+                ${esc(packing)}
+              </div>
+            `
+            : ''
+        }
+
+      </div>
+
+      <div style="
+        display:flex;
+        gap:8px;
+        align-items:center;
+      ">
+
+        <button
+          class="edit-product-btn"
+          data-id="${esc(product.id)}"
+          style="${buttonStyle('secondary')}"
+        >
+          Edit
+        </button>
+
+        <button
+          class="delete-product-btn"
+          data-id="${esc(product.id)}"
+          style="${buttonStyle('danger')}"
+        >
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+function setupProductActions() {
+  $$('.edit-product-btn')
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        async () => {
+          const id =
+            button.dataset.id;
+
+          await showProductForm(id);
+        }
+      );
+    });
+
+  $$('.delete-product-btn')
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        async () => {
+          const id =
+            button.dataset.id;
+
+          await deleteProduct(id);
+        }
+      );
+    });
+}
+
+
+async function showProductForm(id = null) {
+  const container =
+    $('#product-form-container');
+
+  if (!container) return;
+
+  let product = null;
+
+  if (id) {
+    const { data, error } =
+      await sb
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+      showToast(
+        error.message,
+        'error'
+      );
+      return;
+    }
+
+    product = data;
+  }
+
+  container.innerHTML = `
+    ${cardHtml(`
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+        gap:15px;
+      ">
+
+        <h2 style="
+          margin:0;
+          font-size:20px;
+        ">
+          ${
+            product
+              ? 'Edit Product'
+              : 'Add Product'
+          }
+        </h2>
+
+        <button
+          id="close-product-form"
+          type="button"
+          style="${buttonStyle('secondary')}"
+        >
+          Close
+        </button>
+
+      </div>
+
+      <form id="product-form">
 
         <input
           type="hidden"
-          id="productId"
-        >
+          id="product-id"
+          value="${esc(product?.id || '')}"
+        />
 
-        <div class="form-grid">
+        <div style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(240px,1fr));
+          gap:16px;
+        ">
 
-          <div class="form-group">
-
-            <label>Product Name</label>
+          <div>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Product Name *
+            </label>
 
             <input
-              id="productName"
+              id="product-name"
               required
-            >
-
+              value="${esc(
+                product?.name ||
+                product?.product_name ||
+                ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="Product name"
+            />
           </div>
 
-
-          <div class="form-group">
-
-            <label>Business Unit</label>
+          <div>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Category
+            </label>
 
             <input
-              id="productUnit"
-              placeholder="DEVI Chemicals"
-            >
-
+              id="product-category"
+              value="${esc(
+                product?.category || ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="e.g. Chemicals"
+            />
           </div>
 
+          <div>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Packing
+            </label>
 
-          <div class="form-group full">
-
-            <label>Description</label>
-
-            <textarea
-              id="productDescription"
-            ></textarea>
-
+            <input
+              id="product-packing"
+              value="${esc(
+                product?.packing || ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="e.g. 25 KG Bag"
+            />
           </div>
 
-
-          <div class="form-group">
-
-            <label>Packing</label>
-
-            <input
-              id="productPacking"
-              placeholder="25 KG / 50 KG"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Sort Order</label>
+          <div>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Product Code
+            </label>
 
             <input
-              type="number"
-              id="productSort"
-              value="0"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Product Photo</label>
-
-            <input
-              type="file"
-              id="productPhoto"
-              accept="image/*"
-            >
-
-            <input
-              id="productImageUrl"
-              placeholder="Or paste image URL"
-              style="margin-top:7px"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Brochure / PDF</label>
-
-            <input
-              type="file"
-              id="productBrochure"
-              accept=".pdf,.doc,.docx"
-            >
-
-            <input
-              id="productBrochureUrl"
-              placeholder="Or paste brochure URL"
-              style="margin-top:7px"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Active</label>
-
-            <select id="productActive">
-
-              <option value="true">
-                Yes
-              </option>
-
-              <option value="false">
-                No
-              </option>
-
-            </select>
-
+              id="product-code"
+              value="${esc(
+                product?.product_code || ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="Optional product code"
+            />
           </div>
 
         </div>
 
+        <div style="margin-top:16px;">
+
+          <label style="
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            Description
+          </label>
+
+          <textarea
+            id="product-description"
+            rows="5"
+            style="${inputStyle()}resize:vertical;"
+            placeholder="Product description"
+          >${esc(
+            product?.description || ''
+          )}</textarea>
+
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(260px,1fr));
+          gap:16px;
+          margin-top:16px;
+        ">
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Product Photo
+            </label>
+
+            <input
+              id="product-image-file"
+              type="file"
+              accept="image/*"
+              style="
+                width:100%;
+                box-sizing:border-box;
+                padding:9px;
+                border:1px solid #cbd5e1;
+                border-radius:8px;
+              "
+            />
+
+            ${
+              product?.image_url
+                ? `
+                  <div style="
+                    margin-top:10px;
+                  ">
+                    <img
+                      src="${esc(
+                        product.image_url
+                      )}"
+                      alt=""
+                      style="
+                        width:120px;
+                        height:120px;
+                        object-fit:cover;
+                        border-radius:9px;
+                        border:1px solid #e2e8f0;
+                      "
+                    />
+                  </div>
+                `
+                : ''
+            }
+
+          </div>
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Brochure / PDF
+            </label>
+
+            <input
+              id="product-brochure-file"
+              type="file"
+              accept=".pdf,.doc,.docx"
+              style="
+                width:100%;
+                box-sizing:border-box;
+                padding:9px;
+                border:1px solid #cbd5e1;
+                border-radius:8px;
+              "
+            />
+
+            ${
+              product?.brochure_url
+                ? `
+                  <div style="
+                    margin-top:9px;
+                    font-size:12px;
+                  ">
+                    Existing:
+                    <a
+                      href="${esc(
+                        product.brochure_url
+                      )}"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      ${esc(
+                        fileNameFromUrl(
+                          product.brochure_url
+                        )
+                      ) || 'Open file'}
+                    </a>
+                  </div>
+                `
+                : ''
+            }
+
+          </div>
+
+        </div>
 
         <div style="
           display:flex;
           gap:10px;
-          flex-wrap:wrap
+          margin-top:22px;
         ">
 
           <button
             type="submit"
-            class="btn btn-primary"
+            style="${buttonStyle('primary')}"
           >
-            Save Product
+            ${
+              product
+                ? 'Update Product'
+                : 'Save Product'
+            }
           </button>
 
           <button
+            id="cancel-product-form"
             type="button"
-            id="productCancel"
-            class="btn btn-secondary"
+            style="${buttonStyle('secondary')}"
           >
-            Clear
+            Cancel
           </button>
 
         </div>
 
-        <p id="productMsg"></p>
-
       </form>
+    `)}
+  `;
 
-    </div>
+  $('#close-product-form')
+    ?.addEventListener(
+      'click',
+      () => {
+        container.innerHTML = '';
+      }
+    );
 
+  $('#cancel-product-form')
+    ?.addEventListener(
+      'click',
+      () => {
+        container.innerHTML = '';
+      }
+    );
 
-    <div class="card">
+  $('#product-form')
+    ?.addEventListener(
+      'submit',
+      async event => {
+        event.preventDefault();
 
-      <h3>
-        Products List
-        (${data?.length || 0})
-      </h3>
+        await saveProduct(product);
+      }
+    );
 
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>ID</th>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>Business Unit</th>
-              <th>Packing</th>
-              <th>Active</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            ${(data || []).map(p => {
-
-              const img =
-                p.image_url ||
-                p.photo_url ||
-                '';
-
-              return `
-
-                <tr>
-
-                  <td>
-                    ${esc(p.id)}
-                  </td>
-
-                  <td>
-
-                    ${
-                      img
-                      ?
-                      `<img
-                        src="${esc(img)}"
-                        style="
-                          width:65px;
-                          height:65px;
-                          object-fit:contain;
-                          border:1px solid #ddd;
-                          border-radius:6px
-                        "
-                      >`
-                      :
-                      '-'
-                    }
-
-                  </td>
-
-                  <td>
-                    <b>
-                      ${esc(p.name)}
-                    </b>
-                  </td>
-
-                  <td>
-                    ${esc(p.business_unit)}
-                  </td>
-
-                  <td>
-                    ${esc(p.packing)}
-                  </td>
-
-                  <td>
-                    ${p.active === false
-                      ? 'No'
-                      : 'Yes'}
-                  </td>
-
-                  <td>
-
-                    <button
-                      class="btn btn-primary"
-                      data-edit-product="${esc(p.id)}"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      class="btn btn-danger"
-                      data-delete-product="${esc(p.id)}"
-                    >
-                      Delete
-                    </button>
-
-                  </td>
-
-                </tr>
-
-              `;
-
-            }).join('')}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  `);
-
-
-  $('#productForm')?.addEventListener(
-    'submit',
-    saveProduct
-  );
-
-
-  $('#productCancel')?.addEventListener(
-    'click',
-    clearProductForm
-  );
-
-
-  $$('[data-edit-product]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          editProduct(
-            btn.dataset.editProduct
-          )
-      );
-
-    });
-
-
-  $$('[data-delete-product]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          deleteProduct(
-            btn.dataset.deleteProduct
-          )
-      );
-
-    });
-
+  container.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
 }
 
 
-async function saveProduct(e) {
-
-  e.preventDefault();
-
-  const msg =
-    $('#productMsg');
-
-  if (msg)
-    msg.textContent =
-      'Saving...';
-
-
+async function saveProduct(existingProduct) {
   const id =
-    $('#productId').value;
+    $('#product-id')?.value ||
+    null;
 
+  const name =
+    $('#product-name')?.value.trim() ||
+    '';
 
-  let imageUrl =
-    $('#productImageUrl').value.trim();
+  const category =
+    $('#product-category')?.value.trim() ||
+    '';
 
+  const packing =
+    $('#product-packing')?.value.trim() ||
+    '';
 
-  let brochureUrl =
-    $('#productBrochureUrl').value.trim();
+  const productCode =
+    $('#product-code')?.value.trim() ||
+    '';
 
+  const description =
+    $('#product-description')?.value.trim() ||
+    '';
+
+  const imageFile =
+    $('#product-image-file')?.files?.[0] ||
+    null;
+
+  const brochureFile =
+    $('#product-brochure-file')?.files?.[0] ||
+    null;
+
+  if (!name) {
+    showToast(
+      'Product name is required.',
+      'warning'
+    );
+    return;
+  }
+
+  showLoading(
+    existingProduct
+      ? 'Updating product...'
+      : 'Adding product...'
+  );
 
   try {
+    let imageUrl =
+      existingProduct?.image_url ||
+      '';
 
-    const photo =
-      $('#productPhoto').files[0];
+    let brochureUrl =
+      existingProduct?.brochure_url ||
+      '';
 
-    if (photo) {
-
-      const uploaded =
+    if (imageFile) {
+      imageUrl =
         await uploadMedia(
-          photo,
+          imageFile,
           'products'
         );
-
-      imageUrl =
-        uploaded.url;
-
     }
 
-
-    const brochure =
-      $('#productBrochure').files[0];
-
-    if (brochure) {
-
-      const uploaded =
-        await uploadMedia(
-          brochure,
-          'brochures'
-        );
-
+    if (brochureFile) {
       brochureUrl =
-        uploaded.url;
-
+        await uploadMedia(
+          brochureFile,
+          'documents/products'
+        );
     }
-
 
     const payload = {
-
-      name:
-        $('#productName').value.trim(),
-
-      business_unit:
-        $('#productUnit').value.trim(),
-
-      description:
-        $('#productDescription').value.trim(),
-
-      packing:
-        $('#productPacking').value.trim(),
-
-      image_url:
-        imageUrl || null,
-
-      brochure_url:
-        brochureUrl || null,
-
-      sort_order:
-        Number(
-          $('#productSort').value || 0
-        ),
-
-      active:
-        $('#productActive').value === 'true'
-
+      name,
+      description,
+      packing,
+      category,
+      product_code: productCode,
+      image_url: imageUrl,
+      brochure_url: brochureUrl
     };
 
-
-    let result;
-
+    /*
+     * IMPORTANT:
+     * Products use bigint "id".
+     * Update must use .eq('id', id),
+     * NOT .eq('key', originalKey).
+     */
 
     if (id) {
-
-      result =
+      const { error } =
         await sb
           .from('products')
           .update(payload)
-          .eq('key', originalKey);
+          .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+
+      showToast(
+        'Product updated successfully.'
+      );
 
     } else {
-
-      result =
+      const { error } =
         await sb
           .from('products')
           .insert(payload);
 
+      if (error) {
+        throw error;
+      }
+
+      showToast(
+        'Product added successfully.'
+      );
     }
 
+    const container =
+      $('#product-form-container');
 
-    if (result.error)
-      throw result.error;
-
-
-    if (msg) {
-
-      msg.style.color =
-        '#166534';
-
-      msg.textContent =
-        'Product saved successfully.';
-
+    if (container) {
+      container.innerHTML = '';
     }
 
+    await renderProducts();
 
-    clearProductForm();
+  } catch (error) {
+    console.error(
+      'Save product error:',
+      error
+    );
 
-    await crudProducts();
+    showToast(
+      error.message ||
+      'Unable to save product.',
+      'error'
+    );
 
-
-  } catch (err) {
-
-    if (msg) {
-
-      msg.style.color =
-        '#dc2626';
-
-      msg.textContent =
-        err.message;
-
-    }
-
+  } finally {
+    hideLoading();
   }
-
-}
-
-
-async function editProduct(id) {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('products')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  $('#productId').value =
-    data.id || '';
-
-  $('#productName').value =
-    data.name || '';
-
-  $('#productUnit').value =
-    data.business_unit || '';
-
-  $('#productDescription').value =
-    data.description || '';
-
-  $('#productPacking').value =
-    data.packing || '';
-
-  $('#productSort').value =
-    data.sort_order || 0;
-
-  $('#productImageUrl').value =
-    data.image_url ||
-    data.photo_url ||
-    '';
-
-  $('#productBrochureUrl').value =
-    data.brochure_url ||
-    '';
-
-  $('#productActive').value =
-    data.active === false
-      ? 'false'
-      : 'true';
-
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
-
 }
 
 
 async function deleteProduct(id) {
+  if (!id) return;
 
-  if (
-    !confirm(
-      'Delete this product?'
-    )
-  ) return;
-
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('products')
-    .select(
-      'image_url,brochure_url'
-    )
-    .eq('id', id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  const result =
-    await sb
-      .from('products')
-      .delete()
-      .eq('id', id);
-
-
-  if (result.error) {
-
-    alert(
-      result.error.message
+  const confirmed =
+    window.confirm(
+      'Are you sure you want to delete this product?'
     );
 
+  if (!confirmed) {
     return;
-
   }
 
+  showLoading(
+    'Deleting product...'
+  );
 
   try {
+    const { data: product } =
+      await sb
+        .from('products')
+        .select(
+          'id,image_url,brochure_url'
+        )
+        .eq('id', id)
+        .maybeSingle();
 
-    await deleteMediaUrl(
-      data.image_url
+    /*
+     * Delete database record first.
+     */
+
+    const { error } =
+      await sb
+        .from('products')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    /*
+     * Remove associated files when possible.
+     */
+    if (product?.image_url) {
+      await deleteMediaByUrl(
+        product.image_url
+      );
+    }
+
+    if (product?.brochure_url) {
+      await deleteMediaByUrl(
+        product.brochure_url
+      );
+    }
+
+    showToast(
+      'Product deleted successfully.'
     );
 
-    await deleteMediaUrl(
-      data.brochure_url
+    await renderProducts();
+
+  } catch (error) {
+    console.error(
+      'Delete product error:',
+      error
     );
 
-  } catch (_) {}
+    showToast(
+      error.message ||
+      'Unable to delete product.',
+      'error'
+    );
 
-
-  await crudProducts();
-
+  } finally {
+    hideLoading();
+  }
 }
 
 
-function clearProductForm() {
+/* =========================================================
+   PRODUCT SEARCH / FILTER HELPERS
+   ========================================================= */
 
-  if (!$('#productForm'))
-    return;
+function filterProductRows(searchTerm) {
+  const term =
+    String(searchTerm || '')
+      .trim()
+      .toLowerCase();
 
-  $('#productForm').reset();
+  $$('.product-row')
+    .forEach(row => {
+      const text =
+        row.textContent
+          .toLowerCase();
 
-  $('#productId').value =
-    '';
-
-  $('#productSort').value =
-    '0';
-
-}
-
-
-/* =========================
-   BUSINESS UNITS
-========================= */
-
-async function crudUnits() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('business_units')
-    .select('*')
-    .order('sort_order', {
-      ascending:true,
-      nullsFirst:false
+      row.style.display =
+        !term || text.includes(term)
+          ? ''
+          : 'none';
     });
+}
 
 
-  if (error) {
+function addProductSearchBox() {
+  const list =
+    $('#products-list');
 
-    setMain(`
-      <div class="card">
-        <h2>Business Units</h2>
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-      </div>
-    `);
+  if (!list) return;
 
-    return;
+  const wrapper =
+    document.createElement('div');
 
+  wrapper.style.cssText = `
+    margin-bottom:15px;
+  `;
+
+  wrapper.innerHTML = `
+    <input
+      id="product-search"
+      type="search"
+      placeholder="Search products..."
+      style="
+        width:100%;
+        max-width:500px;
+        ${inputStyle()}
+      "
+    />
+  `;
+
+  list.parentNode.insertBefore(
+    wrapper,
+    list
+  );
+
+  $('#product-search')
+    ?.addEventListener(
+      'input',
+      event => {
+        filterProductRows(
+          event.target.value
+        );
+      }
+    );
+}
+
+
+/* =========================================================
+   PRODUCT TABLE EXPORT
+   ========================================================= */
+
+function productsToCSV(products) {
+  const headers = [
+    'ID',
+    'Name',
+    'Category',
+    'Packing',
+    'Description',
+    'Product Code',
+    'Image URL',
+    'Brochure URL'
+  ];
+
+  const rows = products.map(
+    product => [
+      product.id,
+      product.name ||
+        product.product_name ||
+        '',
+      product.category || '',
+      product.packing || '',
+      product.description || '',
+      product.product_code || '',
+      product.image_url || '',
+      product.brochure_url || ''
+    ]
+  );
+
+  const csv = [
+    headers,
+    ...rows
+  ]
+    .map(row =>
+      row.map(value => {
+        const text =
+          String(value ?? '');
+
+        return `"${text.replace(
+          /"/g,
+          '""'
+        )}"`;
+      }).join(',')
+    )
+    .join('\n');
+
+  return csv;
+}
+
+
+function downloadTextFile(
+  filename,
+  content,
+  mime = 'text/plain'
+) {
+  const blob =
+    new Blob(
+      [content],
+      { type: mime }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement('a');
+
+  a.href = url;
+  a.download = filename;
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE PREVIEW
+   ========================================================= */
+
+function setupProductImagePreview() {
+  const input =
+    $('#product-image-file');
+
+  if (!input) return;
+
+  input.addEventListener(
+    'change',
+    event => {
+      const file =
+        event.target.files?.[0];
+
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast(
+          'Please select an image file.',
+          'warning'
+        );
+
+        event.target.value = '';
+
+        return;
+      }
+
+      const existing =
+        $('#new-product-image-preview');
+
+      if (existing) {
+        existing.remove();
+      }
+
+      const preview =
+        document.createElement('img');
+
+      preview.id =
+        'new-product-image-preview';
+
+      preview.style.cssText = `
+        width:120px;
+        height:120px;
+        object-fit:cover;
+        margin-top:10px;
+        border-radius:9px;
+        border:1px solid #e2e8f0;
+      `;
+
+      preview.src =
+        URL.createObjectURL(file);
+
+      input.parentNode.appendChild(
+        preview
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   PRODUCT BROCHURE VALIDATION
+   ========================================================= */
+
+function validateDocumentFile(file) {
+  if (!file) {
+    return true;
   }
 
+  const allowed = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
 
-  setMain(`
+  const extension =
+    file.name
+      .split('.')
+      .pop()
+      .toLowerCase();
 
-    <h2 class="page-title">
-      Business Units
-    </h2>
+  const allowedExtensions = [
+    'pdf',
+    'doc',
+    'docx'
+  ];
+
+  if (
+    !allowed.includes(file.type) &&
+    !allowedExtensions.includes(
+      extension
+    )
+  ) {
+    showToast(
+      'Only PDF, DOC or DOCX files are allowed.',
+      'warning'
+    );
+
+    return false;
+  }
+
+  return true;
+}
+/* =========================================================
+   PART 3 — BUSINESS UNITS + HOMEPAGE CMS
+   ========================================================= */
 
 
-    <div class="card">
+/* =========================================================
+   BUSINESS UNITS
+   ========================================================= */
 
-      <h3>Add / Edit Business Unit</h3>
+async function getBusinessUnits() {
+  const { data, error } = await sb
+    .from('business_units')
+    .select('*')
+    .order('id', {
+      ascending: true
+    });
 
-      <form id="unitForm">
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+async function renderBusinessUnits() {
+  const main = $('#admin-main');
+
+  const units =
+    await getBusinessUnits();
+
+  main.innerHTML = `
+    ${pageHeader(
+      'Business Units',
+      'Manage DEVI GROUPS business units.',
+      `
+        <button
+          id="add-unit-btn"
+          style="${buttonStyle('primary')}"
+        >
+          + Add Business Unit
+        </button>
+      `
+    )}
+
+    <div id="business-unit-form-container"></div>
+
+    <div id="business-units-list">
+
+      ${
+        units.length
+          ? units
+              .map(renderBusinessUnitRow)
+              .join('')
+          : cardHtml(`
+              <div style="
+                text-align:center;
+                color:#64748b;
+                padding:30px;
+              ">
+                No business units found.
+              </div>
+            `)
+      }
+
+    </div>
+  `;
+
+  $('#add-unit-btn')
+    ?.addEventListener(
+      'click',
+      () => showBusinessUnitForm()
+    );
+
+  setupBusinessUnitActions();
+}
+
+
+function renderBusinessUnitRow(unit) {
+  const name =
+    unit.name ||
+    unit.title ||
+    'Unnamed Business Unit';
+
+  const description =
+    unit.description || '';
+
+  const image =
+    unit.image_url || '';
+
+  const website =
+    unit.website ||
+    unit.website_url ||
+    '';
+
+  return `
+    <div
+      class="business-unit-row"
+      data-id="${esc(unit.id)}"
+      style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:18px;
+        margin-bottom:12px;
+        display:flex;
+        gap:18px;
+        align-items:flex-start;
+        flex-wrap:wrap;
+      "
+    >
+
+      <div style="
+        width:110px;
+        height:90px;
+        flex:0 0 110px;
+        border-radius:10px;
+        overflow:hidden;
+        background:#f8fafc;
+        border:1px solid #e2e8f0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">
+
+        ${
+          image
+            ? `
+              <img
+                src="${esc(image)}"
+                alt="${esc(name)}"
+                style="
+                  width:100%;
+                  height:100%;
+                  object-fit:cover;
+                "
+              />
+            `
+            : `
+              <span style="
+                color:#94a3b8;
+                font-size:11px;
+              ">
+                No Image
+              </span>
+            `
+        }
+
+      </div>
+
+      <div style="
+        flex:1;
+        min-width:250px;
+      ">
+
+        <div style="
+          font-size:18px;
+          font-weight:700;
+          margin-bottom:7px;
+        ">
+          ${esc(name)}
+        </div>
+
+        <div style="
+          color:#64748b;
+          font-size:13px;
+          line-height:1.6;
+          margin-bottom:8px;
+        ">
+          ${esc(description)}
+        </div>
+
+        ${
+          website
+            ? `
+              <a
+                href="${esc(website)}"
+                target="_blank"
+                rel="noopener"
+                style="
+                  color:#2563eb;
+                  font-size:12px;
+                "
+              >
+                ${esc(website)}
+              </a>
+            `
+            : ''
+        }
+
+      </div>
+
+      <div style="
+        display:flex;
+        gap:8px;
+      ">
+
+        <button
+          class="edit-unit-btn"
+          data-id="${esc(unit.id)}"
+          style="${buttonStyle('secondary')}"
+        >
+          Edit
+        </button>
+
+        <button
+          class="delete-unit-btn"
+          data-id="${esc(unit.id)}"
+          style="${buttonStyle('danger')}"
+        >
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+function setupBusinessUnitActions() {
+  $$('.edit-unit-btn')
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        async () => {
+          await showBusinessUnitForm(
+            button.dataset.id
+          );
+        }
+      );
+    });
+
+  $$('.delete-unit-btn')
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        async () => {
+          await deleteBusinessUnit(
+            button.dataset.id
+          );
+        }
+      );
+    });
+}
+
+
+async function showBusinessUnitForm(id = null) {
+  const container =
+    $('#business-unit-form-container');
+
+  if (!container) return;
+
+  let unit = null;
+
+  if (id) {
+    const { data, error } =
+      await sb
+        .from('business_units')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+      showToast(
+        error.message,
+        'error'
+      );
+      return;
+    }
+
+    unit = data;
+  }
+
+  container.innerHTML = `
+    ${cardHtml(`
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+      ">
+
+        <h2 style="
+          margin:0;
+          font-size:20px;
+        ">
+          ${
+            unit
+              ? 'Edit Business Unit'
+              : 'Add Business Unit'
+          }
+        </h2>
+
+        <button
+          id="close-unit-form"
+          type="button"
+          style="${buttonStyle('secondary')}"
+        >
+          Close
+        </button>
+
+      </div>
+
+      <form id="business-unit-form">
 
         <input
           type="hidden"
-          id="unitId"
-        >
+          id="unit-id"
+          value="${esc(unit?.id || '')}"
+        />
 
-        <div class="form-grid">
+        <div style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(240px,1fr));
+          gap:16px;
+        ">
 
-          <div class="form-group">
+          <div>
 
-            <label>Name</label>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Business Unit Name *
+            </label>
 
             <input
-              id="unitName"
+              id="unit-name"
               required
-            >
+              value="${esc(
+                unit?.name ||
+                unit?.title ||
+                ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="Business unit name"
+            />
 
           </div>
 
+          <div>
 
-          <div class="form-group">
-
-            <label>Website</label>
-
-            <input
-              id="unitWebsite"
-              placeholder="https://..."
-            >
-
-          </div>
-
-
-          <div class="form-group full">
-
-            <label>Description</label>
-
-            <textarea
-              id="unitDescription"
-            ></textarea>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Image</label>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Website
+            </label>
 
             <input
-              type="file"
-              id="unitImage"
-              accept="image/*"
-            >
-
-            <input
-              id="unitImageUrl"
-              placeholder="Or paste image URL"
-              style="margin-top:7px"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>Sort Order</label>
-
-            <input
-              type="number"
-              id="unitSort"
-              value="0"
-            >
+              id="unit-website"
+              type="url"
+              value="${esc(
+                unit?.website ||
+                unit?.website_url ||
+                ''
+              )}"
+              style="${inputStyle()}"
+              placeholder="https://example.com"
+            />
 
           </div>
 
         </div>
 
+        <div style="margin-top:16px;">
 
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Save Business Unit
-        </button>
+          <label style="
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            Description
+          </label>
 
+          <textarea
+            id="unit-description"
+            rows="5"
+            style="${inputStyle()}resize:vertical;"
+            placeholder="Business unit description"
+          >${esc(
+            unit?.description || ''
+          )}</textarea>
 
-        <button
-          class="btn btn-secondary"
-          type="button"
-          id="unitCancel"
-        >
-          Clear
-        </button>
+        </div>
 
+        <div style="margin-top:16px;">
 
-        <p id="unitMsg"></p>
+          <label style="
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            Business Unit Image
+          </label>
+
+          <input
+            id="unit-image-file"
+            type="file"
+            accept="image/*"
+            style="
+              width:100%;
+              box-sizing:border-box;
+              padding:9px;
+              border:1px solid #cbd5e1;
+              border-radius:8px;
+            "
+          />
+
+          ${
+            unit?.image_url
+              ? `
+                <img
+                  src="${esc(
+                    unit.image_url
+                  )}"
+                  alt=""
+                  style="
+                    width:150px;
+                    height:100px;
+                    object-fit:cover;
+                    border-radius:9px;
+                    margin-top:10px;
+                  "
+                />
+              `
+              : ''
+          }
+
+        </div>
+
+        <div style="
+          display:flex;
+          gap:10px;
+          margin-top:22px;
+        ">
+
+          <button
+            type="submit"
+            style="${buttonStyle('primary')}"
+          >
+            ${
+              unit
+                ? 'Update Business Unit'
+                : 'Save Business Unit'
+            }
+          </button>
+
+          <button
+            id="cancel-unit-form"
+            type="button"
+            style="${buttonStyle('secondary')}"
+          >
+            Cancel
+          </button>
+
+        </div>
 
       </form>
-
-    </div>
-
-
-    <div class="card">
-
-      <h3>
-        Business Units
-      </h3>
-
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>ID</th>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Website</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            ${(data || []).map(u => `
-
-              <tr>
-
-                <td>
-                  ${esc(u.id)}
-                </td>
-
-                <td>
-
-                  ${
-                    u.image_url
-                    ?
-                    `<img
-                      src="${esc(u.image_url)}"
-                      style="
-                        width:70px;
-                        height:55px;
-                        object-fit:contain
-                      "
-                    >`
-                    :
-                    '-'
-                  }
-
-                </td>
-
-                <td>
-                  <b>
-                    ${esc(u.name)}
-                  </b>
-                </td>
-
-                <td>
-                  ${esc(u.website_url)}
-                </td>
-
-                <td>
-
-                  <button
-                    class="btn btn-primary"
-                    data-edit-unit="${esc(u.id)}"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    class="btn btn-danger"
-                    data-delete-unit="${esc(u.id)}"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `).join('')}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  `);
-
-
-  $('#unitForm')?.addEventListener(
-    'submit',
-    saveUnit
-  );
-
-
-  $('#unitCancel')?.addEventListener(
-    'click',
-    clearUnitForm
-  );
-
-
-  $$('[data-edit-unit]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          editUnit(
-            btn.dataset.editUnit
-          )
-      );
-
-    });
-
-
-  $$('[data-delete-unit]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          deleteUnit(
-            btn.dataset.deleteUnit
-          )
-      );
-
-    });
-
-}
-
-
-async function saveUnit(e) {
-
-  e.preventDefault();
-
-  const msg =
-    $('#unitMsg');
-
-  if (msg)
-    msg.textContent =
-      'Saving...';
-
-
-  try {
-
-    let imageUrl =
-      $('#unitImageUrl')
-        .value
-        .trim();
-
-
-    const file =
-      $('#unitImage').files[0];
-
-
-    if (file) {
-
-      const uploaded =
-        await uploadMedia(
-          file,
-          'business-units'
-        );
-
-      imageUrl =
-        uploaded.url;
-
-    }
-
-
-    const payload = {
-
-      name:
-        $('#unitName')
-          .value
-          .trim(),
-
-      description:
-        $('#unitDescription')
-          .value
-          .trim(),
-
-      image_url:
-        imageUrl || null,
-
-      website_url:
-        $('#unitWebsite')
-          .value
-          .trim() || null,
-
-      sort_order:
-        Number(
-          $('#unitSort').value || 0
-        )
-
-    };
-
-
-    const id =
-      $('#unitId').value;
-
-
-    const result =
-      id
-      ?
-      await sb
-        .from('business_units')
-        .update(payload)
-        .eq('id', id)
-      :
-      await sb
-        .from('business_units')
-        .insert(payload);
-
-
-    if (result.error)
-      throw result.error;
-
-
-    if (msg) {
-
-      msg.style.color =
-        '#166534';
-
-      msg.textContent =
-        'Business unit saved.';
-
-    }
-
-
-    clearUnitForm();
-
-    await crudUnits();
-
-
-  } catch (err) {
-
-    if (msg) {
-
-      msg.style.color =
-        '#dc2626';
-
-      msg.textContent =
-        err.message;
-
-    }
-
-  }
-
-}
-
-
-async function editUnit(id) {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('business_units')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  $('#unitId').value =
-    data.id || '';
-
-  $('#unitName').value =
-    data.name || '';
-
-  $('#unitDescription').value =
-    data.description || '';
-
-  $('#unitImageUrl').value =
-    data.image_url || '';
-
-  $('#unitWebsite').value =
-    data.website_url || '';
-
-  $('#unitSort').value =
-    data.sort_order || 0;
-
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
-
-}
-
-
-async function deleteUnit(id) {
-
-  if (
-    !confirm(
-      'Delete this business unit?'
-    )
-  ) return;
-
-
-  const result =
-    await sb
-      .from('business_units')
-      .delete()
-      .eq('id', id);
-
-
-  if (result.error) {
-
-    alert(
-      result.error.message
+    `)}
+  `;
+
+  $('#close-unit-form')
+    ?.addEventListener(
+      'click',
+      () => {
+        container.innerHTML = '';
+      }
     );
 
-    return;
+  $('#cancel-unit-form')
+    ?.addEventListener(
+      'click',
+      () => {
+        container.innerHTML = '';
+      }
+    );
 
-  }
+  $('#business-unit-form')
+    ?.addEventListener(
+      'submit',
+      async event => {
+        event.preventDefault();
 
-
-  await crudUnits();
-
+        await saveBusinessUnit(unit);
+      }
+    );
 }
 
 
-function clearUnitForm() {
+async function saveBusinessUnit(existingUnit) {
+  const id =
+    $('#unit-id')?.value ||
+    null;
 
-  $('#unitForm')?.reset();
+  const name =
+    $('#unit-name')?.value.trim() ||
+    '';
 
-  if ($('#unitId'))
-    $('#unitId').value = '';
+  const website =
+    $('#unit-website')?.value.trim() ||
+    '';
 
-  if ($('#unitSort'))
-    $('#unitSort').value = '0';
+  const description =
+    $('#unit-description')?.value.trim() ||
+    '';
 
-}
+  const imageFile =
+    $('#unit-image-file')?.files?.[0] ||
+    null;
 
-
-/* =========================
-   HOMEPAGE
-========================= */
-
-async function homepage() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('site_content')
-    .select('*')
-    .order('key');
-
-
-  if (error) {
-
-    setMain(`
-      <div class="card">
-        <h2>Homepage</h2>
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-      </div>
-    `);
-
+  if (!name) {
+    showToast(
+      'Business unit name is required.',
+      'warning'
+    );
     return;
-
   }
 
-
-  setMain(`
-
-    <h2 class="page-title">
-      Homepage Content
-    </h2>
-
-
-    <div class="card">
-
-      <p>
-        Edit homepage content below.
-      </p>
-
-      <div id="homepageItems">
-
-        ${(data || []).map(item => `
-
-          <div
-            class="card"
-            style="
-              border:1px solid #e5e7eb;
-              margin-bottom:12px
-            "
-          >
-
-            <input
-              type="hidden"
-              class="site-id"
-              value="${esc(item.id)}"
-            >
-
-            <div class="form-group">
-
-              <label>
-                Key
-              </label>
-
-              <input
-                class="site-key"
-                value="${esc(
-                  item.key ||
-                  item.section_key ||
-                  ''
-                )}"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Title
-              </label>
-
-              <input
-                class="site-title"
-                value="${esc(
-                  item.title || ''
-                )}"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Value
-              </label>
-
-              <textarea
-                class="site-value"
-              >${esc(
-                item.value || ''
-              )}</textarea>
-
-            </div>
-
-
-            <button
-              class="btn btn-primary"
-              data-save-site="${esc(item.key || item.section_key || item.id || '')}"
-            >
-              Save
-            </button>
-
-          </div>
-
-        `).join('')}
-
-      </div>
-
-    </div>
-
-  `);
-
-
-  $$('[data-save-site]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          saveSiteContent(
-            btn.dataset.saveSite
-          )
-      );
-
-    });
-
-}
-
-
-async function saveSiteContent(id) {
-
-  const card =
-    $$('[data-save-site]')
-      .find(
-        b =>
-          b.dataset.saveSite ===
-          String(id)
-      )
-      ?.closest('.card');
-
-
-  if (!card) return;
-
-
-  const payload = {
-
-    key:
-      $('.site-key', card)
-        ?.value
-        .trim(),
-
-    title:
-      $('.site-title', card)
-        ?.value
-        .trim(),
-
-    value:
-      $('.site-value', card)
-        ?.value || ''
-
-  };
-
-
-  const {
-    error
-  } = await sb
-    .from('site_content')
-    .update(payload)
-    .eq('id', id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  alert(
-    'Homepage content updated.'
+  showLoading(
+    existingUnit
+      ? 'Updating business unit...'
+      : 'Adding business unit...'
   );
 
+  try {
+    let imageUrl =
+      existingUnit?.image_url ||
+      '';
+
+    if (imageFile) {
+      imageUrl =
+        await uploadMedia(
+          imageFile,
+          'business-units'
+        );
+    }
+
+    const payload = {
+      name,
+      description,
+      image_url: imageUrl,
+      website
+    };
+
+    if (id) {
+      const { error } =
+        await sb
+          .from('business_units')
+          .update(payload)
+          .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+
+      showToast(
+        'Business unit updated successfully.'
+      );
+
+    } else {
+      const { error } =
+        await sb
+          .from('business_units')
+          .insert(payload);
+
+      if (error) {
+        throw error;
+      }
+
+      showToast(
+        'Business unit added successfully.'
+      );
+    }
+
+    await renderBusinessUnits();
+
+  } catch (error) {
+    console.error(
+      'Business unit save error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to save business unit.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
 }
 
 
-/* =========================
-   ENQUIRIES
-========================= */
+async function deleteBusinessUnit(id) {
+  if (!id) return;
 
-async function enquiries() {
+  const confirmed =
+    window.confirm(
+      'Are you sure you want to delete this business unit?'
+    );
 
-  const {
-    data,
-    error
-  } = await sb
-    .from('enquiries')
-    .select('*')
-    .order('created_at', {
-      ascending:false
-    });
+  if (!confirmed) return;
 
+  showLoading(
+    'Deleting business unit...'
+  );
+
+  try {
+    const { data: unit } =
+      await sb
+        .from('business_units')
+        .select(
+          'id,image_url'
+        )
+        .eq('id', id)
+        .maybeSingle();
+
+    const { error } =
+      await sb
+        .from('business_units')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    if (unit?.image_url) {
+      await deleteMediaByUrl(
+        unit.image_url
+      );
+    }
+
+    showToast(
+      'Business unit deleted successfully.'
+    );
+
+    await renderBusinessUnits();
+
+  } catch (error) {
+    console.error(
+      'Business unit delete error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to delete business unit.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   HOMEPAGE CMS
+   ========================================================= */
+
+async function getHomepageContent() {
+  const { data, error } =
+    await sb
+      .from('site_content')
+      .select('*')
+      .order('key', {
+        ascending: true
+      });
 
   if (error) {
-
-    setMain(`
-      <div class="card">
-        <h2>Customer Enquiries</h2>
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-      </div>
-    `);
-
-    return;
-
+    throw error;
   }
 
+  return data || [];
+}
 
-  setMain(`
 
-    <h2 class="page-title">
-      Customer Enquiries
-    </h2>
+async function renderHomepage() {
+  const main = $('#admin-main');
 
-    <div class="card">
+  const items =
+    await getHomepageContent();
 
-      <div class="table-wrap">
+  main.innerHTML = `
+    ${pageHeader(
+      'Homepage',
+      'Edit homepage text, images and links used by the CMS.'
+    )}
 
-        <table>
+    ${
+      items.length
+        ? `
+          <div id="homepage-content-list">
+            ${items
+              .map(
+                item =>
+                  renderHomepageItem(item)
+              )
+              .join('')}
+          </div>
+        `
+        : cardHtml(`
+            <div style="
+              text-align:center;
+              padding:35px;
+              color:#64748b;
+            ">
+              No homepage content found.
+              <br>
+              <span style="
+                font-size:12px;
+              ">
+                Add records to
+                <strong>site_content</strong>
+                in Supabase first.
+              </span>
+            </div>
+          `)
+    }
+  `;
 
-          <thead>
+  setupHomepageActions();
+}
 
-            <tr>
 
-              <th>Date</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Products</th>
-              <th>Message</th>
-              <th>Status</th>
-              <th>Action</th>
+function renderHomepageItem(item) {
+  /*
+   * IMPORTANT:
+   *
+   * Supabase site_content table uses:
+   *   section_key
+   *   key
+   *   title
+   *   subtitle
+   *   content
+   *   image_url
+   *   video_url
+   *   button_text
+   *   button_url
+   *   active
+   *
+   * The editable text field is "content".
+   *
+   * Do NOT use item.value here.
+   */
 
-            </tr>
+  const key =
+    item.key ||
+    item.section_key ||
+    '';
 
-          </thead>
+  return `
+    <div
+      class="homepage-content-card"
+      data-id="${esc(item.id)}"
+      style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:20px;
+        margin-bottom:15px;
+      "
+    >
 
-          <tbody>
+      <div style="
+        display:grid;
+        grid-template-columns:
+          repeat(auto-fit,minmax(220px,1fr));
+        gap:15px;
+      ">
 
-            ${(data || []).map(e => `
+        <div>
 
-              <tr>
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Key
+          </label>
 
-                <td>
-                  ${e.created_at
-                    ? new Date(
-                        e.created_at
-                      ).toLocaleString()
-                    : ''}
-                </td>
+          <input
+            class="site-key"
+            value="${esc(key)}"
+            style="${inputStyle()}"
+            readonly
+          />
 
-                <td>
-                  ${esc(e.name)}
-                </td>
+        </div>
 
-                <td>
-                  ${esc(e.email)}
-                </td>
+        <div>
 
-                <td>
-                  ${esc(e.phone)}
-                </td>
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Title
+          </label>
 
-                <td>
-                  ${esc(
-                    Array.isArray(e.products)
-                      ? e.products.join(', ')
-                      : e.products
-                  )}
-                </td>
+          <input
+            class="site-title"
+            value="${esc(
+              item.title || ''
+            )}"
+            style="${inputStyle()}"
+          />
 
-                <td>
-                  ${esc(e.message)}
-                </td>
+        </div>
 
-                <td>
+        <div>
 
-                  <select
-                    data-enquiry-status="${esc(e.id)}"
-                  >
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Subtitle
+          </label>
 
-                    ${[
-                      'new',
-                      'contacted',
-                      'quoted',
-                      'closed',
-                      'spam'
-                    ].map(s => `
+          <input
+            class="site-subtitle"
+            value="${esc(
+              item.subtitle || ''
+            )}"
+            style="${inputStyle()}"
+          />
 
-                      <option
-                        value="${s}"
-                        ${e.status === s
-                          ? 'selected'
-                          : ''}
-                      >
-                        ${s}
-                      </option>
+        </div>
 
-                    `).join('')}
+      </div>
 
-                  </select>
+      <div style="
+        margin-top:15px;
+      ">
 
-                </td>
+        <label style="
+          display:block;
+          font-size:12px;
+          font-weight:700;
+          color:#475569;
+          margin-bottom:6px;
+        ">
+          Content
+        </label>
 
-                <td>
+        <textarea
+          class="site-content"
+          rows="5"
+          style="${inputStyle()}resize:vertical;"
+        >${esc(
+          item.content || ''
+        )}</textarea>
 
-                  <button
-                    class="btn btn-danger"
-                    data-delete-enquiry="${esc(e.id)}"
-                  >
-                    Delete
-                  </button>
+      </div>
 
-                </td>
+      <div style="
+        display:grid;
+        grid-template-columns:
+          repeat(auto-fit,minmax(240px,1fr));
+        gap:15px;
+        margin-top:15px;
+      ">
 
-              </tr>
+        <div>
 
-            `).join('')}
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Image URL
+          </label>
 
-          </tbody>
+          <input
+            class="site-image-url"
+            value="${esc(
+              item.image_url || ''
+            )}"
+            style="${inputStyle()}"
+            placeholder="https://..."
+          />
 
-        </table>
+          <input
+            class="site-image-file"
+            type="file"
+            accept="image/*"
+            style="
+              width:100%;
+              margin-top:8px;
+              box-sizing:border-box;
+            "
+          />
+
+          ${
+            item.image_url
+              ? `
+                <img
+                  src="${esc(
+                    item.image_url
+                  )}"
+                  alt=""
+                  style="
+                    width:120px;
+                    height:80px;
+                    object-fit:cover;
+                    border-radius:8px;
+                    margin-top:8px;
+                    border:1px solid #e2e8f0;
+                  "
+                />
+              `
+              : ''
+          }
+
+        </div>
+
+        <div>
+
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Video URL
+          </label>
+
+          <input
+            class="site-video-url"
+            value="${esc(
+              item.video_url || ''
+            )}"
+            style="${inputStyle()}"
+            placeholder="https://..."
+          />
+
+        </div>
+
+        <div>
+
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Button Text
+          </label>
+
+          <input
+            class="site-button-text"
+            value="${esc(
+              item.button_text || ''
+            )}"
+            style="${inputStyle()}"
+            placeholder="Explore Products"
+          />
+
+        </div>
+
+        <div>
+
+          <label style="
+            display:block;
+            font-size:12px;
+            font-weight:700;
+            color:#475569;
+            margin-bottom:6px;
+          ">
+            Button URL
+          </label>
+
+          <input
+            class="site-button-url"
+            value="${esc(
+              item.button_url || ''
+            )}"
+            style="${inputStyle()}"
+            placeholder="#products"
+          />
+
+        </div>
+
+      </div>
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-top:18px;
+        gap:15px;
+        flex-wrap:wrap;
+      ">
+
+        <label style="
+          display:flex;
+          align-items:center;
+          gap:8px;
+          font-size:13px;
+          color:#475569;
+          cursor:pointer;
+        ">
+
+          <input
+            class="site-active"
+            type="checkbox"
+            ${
+              item.active !== false
+                ? 'checked'
+                : ''
+            }
+          />
+
+          Active
+
+        </label>
+
+        <button
+          class="save-homepage-btn"
+          data-id="${esc(item.id)}"
+          style="${buttonStyle('primary')}"
+        >
+          Save
+        </button>
 
       </div>
 
     </div>
+  `;
+}
 
-  `);
+
+function setupHomepageActions() {
+  $$('.save-homepage-btn')
+    .forEach(button => {
+      button.addEventListener(
+        'click',
+        async () => {
+          await saveHomepageItem(
+            button.dataset.id
+          );
+        }
+      );
+    });
+
+  $$('.site-image-file')
+    .forEach(input => {
+      input.addEventListener(
+        'change',
+        event => {
+          const file =
+            event.target.files?.[0];
+
+          if (!file) return;
+
+          if (
+            !file.type.startsWith(
+              'image/'
+            )
+          ) {
+            showToast(
+              'Please select an image file.',
+              'warning'
+            );
+
+            event.target.value = '';
+          }
+        }
+      );
+    });
+}
 
 
-  $$('[data-enquiry-status]')
+async function saveHomepageItem(id) {
+  if (!id) return;
+
+  const card =
+    $(
+      `.homepage-content-card[data-id="${CSS.escape(String(id))}"]`
+    );
+
+  if (!card) {
+    showToast(
+      'Homepage content row not found.',
+      'error'
+    );
+    return;
+  }
+
+  const title =
+    $('.site-title', card)?.value || '';
+
+  const subtitle =
+    $('.site-subtitle', card)?.value || '';
+
+  const content =
+    $('.site-content', card)?.value || '';
+
+  const imageInput =
+    $('.site-image-file', card);
+
+  const imageFile =
+    imageInput?.files?.[0] || null;
+
+  let imageUrl =
+    $('.site-image-url', card)?.value
+      .trim() || '';
+
+  const videoUrl =
+    $('.site-video-url', card)?.value
+      .trim() || '';
+
+  const buttonText =
+    $('.site-button-text', card)?.value
+      .trim() || '';
+
+  const buttonUrl =
+    $('.site-button-url', card)?.value
+      .trim() || '';
+
+  const active =
+    $('.site-active', card)?.checked !== false;
+
+  showLoading(
+    'Saving homepage content...'
+  );
+
+  try {
+    if (imageFile) {
+      imageUrl =
+        await uploadMedia(
+          imageFile,
+          'homepage'
+        );
+
+      const imageField =
+        $('.site-image-url', card);
+
+      if (imageField) {
+        imageField.value =
+          imageUrl;
+      }
+    }
+
+    /*
+     * IMPORTANT:
+     * Database column is "content",
+     * not "value".
+     */
+
+    const payload = {
+      title,
+      subtitle,
+      content,
+      image_url: imageUrl,
+      video_url: videoUrl,
+      button_text: buttonText,
+      button_url: buttonUrl,
+      active,
+      updated_at:
+        new Date().toISOString()
+    };
+
+    const { error } =
+      await sb
+        .from('site_content')
+        .update(payload)
+        .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    showToast(
+      'Homepage content saved successfully.'
+    );
+
+  } catch (error) {
+    console.error(
+      'Homepage save error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to save homepage content.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
+}
+
+
+/* =========================================================
+   HOMEPAGE IMAGE UPLOAD
+   ========================================================= */
+
+async function uploadHomepageImage(
+  file
+) {
+  if (!file) {
+    return '';
+  }
+
+  if (
+    !file.type.startsWith('image/')
+  ) {
+    throw new Error(
+      'Please select a valid image.'
+    );
+  }
+
+  return await uploadMedia(
+    file,
+    'homepage'
+  );
+}
+
+
+/* =========================================================
+   HOMEPAGE CONTENT REFRESH
+   ========================================================= */
+
+async function refreshHomepage() {
+  if (
+    currentView === 'homepage'
+  ) {
+    await renderHomepage();
+  }
+}
+
+
+/* =========================================================
+   CMS CONTENT HELPERS
+   ========================================================= */
+
+async function getSiteContentByKey(key) {
+  if (!key) return null;
+
+  const { data, error } =
+    await sb
+      .from('site_content')
+      .select('*')
+      .eq('key', key)
+      .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+async function createSiteContentIfMissing(
+  key,
+  defaults = {}
+) {
+  if (!key) {
+    throw new Error(
+      'Content key is required.'
+    );
+  }
+
+  const existing =
+    await getSiteContentByKey(key);
+
+  if (existing) {
+    return existing;
+  }
+
+  const payload = {
+    key,
+    section_key:
+      defaults.section_key || key,
+    title:
+      defaults.title || '',
+    subtitle:
+      defaults.subtitle || '',
+    content:
+      defaults.content || '',
+    image_url:
+      defaults.image_url || '',
+    video_url:
+      defaults.video_url || '',
+    button_text:
+      defaults.button_text || '',
+    button_url:
+      defaults.button_url || '',
+    active:
+      defaults.active !== false
+  };
+
+  const { data, error } =
+    await sb
+      .from('site_content')
+      .insert(payload)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+/* =========================================================
+   DEFAULT HOMEPAGE CONTENT
+   ========================================================= */
+
+const DEFAULT_HOMEPAGE_CONTENT = [
+  {
+    key: 'hero',
+    section_key: 'hero',
+    title:
+      'Global Industrial & Export Powerhouse',
+    subtitle:
+      'Pioneering Excellence Across Global Markets',
+    content:
+      'Supplying premium Chemical Intermediates, Heavy Industrial Packaging, FMCG Essentials, and Sustainable Solar Backup Solutions worldwide.',
+    active: true
+  },
+
+  {
+    key: 'about',
+    section_key: 'about',
+    title:
+      'About DEVI GROUPS',
+    subtitle:
+      'Established in 1989',
+    content:
+      'Established in 1989, expanding across decades of unmatched manufacturing integrity and market reputation.',
+    active: true
+  },
+
+  {
+    key: 'products',
+    section_key: 'products',
+    title:
+      'Export Product Catalog',
+    subtitle:
+      'High-definition product showcases',
+    content:
+      'High-definition product showcases with technical specs, PDF brochures & instant quote generator.',
+    active: true
+  },
+
+  {
+    key: 'contact',
+    section_key: 'contact',
+    title:
+      'Connect With DEVI GROUPS',
+    subtitle:
+      'Headquarters & Offices',
+    content:
+      'Shah Nirav (Owner & MD)',
+    active: true
+  }
+];
+
+
+async function seedDefaultHomepageContent() {
+  showLoading(
+    'Checking homepage content...'
+  );
+
+  try {
+    for (
+      const item
+      of DEFAULT_HOMEPAGE_CONTENT
+    ) {
+      await createSiteContentIfMissing(
+        item.key,
+        item
+      );
+    }
+
+    showToast(
+      'Homepage default content is ready.'
+    );
+
+    await renderHomepage();
+
+  } catch (error) {
+    console.error(
+      'Homepage seed error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to prepare homepage content.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
+}
+/* =========================================================
+   PART 4 — CUSTOMER ENQUIRIES + REVIEWS + COMPANY INFO
+   ========================================================= */
+
+
+/* =========================================================
+   CUSTOMER ENQUIRIES
+   ========================================================= */
+
+async function getEnquiries() {
+  const { data, error } = await sb
+    .from('customer_enquiries')
+    .select('*')
+    .order('created_at', {
+      ascending: false
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+function enquiryValue(
+  enquiry,
+  ...keys
+) {
+  for (const key of keys) {
+    if (
+      enquiry &&
+      enquiry[key] !== undefined &&
+      enquiry[key] !== null &&
+      enquiry[key] !== ''
+    ) {
+      return enquiry[key];
+    }
+  }
+
+  return '';
+}
+
+
+function renderEnquiryRow(enquiry) {
+  const name =
+    enquiryValue(
+      enquiry,
+      'name',
+      'customer_name',
+      'full_name'
+    ) || 'Unknown';
+
+  const email =
+    enquiryValue(
+      enquiry,
+      'email',
+      'customer_email'
+    );
+
+  const phone =
+    enquiryValue(
+      enquiry,
+      'phone',
+      'phone_number',
+      'mobile'
+    );
+
+  const company =
+    enquiryValue(
+      enquiry,
+      'company',
+      'company_name',
+      'organization'
+    );
+
+  const product =
+    enquiryValue(
+      enquiry,
+      'product',
+      'product_name',
+      'subject'
+    );
+
+  const message =
+    enquiryValue(
+      enquiry,
+      'message',
+      'enquiry',
+      'details'
+    );
+
+  const status =
+    enquiryValue(
+      enquiry,
+      'status'
+    ) || 'new';
+
+  const created =
+    enquiryValue(
+      enquiry,
+      'created_at'
+    );
+
+  return `
+    <div
+      class="enquiry-row"
+      data-id="${esc(enquiry.id)}"
+      style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:18px;
+        margin-bottom:12px;
+      "
+    >
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:15px;
+        flex-wrap:wrap;
+      ">
+
+        <div>
+
+          <div style="
+            font-size:17px;
+            font-weight:700;
+            color:#0f172a;
+          ">
+            ${esc(name)}
+          </div>
+
+          ${
+            company
+              ? `
+                <div style="
+                  color:#64748b;
+                  font-size:12px;
+                  margin-top:3px;
+                ">
+                  ${esc(company)}
+                </div>
+              `
+              : ''
+          }
+
+        </div>
+
+        <select
+          class="enquiry-status"
+          data-id="${esc(enquiry.id)}"
+          style="
+            padding:8px 10px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            background:#fff;
+          "
+        >
+
+          <option
+            value="new"
+            ${
+              status === 'new'
+                ? 'selected'
+                : ''
+            }
+          >
+            New
+          </option>
+
+          <option
+            value="contacted"
+            ${
+              status === 'contacted'
+                ? 'selected'
+                : ''
+            }
+          >
+            Contacted
+          </option>
+
+          <option
+            value="in_progress"
+            ${
+              status === 'in_progress'
+                ? 'selected'
+                : ''
+            }
+          >
+            In Progress
+          </option>
+
+          <option
+            value="completed"
+            ${
+              status === 'completed'
+                ? 'selected'
+                : ''
+            }
+          >
+            Completed
+          </option>
+
+          <option
+            value="closed"
+            ${
+              status === 'closed'
+                ? 'selected'
+                : ''
+            }
+          >
+            Closed
+          </option>
+
+        </select>
+
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:
+          repeat(auto-fit,minmax(200px,1fr));
+        gap:10px;
+        margin-top:15px;
+      ">
+
+        ${
+          email
+            ? `
+              <div style="
+                font-size:13px;
+                color:#475569;
+              ">
+                <strong>Email:</strong><br>
+                <a
+                  href="mailto:${esc(email)}"
+                  style="color:#2563eb;"
+                >
+                  ${esc(email)}
+                </a>
+              </div>
+            `
+            : ''
+        }
+
+        ${
+          phone
+            ? `
+              <div style="
+                font-size:13px;
+                color:#475569;
+              ">
+                <strong>Phone:</strong><br>
+                ${esc(phone)}
+              </div>
+            `
+            : ''
+        }
+
+        ${
+          product
+            ? `
+              <div style="
+                font-size:13px;
+                color:#475569;
+              ">
+                <strong>Product:</strong><br>
+                ${esc(product)}
+              </div>
+            `
+            : ''
+        }
+
+        ${
+          created
+            ? `
+              <div style="
+                font-size:13px;
+                color:#475569;
+              ">
+                <strong>Received:</strong><br>
+                ${esc(formatDate(created))}
+              </div>
+            `
+            : ''
+        }
+
+      </div>
+
+      ${
+        message
+          ? `
+            <div style="
+              margin-top:15px;
+              padding:13px;
+              background:#f8fafc;
+              border-radius:8px;
+              color:#475569;
+              font-size:13px;
+              line-height:1.7;
+              white-space:pre-wrap;
+            ">
+              ${esc(message)}
+            </div>
+          `
+          : ''
+      }
+
+      <div style="
+        display:flex;
+        justify-content:flex-end;
+        margin-top:14px;
+      ">
+
+        <button
+          class="delete-enquiry-btn"
+          data-id="${esc(enquiry.id)}"
+          style="${buttonStyle('danger')}"
+        >
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+async function renderEnquiries() {
+  const main = $('#admin-main');
+
+  const enquiries =
+    await getEnquiries();
+
+  main.innerHTML = `
+    ${pageHeader(
+      'Customer Enquiries',
+      'View and manage enquiries received from the website.'
+    )}
+
+    <div style="
+      margin-bottom:15px;
+    ">
+      <input
+        id="enquiry-search"
+        type="search"
+        placeholder="Search name, email, company or product..."
+        style="
+          ${inputStyle()}
+          max-width:520px;
+        "
+      />
+    </div>
+
+    <div id="enquiries-list">
+
+      ${
+        enquiries.length
+          ? enquiries
+              .map(renderEnquiryRow)
+              .join('')
+          : cardHtml(`
+              <div style="
+                text-align:center;
+                padding:35px;
+                color:#64748b;
+              ">
+                No customer enquiries found.
+              </div>
+            `)
+      }
+
+    </div>
+  `;
+
+  setupEnquiryActions();
+}
+
+
+function setupEnquiryActions() {
+  $('#enquiry-search')
+    ?.addEventListener(
+      'input',
+      event => {
+        const term =
+          event.target.value
+            .trim()
+            .toLowerCase();
+
+        $$('.enquiry-row')
+          .forEach(row => {
+            row.style.display =
+              !term ||
+              row.textContent
+                .toLowerCase()
+                .includes(term)
+                ? ''
+                : 'none';
+          });
+      }
+    );
+
+  $$('.enquiry-status')
     .forEach(select => {
-
       select.addEventListener(
         'change',
-        () =>
-          updateEnquiryStatus(
-            select.dataset.enquiryStatus,
+        async () => {
+          await updateEnquiryStatus(
+            select.dataset.id,
             select.value
-          )
+          );
+        }
       );
-
     });
 
-
-  $$('[data-delete-enquiry]')
-    .forEach(btn => {
-
-      btn.addEventListener(
+  $$('.delete-enquiry-btn')
+    .forEach(button => {
+      button.addEventListener(
         'click',
-        () =>
-          deleteEnquiry(
-            btn.dataset.deleteEnquiry
-          )
+        async () => {
+          await deleteEnquiry(
+            button.dataset.id
+          );
+        }
       );
-
     });
-
 }
 
 
@@ -2269,240 +4260,394 @@ async function updateEnquiryStatus(
   id,
   status
 ) {
+  if (!id) return;
 
-  const {
-    error
-  } = await sb
-    .from('enquiries')
-    .update({status})
-    .eq('id', id);
+  try {
+    const { error } =
+      await sb
+        .from('customer_enquiries')
+        .update({
+          status,
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq('id', id);
 
+    if (error) {
+      throw error;
+    }
 
-  if (error)
-    alert(error.message);
+    showToast(
+      'Enquiry status updated.'
+    );
 
+  } catch (error) {
+    console.error(
+      'Enquiry status error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to update enquiry status.',
+      'error'
+    );
+  }
 }
 
 
 async function deleteEnquiry(id) {
+  if (!id) return;
 
   if (
-    !confirm(
-      'Delete this enquiry?'
+    !window.confirm(
+      'Delete this customer enquiry?'
     )
-  ) return;
-
-
-  const {
-    error
-  } = await sb
-    .from('enquiries')
-    .delete()
-    .eq('id', id);
-
-
-  if (error) {
-
-    alert(error.message);
-
+  ) {
     return;
-
   }
 
+  showLoading(
+    'Deleting enquiry...'
+  );
 
-  await enquiries();
+  try {
+    const { error } =
+      await sb
+        .from('customer_enquiries')
+        .delete()
+        .eq('id', id);
 
+    if (error) {
+      throw error;
+    }
+
+    showToast(
+      'Customer enquiry deleted.'
+    );
+
+    await renderEnquiries();
+
+  } catch (error) {
+    console.error(
+      'Delete enquiry error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to delete enquiry.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
 }
-/* =========================
+
+
+/* =========================================================
    REVIEWS
-========================= */
+   ========================================================= */
 
-async function reviews() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('reviews')
-    .select('*')
-    .order('created_at', {
-      ascending:false
-    });
-
+async function getReviews() {
+  const { data, error } =
+    await sb
+      .from('reviews')
+      .select('*')
+      .order('created_at', {
+        ascending: false
+      });
 
   if (error) {
+    throw error;
+  }
 
-    setMain(`
-      <div class="card">
+  return data || [];
+}
 
-        <h2>Reviews</h2>
 
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
+function renderReviewRow(review) {
+  const name =
+    review.name ||
+    review.customer_name ||
+    review.author_name ||
+    'Customer';
+
+  const company =
+    review.company ||
+    review.company_name ||
+    '';
+
+  const message =
+    review.message ||
+    review.review ||
+    review.content ||
+    '';
+
+  const rating =
+    Number(
+      review.rating ||
+      review.stars ||
+      5
+    );
+
+  const status =
+    review.status ||
+    (
+      review.approved === false
+        ? 'pending'
+        : 'approved'
+    );
+
+  const created =
+    review.created_at || '';
+
+  return `
+    <div
+      class="review-row"
+      data-id="${esc(review.id)}"
+      style="
+        background:#fff;
+        border:1px solid #e2e8f0;
+        border-radius:12px;
+        padding:18px;
+        margin-bottom:12px;
+      "
+    >
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:15px;
+        flex-wrap:wrap;
+      ">
+
+        <div>
+
+          <div style="
+            font-size:17px;
+            font-weight:700;
+          ">
+            ${esc(name)}
+          </div>
+
+          ${
+            company
+              ? `
+                <div style="
+                  font-size:12px;
+                  color:#64748b;
+                  margin-top:3px;
+                ">
+                  ${esc(company)}
+                </div>
+              `
+              : ''
+          }
+
+        </div>
+
+        <div style="
+          font-size:18px;
+          letter-spacing:2px;
+        ">
+          ${'★'.repeat(
+            Math.max(
+              0,
+              Math.min(
+                5,
+                rating
+              )
+            )
+          )}
+          <span style="
+            color:#cbd5e1;
+          ">
+            ${'★'.repeat(
+              Math.max(
+                0,
+                5 -
+                Math.min(
+                  5,
+                  rating
+                )
+              )
+            )}
+          </span>
+        </div>
 
       </div>
-    `);
 
-    return;
+      ${
+        message
+          ? `
+            <div style="
+              margin-top:14px;
+              padding:13px;
+              background:#f8fafc;
+              border-radius:8px;
+              color:#475569;
+              font-size:13px;
+              line-height:1.7;
+            ">
+              ${esc(message)}
+            </div>
+          `
+          : ''
+      }
 
-  }
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-top:15px;
+        flex-wrap:wrap;
+      ">
 
+        <div style="
+          color:#94a3b8;
+          font-size:12px;
+        ">
+          ${esc(
+            created
+              ? formatDate(created)
+              : ''
+          )}
+        </div>
 
-  setMain(`
+        <div style="
+          display:flex;
+          gap:8px;
+          align-items:center;
+        ">
 
-    <h2 class="page-title">
-      Reviews
-    </h2>
+          <select
+            class="review-status"
+            data-id="${esc(review.id)}"
+            style="
+              padding:8px 10px;
+              border:1px solid #cbd5e1;
+              border-radius:8px;
+            "
+          >
 
-    <div class="card">
+            <option
+              value="pending"
+              ${
+                status === 'pending'
+                  ? 'selected'
+                  : ''
+              }
+            >
+              Pending
+            </option>
 
-      <div class="table-wrap">
+            <option
+              value="approved"
+              ${
+                status === 'approved'
+                  ? 'selected'
+                  : ''
+              }
+            >
+              Approved
+            </option>
 
-        <table>
+            <option
+              value="rejected"
+              ${
+                status === 'rejected'
+                  ? 'selected'
+                  : ''
+              }
+            >
+              Rejected
+            </option>
 
-          <thead>
+          </select>
 
-            <tr>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Rating</th>
-              <th>Message</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
+          <button
+            class="delete-review-btn"
+            data-id="${esc(review.id)}"
+            style="${buttonStyle('danger')}"
+          >
+            Delete
+          </button>
 
-          </thead>
-
-          <tbody>
-
-            ${(data || []).map(r => `
-
-              <tr>
-
-                <td>
-                  ${r.created_at
-                    ? new Date(
-                        r.created_at
-                      ).toLocaleString()
-                    : ''}
-                </td>
-
-                <td>
-                  <b>
-                    ${esc(
-                      r.customer_name
-                    )}
-                  </b>
-                </td>
-
-                <td>
-                  ${'★'.repeat(
-                    Math.max(
-                      0,
-                      Math.min(
-                        5,
-                        Number(r.rating || 0)
-                      )
-                    )
-                  )}
-                </td>
-
-                <td>
-                  ${esc(r.message)}
-                </td>
-
-                <td>
-
-                  <select
-                    data-review-status="${esc(r.id)}"
-                  >
-
-                    <option
-                      value="pending"
-                      ${r.status === 'pending'
-                        ? 'selected'
-                        : ''}
-                    >
-                      Pending
-                    </option>
-
-                    <option
-                      value="approved"
-                      ${r.status === 'approved'
-                        ? 'selected'
-                        : ''}
-                    >
-                      Approved
-                    </option>
-
-                    <option
-                      value="rejected"
-                      ${r.status === 'rejected'
-                        ? 'selected'
-                        : ''}
-                    >
-                      Rejected
-                    </option>
-
-                  </select>
-
-                </td>
-
-                <td>
-
-                  <button
-                    class="btn btn-danger"
-                    data-delete-review="${esc(r.id)}"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `).join('')}
-
-          </tbody>
-
-        </table>
+        </div>
 
       </div>
 
     </div>
+  `;
+}
 
-  `);
+
+async function renderReviews() {
+  const main = $('#admin-main');
+
+  const reviews =
+    await getReviews();
+
+  main.innerHTML = `
+    ${pageHeader(
+      'Reviews',
+      'Approve, reject or delete customer reviews.'
+    )}
+
+    <div id="reviews-list">
+
+      ${
+        reviews.length
+          ? reviews
+              .map(renderReviewRow)
+              .join('')
+          : cardHtml(`
+              <div style="
+                text-align:center;
+                padding:35px;
+                color:#64748b;
+              ">
+                No reviews found.
+              </div>
+            `)
+      }
+
+    </div>
+  `;
+
+  setupReviewActions();
+}
 
 
-  $$('[data-review-status]')
+function setupReviewActions() {
+  $$('.review-status')
     .forEach(select => {
-
       select.addEventListener(
         'change',
-        () =>
-          updateReviewStatus(
-            select.dataset.reviewStatus,
+        async () => {
+          await updateReviewStatus(
+            select.dataset.id,
             select.value
-          )
+          );
+        }
       );
-
     });
 
-
-  $$('[data-delete-review]')
-    .forEach(btn => {
-
-      btn.addEventListener(
+  $$('.delete-review-btn')
+    .forEach(button => {
+      button.addEventListener(
         'click',
-        () =>
-          deleteReview(
-            btn.dataset.deleteReview
-          )
+        async () => {
+          await deleteReview(
+            button.dataset.id
+          );
+        }
       );
-
     });
-
 }
 
 
@@ -2510,1855 +4655,664 @@ async function updateReviewStatus(
   id,
   status
 ) {
+  if (!id) return;
 
-  const {
-    error
-  } = await sb
-    .from('reviews')
-    .update({status})
-    .eq('id', id);
+  try {
+    const payload = {
+      status,
+      updated_at:
+        new Date().toISOString()
+    };
 
+    /*
+     * Some older review tables use
+     * "approved" instead of "status".
+     * The primary CMS uses status.
+     */
 
-  if (error)
-    alert(error.message);
+    const { error } =
+      await sb
+        .from('reviews')
+        .update(payload)
+        .eq('id', id);
 
+    if (error) {
+      throw error;
+    }
+
+    showToast(
+      'Review status updated.'
+    );
+
+  } catch (error) {
+    console.error(
+      'Review status error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to update review.',
+      'error'
+    );
+  }
 }
 
 
 async function deleteReview(id) {
+  if (!id) return;
 
   if (
-    !confirm(
+    !window.confirm(
       'Delete this review?'
     )
-  ) return;
-
-
-  const {
-    error
-  } = await sb
-    .from('reviews')
-    .delete()
-    .eq('id', id);
-
-
-  if (error) {
-
-    alert(error.message);
-
+  ) {
     return;
-
   }
 
+  showLoading(
+    'Deleting review...'
+  );
 
-  await reviews();
+  try {
+    const { error } =
+      await sb
+        .from('reviews')
+        .delete()
+        .eq('id', id);
 
+    if (error) {
+      throw error;
+    }
+
+    showToast(
+      'Review deleted successfully.'
+    );
+
+    await renderReviews();
+
+  } catch (error) {
+    console.error(
+      'Delete review error:',
+      error
+    );
+
+    showToast(
+      error.message ||
+      'Unable to delete review.',
+      'error'
+    );
+
+  } finally {
+    hideLoading();
+  }
 }
 
 
-/* =========================
-   COMPANY INFO
-========================= */
+/* =========================================================
+   COMPANY INFORMATION
+   ========================================================= */
 
-async function company() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('company_info')
-    .select('*')
-    .eq('id', 1)
-    .maybeSingle();
-
+async function getCompanyInfo() {
+  const { data, error } =
+    await sb
+      .from('company_info')
+      .select('*')
+      .limit(1)
+      .maybeSingle();
 
   if (error) {
-
-    setMain(`
-      <div class="card">
-
-        <h2>Company Info</h2>
-
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-
-      </div>
-    `);
-
-    return;
-
+    throw error;
   }
 
-
-  const c = data || {};
-
-
-  setMain(`
-
-    <h2 class="page-title">
-      Company Information
-    </h2>
+  return data;
+}
 
 
-    <div class="card">
+function companyField(
+  company,
+  ...keys
+) {
+  for (const key of keys) {
+    if (
+      company &&
+      company[key] !== undefined &&
+      company[key] !== null
+    ) {
+      return company[key];
+    }
+  }
 
-      <form id="companyForm">
+  return '';
+}
 
-        <div class="form-grid">
 
-          <div class="form-group">
+async function renderCompanyInfo() {
+  const main = $('#admin-main');
 
-            <label>
+  const company =
+    await getCompanyInfo();
+
+  main.innerHTML = `
+    ${pageHeader(
+      'Company Info',
+      'Manage DEVI GROUPS contact and company information.'
+    )}
+
+    ${cardHtml(`
+      <form id="company-info-form">
+
+        <div style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(240px,1fr));
+          gap:16px;
+        ">
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
               Company Name
             </label>
 
             <input
-              id="companyName"
+              id="company-name"
               value="${esc(
-                c.company_name
+                companyField(
+                  company,
+                  'company_name',
+                  'name'
+                )
               )}"
-            >
+              style="${inputStyle()}"
+            />
 
           </div>
 
+          <div>
 
-          <div class="form-group">
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Owner / Managing Director
+            </label>
 
-            <label>
+            <input
+              id="company-owner"
+              value="${esc(
+                companyField(
+                  company,
+                  'owner_name',
+                  'director_name',
+                  'owner'
+                )
+              )}"
+              style="${inputStyle()}"
+            />
+
+          </div>
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
               Email
             </label>
 
             <input
+              id="company-email"
               type="email"
-              id="companyEmail"
               value="${esc(
-                c.email
+                companyField(
+                  company,
+                  'email',
+                  'company_email'
+                )
               )}"
-            >
+              style="${inputStyle()}"
+            />
 
           </div>
 
+          <div>
 
-          <div class="form-group">
-
-            <label>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
               Phone
             </label>
 
             <input
-              id="companyPhone"
+              id="company-phone"
               value="${esc(
-                c.phone
+                companyField(
+                  company,
+                  'phone',
+                  'phone_number',
+                  'mobile'
+                )
               )}"
-            >
+              style="${inputStyle()}"
+            />
 
           </div>
 
+          <div>
 
-          <div class="form-group">
-
-            <label>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
               WhatsApp
             </label>
 
             <input
-              id="companyWhatsapp"
+              id="company-whatsapp"
               value="${esc(
-                c.whatsapp
+                companyField(
+                  company,
+                  'whatsapp',
+                  'whatsapp_number'
+                )
               )}"
-            >
+              style="${inputStyle()}"
+            />
 
           </div>
 
+          <div>
 
-          <div class="form-group full">
-
-            <label>
-              Address
-            </label>
-
-            <textarea
-              id="companyAddress"
-            >${esc(
-              c.address
-            )}</textarea>
-
-          </div>
-
-
-          <div class="form-group full">
-
-            <label>
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
               Website
             </label>
 
             <input
-              id="companyWebsite"
+              id="company-website"
               value="${esc(
-                c.website
+                companyField(
+                  company,
+                  'website',
+                  'website_url'
+                )
               )}"
-              placeholder="https://..."
-            >
+              style="${inputStyle()}"
+            />
 
           </div>
 
         </div>
 
+        <div style="
+          margin-top:16px;
+        ">
 
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Save Company Info
-        </button>
+          <label style="
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            Address
+          </label>
 
+          <textarea
+            id="company-address"
+            rows="4"
+            style="${inputStyle()}resize:vertical;"
+          >${esc(
+            companyField(
+              company,
+              'address',
+              'company_address'
+            )
+          )}</textarea>
 
-        <p id="companyMsg"></p>
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:
+            repeat(auto-fit,minmax(240px,1fr));
+          gap:16px;
+          margin-top:16px;
+        ">
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              India Office
+            </label>
+
+            <textarea
+              id="company-india-office"
+              rows="4"
+              style="${inputStyle()}resize:vertical;"
+            >${esc(
+              companyField(
+                company,
+                'india_office',
+                'india_address'
+              )
+            )}</textarea>
+
+          </div>
+
+          <div>
+
+            <label style="
+              display:block;
+              margin-bottom:6px;
+              font-size:13px;
+              font-weight:700;
+            ">
+              Kenya Office
+            </label>
+
+            <textarea
+              id="company-kenya-office"
+              rows="4"
+              style="${inputStyle()}resize:vertical;"
+            >${esc(
+              companyField(
+                company,
+                'kenya_office',
+                'kenya_address'
+              )
+            )}</textarea>
+
+          </div>
+
+        </div>
+
+        <div style="
+          margin-top:16px;
+        ">
+
+          <label style="
+            display:block;
+            margin-bottom:6px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            Company Description
+          </label>
+
+          <textarea
+            id="company-description"
+            rows="6"
+            style="${inputStyle()}resize:vertical;"
+          >${esc(
+            companyField(
+              company,
+              'description',
+              'company_description',
+              'about'
+            )
+          )}</textarea>
+
+        </div>
+
+        <div style="
+          margin-top:22px;
+        ">
+
+          <button
+            type="submit"
+            style="${buttonStyle('primary')}"
+          >
+            Save Company Information
+          </button>
+
+        </div>
 
       </form>
+    `)}
 
-    </div>
+  `;
 
-  `);
-
-
-  $('#companyForm')
+  $('#company-info-form')
     ?.addEventListener(
       'submit',
-      saveCompany
-    );
+      async event => {
+        event.preventDefault();
 
+        await saveCompanyInfo(
+          company
+        );
+      }
+    );
 }
 
 
-async function saveCompany(e) {
-
-  e.preventDefault();
-
-
+async function saveCompanyInfo(
+  existingCompany
+) {
   const payload = {
-
-    id: 1,
-
     company_name:
-      $('#companyName')
-        .value
-        .trim(),
+      $('#company-name')
+        ?.value.trim() || '',
+
+    owner_name:
+      $('#company-owner')
+        ?.value.trim() || '',
 
     email:
-      $('#companyEmail')
-        .value
-        .trim(),
+      $('#company-email')
+        ?.value.trim() || '',
 
     phone:
-      $('#companyPhone')
-        .value
-        .trim(),
+      $('#company-phone')
+        ?.value.trim() || '',
 
     whatsapp:
-      $('#companyWhatsapp')
-        .value
-        .trim(),
-
-    address:
-      $('#companyAddress')
-        .value
-        .trim(),
+      $('#company-whatsapp')
+        ?.value.trim() || '',
 
     website:
-      $('#companyWebsite')
-        .value
-        .trim()
+      $('#company-website')
+        ?.value.trim() || '',
 
+    address:
+      $('#company-address')
+        ?.value.trim() || '',
+
+    india_office:
+      $('#company-india-office')
+        ?.value.trim() || '',
+
+    kenya_office:
+      $('#company-kenya-office')
+        ?.value.trim() || '',
+
+    description:
+      $('#company-description')
+        ?.value.trim() || '',
+
+    updated_at:
+      new Date().toISOString()
   };
 
+  showLoading(
+    'Saving company information...'
+  );
 
-  const {
-    error
-  } = await sb
-    .from('company_info')
-    .upsert(
-      payload,
-      { onConflict:'id' }
+  try {
+    let error = null;
+
+    if (existingCompany?.id) {
+
+      const result =
+        await sb
+          .from('company_info')
+          .update(payload)
+          .eq(
+            'id',
+            existingCompany.id
+          );
+
+      error = result.error;
+
+    } else {
+
+      const result =
+        await sb
+          .from('company_info')
+          .insert(payload);
+
+      error = result.error;
+    }
+
+    if (error) {
+      throw error;
+    }
+
+    showToast(
+      'Company information saved successfully.'
     );
 
+    await renderCompanyInfo();
 
-  if (error) {
+  } catch (error) {
+    console.error(
+      'Company info save error:',
+      error
+    );
 
-    $('#companyMsg').textContent =
-      error.message;
+    showToast(
+      error.message ||
+      'Unable to save company information.',
+      'error'
+    );
 
-    $('#companyMsg').style.color =
-      '#dc2626';
-
-    return;
-
+  } finally {
+    hideLoading();
   }
-
-
-  $('#companyMsg').textContent =
-    'Company information saved.';
-
-  $('#companyMsg').style.color =
-    '#166534';
-
 }
 
 
-/* =========================
-   DOCUMENTS
-========================= */
+/* =========================================================
+   COMPANY CONTACT QUICK ACTIONS
+   ========================================================= */
 
-async function documents() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('documents')
-    .select('*')
-    .order('id', {
-      ascending:false
-    });
+function normalizePhone(
+  phone
+) {
+  return String(phone || '')
+    .replace(/[^\d+]/g, '');
+}
 
 
-  if (error) {
+function createMailto(email) {
+  if (!email) return '';
 
-    setMain(`
-      <div class="card">
-
-        <h2>Documents</h2>
-
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-
-      </div>
-    `);
-
-    return;
-
-  }
+  return `mailto:${email}`;
+}
 
 
-  setMain(`
+function createTel(phone) {
+  const clean =
+    normalizePhone(phone);
 
-    <h2 class="page-title">
-      Documents / Brochures / TDS / MSDS
-    </h2>
+  if (!clean) return '';
 
-
-    <div class="card">
-
-      <h3>
-        Add / Edit Document
-      </h3>
+  return `tel:${clean}`;
+}
 
 
-      <form id="documentForm">
+/* =========================================================
+   GENERIC TABLE HELPERS
+   ========================================================= */
 
-        <input
-          type="hidden"
-          id="documentId"
-        >
-
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label>
-              Title
-            </label>
-
-            <input
-              id="documentTitle"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Category
-            </label>
-
-            <select id="documentCategory">
-
-              <option value="brochure">
-                Brochure
-              </option>
-
-              <option value="tds">
-                TDS
-              </option>
-
-              <option value="msds">
-                MSDS
-              </option>
-
-              <option value="other">
-                Other
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group full">
-
-            <label>
-              Product ID (optional)
-            </label>
-
-            <input
-              type="number"
-              id="documentProductId"
-              placeholder="Product ID"
-            >
-
-          </div>
-
-
-          <div class="form-group full">
-
-            <label>
-              Upload File
-            </label>
-
-            <input
-              type="file"
-              id="documentFile"
-              accept=".pdf,.doc,.docx,.xls,.xlsx"
-            >
-
-            <input
-              id="documentUrl"
-              placeholder="Or paste file URL"
-              style="margin-top:7px"
-            >
-
-          </div>
-
-        </div>
-
-
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Save Document
-        </button>
-
-
-        <button
-          class="btn btn-secondary"
-          type="button"
-          id="documentCancel"
-        >
-          Clear
-        </button>
-
-
-        <p id="documentMsg"></p>
-
-      </form>
-
+function emptyState(
+  message = 'No records found.'
+) {
+  return cardHtml(`
+    <div style="
+      text-align:center;
+      padding:35px;
+      color:#64748b;
+    ">
+      ${esc(message)}
     </div>
-
-
-    <div class="card">
-
-      <h3>
-        Document List
-      </h3>
-
-
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Product</th>
-              <th>File</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-
-          <tbody>
-
-            ${(data || []).map(d => `
-
-              <tr>
-
-                <td>
-                  ${esc(d.id)}
-                </td>
-
-                <td>
-                  <b>
-                    ${esc(d.title)}
-                  </b>
-                </td>
-
-                <td>
-                  ${esc(d.category)}
-                </td>
-
-                <td>
-                  ${esc(d.product_id)}
-                </td>
-
-                <td>
-
-                  ${
-                    d.file_url
-                    ?
-                    `<a
-                      href="${esc(d.file_url)}"
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      Open File
-                    </a>`
-                    :
-                    '-'
-                  }
-
-                </td>
-
-                <td>
-
-                  <button
-                    class="btn btn-primary"
-                    data-edit-document="${esc(d.id)}"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    class="btn btn-danger"
-                    data-delete-document="${esc(d.id)}"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `).join('')}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
   `);
-
-
-  $('#documentForm')
-    ?.addEventListener(
-      'submit',
-      saveDocument
-    );
-
-
-  $('#documentCancel')
-    ?.addEventListener(
-      'click',
-      clearDocumentForm
-    );
-
-
-  $$('[data-edit-document]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          editDocument(
-            btn.dataset.editDocument
-          )
-      );
-
-    });
-
-
-  $$('[data-delete-document]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          deleteDocument(
-            btn.dataset.deleteDocument
-          )
-      );
-
-    });
-
 }
 
 
-async function saveDocument(e) {
-
-  e.preventDefault();
-
-
-  const msg =
-    $('#documentMsg');
-
-  if (msg)
-    msg.textContent =
-      'Saving...';
-
-
-  try {
-
-    let fileUrl =
-      $('#documentUrl')
-        .value
-        .trim();
-
-
-    const file =
-      $('#documentFile')
-        .files[0];
-
-
-    if (file) {
-
-      const uploaded =
-        await uploadMedia(
-          file,
-          'documents'
-        );
-
-      fileUrl =
-        uploaded.url;
-
-    }
-
-
-    const payload = {
-
-      title:
-        $('#documentTitle')
-          .value
-          .trim(),
-
-      category:
-        $('#documentCategory')
-          .value,
-
-      file_url:
-        fileUrl || null,
-
-      product_id:
-        $('#documentProductId')
-          .value
-          ? Number(
-              $('#documentProductId')
-                .value
-            )
-          : null
-
-    };
-
-
-    const id =
-      $('#documentId')
-        .value;
-
-
-    const result =
-      id
-      ?
-      await sb
-        .from('documents')
-        .update(payload)
-        .eq('id', id)
-      :
-      await sb
-        .from('documents')
-        .insert(payload);
-
-
-    if (result.error)
-      throw result.error;
-
-
-    if (msg) {
-
-      msg.style.color =
-        '#166534';
-
-      msg.textContent =
-        'Document saved successfully.';
-
-    }
-
-
-    clearDocumentForm();
-
-    await documents();
-
-
-  } catch (err) {
-
-    if (msg) {
-
-      msg.style.color =
-        '#dc2626';
-
-      msg.textContent =
-        err.message;
-
-    }
-
-  }
-
+function confirmAction(
+  message
+) {
+  return window.confirm(
+    message
+  );
 }
 
 
-async function editDocument(id) {
+/* =========================================================
+   ERROR HANDLING
+   ========================================================= */
 
-  const {
-    data,
+function handleDatabaseError(
+  error,
+  fallback = 'Database operation failed.'
+) {
+  console.error(
+    'Database error:',
     error
-  } = await sb
-    .from('documents')
-    .select('*')
-    .eq('id', id)
-    .single();
+  );
 
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  $('#documentId').value =
-    data.id || '';
-
-  $('#documentTitle').value =
-    data.title || '';
-
-  $('#documentCategory').value =
-    data.category || 'other';
-
-  $('#documentProductId').value =
-    data.product_id || '';
-
-  $('#documentUrl').value =
-    data.file_url || '';
-
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
-
+  showToast(
+    error?.message ||
+    fallback,
+    'error'
+  );
 }
 
 
-async function deleteDocument(id) {
-
-  if (
-    !confirm(
-      'Delete this document?'
-    )
-  ) return;
-
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('documents')
-    .select('file_url')
-    .eq('id', id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  const result =
-    await sb
-      .from('documents')
-      .delete()
-      .eq('id', id);
-
-
-  if (result.error) {
-
-    alert(
-      result.error.message
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    await deleteMediaUrl(
-      data.file_url
-    );
-
-  } catch (_) {}
-
-
-  await documents();
-
-}
-
-
-function clearDocumentForm() {
-
-  $('#documentForm')?.reset();
-
-  if ($('#documentId'))
-    $('#documentId').value = '';
-
-}
-
-
-/* =========================
-   TRACKING
-========================= */
-
-async function tracking() {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('tracking')
-    .select('*')
-    .order('id', {
-      ascending:false
-    });
-
-
-  if (error) {
-
-    setMain(`
-      <div class="card">
-
-        <h2>Tracking</h2>
-
-        <p style="color:#dc2626">
-          ${esc(error.message)}
-        </p>
-
-      </div>
-    `);
-
-    return;
-
-  }
-
-
-  setMain(`
-
-    <h2 class="page-title">
-      Tracking Information
-    </h2>
-
-
-    <div class="card">
-
-      <h3>
-        Add / Edit Tracking
-      </h3>
-
-
-      <form id="trackingForm">
-
-        <input
-          type="hidden"
-          id="trackingId"
-        >
-
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label>
-              Reference No
-            </label>
-
-            <input
-              id="trackingReference"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Customer Name
-            </label>
-
-            <input
-              id="trackingCustomer"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Product
-            </label>
-
-            <input
-              id="trackingProduct"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Status
-            </label>
-
-            <input
-              id="trackingStatus"
-              placeholder="In Transit"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Location
-            </label>
-
-            <input
-              id="trackingLocation"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              ETA
-            </label>
-
-            <input
-              id="trackingEta"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Step 1
-            </label>
-
-            <input
-              id="trackingStep1"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Step 2
-            </label>
-
-            <input
-              id="trackingStep2"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Step 3
-            </label>
-
-            <input
-              id="trackingStep3"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              Step 4
-            </label>
-
-            <input
-              id="trackingStep4"
-            >
-
-          </div>
-
-        </div>
-
-
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Save Tracking
-        </button>
-
-
-        <button
-          class="btn btn-secondary"
-          type="button"
-          id="trackingCancel"
-        >
-          Clear
-        </button>
-
-
-        <p id="trackingMsg"></p>
-
-      </form>
-
-    </div>
-
-
-    <div class="card">
-
-      <h3>
-        Tracking List
-      </h3>
-
-
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>Reference</th>
-              <th>Customer</th>
-              <th>Product</th>
-              <th>Status</th>
-              <th>Location</th>
-              <th>ETA</th>
-              <th>Actions</th>
-            </tr>
-
-          </thead>
-
-
-          <tbody>
-
-            ${(data || []).map(t => `
-
-              <tr>
-
-                <td>
-                  <b>
-                    ${esc(t.reference_no)}
-                  </b>
-                </td>
-
-                <td>
-                  ${esc(t.customer_name)}
-                </td>
-
-                <td>
-                  ${esc(t.product)}
-                </td>
-
-                <td>
-                  ${esc(t.status)}
-                </td>
-
-                <td>
-                  ${esc(t.location)}
-                </td>
-
-                <td>
-                  ${esc(t.eta)}
-                </td>
-
-                <td>
-
-                  <button
-                    class="btn btn-primary"
-                    data-edit-tracking="${esc(t.id)}"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    class="btn btn-danger"
-                    data-delete-tracking="${esc(t.id)}"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `).join('')}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </div>
-
-  `);
-
-
-  $('#trackingForm')
-    ?.addEventListener(
-      'submit',
-      saveTracking
-    );
-
-
-  $('#trackingCancel')
-    ?.addEventListener(
-      'click',
-      clearTrackingForm
-    );
-
-
-  $$('[data-edit-tracking]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          editTracking(
-            btn.dataset.editTracking
-          )
-      );
-
-    });
-
-
-  $$('[data-delete-tracking]')
-    .forEach(btn => {
-
-      btn.addEventListener(
-        'click',
-        () =>
-          deleteTracking(
-            btn.dataset.deleteTracking
-          )
-      );
-
-    });
-
-}
-
-
-async function saveTracking(e) {
-
-  e.preventDefault();
-
-
-  const payload = {
-
-    reference_no:
-      $('#trackingReference')
-        .value
-        .trim(),
-
-    customer_name:
-      $('#trackingCustomer')
-        .value
-        .trim(),
-
-    product:
-      $('#trackingProduct')
-        .value
-        .trim(),
-
-    status:
-      $('#trackingStatus')
-        .value
-        .trim(),
-
-    location:
-      $('#trackingLocation')
-        .value
-        .trim(),
-
-    eta:
-      $('#trackingEta')
-        .value
-        .trim(),
-
-    step1:
-      $('#trackingStep1')
-        .value
-        .trim(),
-
-    step2:
-      $('#trackingStep2')
-        .value
-        .trim(),
-
-    step3:
-      $('#trackingStep3')
-        .value
-        .trim(),
-
-    step4:
-      $('#trackingStep4')
-        .value
-        .trim()
-
-  };
-
-
-  const id =
-    $('#trackingId')
-      .value;
-
-
-  const result =
-    id
-    ?
-    await sb
-      .from('tracking')
-      .update(payload)
-      .eq('id', id)
-    :
-    await sb
-      .from('tracking')
-      .insert(payload);
-
-
-  if (result.error) {
-
-    $('#trackingMsg').textContent =
-      result.error.message;
-
-    $('#trackingMsg').style.color =
-      '#dc2626';
-
-    return;
-
-  }
-
-
-  $('#trackingMsg').textContent =
-    'Tracking saved successfully.';
-
-  $('#trackingMsg').style.color =
-    '#166534';
-
-
-  clearTrackingForm();
-
-  await tracking();
-
-}
-
-
-async function editTracking(id) {
-
-  const {
-    data,
-    error
-  } = await sb
-    .from('tracking')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  $('#trackingId').value =
-    data.id || '';
-
-  $('#trackingReference').value =
-    data.reference_no || '';
-
-  $('#trackingCustomer').value =
-    data.customer_name || '';
-
-  $('#trackingProduct').value =
-    data.product || '';
-
-  $('#trackingStatus').value =
-    data.status || '';
-
-  $('#trackingLocation').value =
-    data.location || '';
-
-  $('#trackingEta').value =
-    data.eta || '';
-
-  $('#trackingStep1').value =
-    data.step1 || '';
-
-  $('#trackingStep2').value =
-    data.step2 || '';
-
-  $('#trackingStep3').value =
-    data.step3 || '';
-
-  $('#trackingStep4').value =
-    data.step4 || '';
-
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
-
-}
-
-
-async function deleteTracking(id) {
-
-  if (
-    !confirm(
-      'Delete this tracking record?'
-    )
-  ) return;
-
-
-  const {
-    error
-  } = await sb
-    .from('tracking')
-    .delete()
-    .eq('id', id);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  await tracking();
-
-}
-
-
-function clearTrackingForm() {
-
-  $('#trackingForm')?.reset();
-
-  if ($('#trackingId'))
-    $('#trackingId').value = '';
-
-}
-
-
-/* =========================
-   MEDIA LIBRARY
-========================= */
-
-async function mediaLibrary() {
-
-  setMain(`
-
-    <h2 class="page-title">
-      Media Library
-    </h2>
-
-
-    <div class="card">
-
-      <h3>
-        Upload Photo / Video / PDF / Document
-      </h3>
-
-
-      <form id="mediaForm">
-
-        <div class="form-grid">
-
-          <div class="form-group">
-
-            <label>
-              Select Folder
-            </label>
-
-            <select id="mediaFolder">
-
-              <option value="general">
-                General
-              </option>
-
-              <option value="images">
-                Images
-              </option>
-
-              <option value="videos">
-                Videos
-              </option>
-
-              <option value="brochures">
-                Brochures
-              </option>
-
-              <option value="documents">
-                Documents
-              </option>
-
-              <option value="tds">
-                TDS
-              </option>
-
-              <option value="msds">
-                MSDS
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label>
-              File
-            </label>
-
-            <input
-              type="file"
-              id="mediaFile"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <button
-          class="btn btn-primary"
-          type="submit"
-        >
-          Upload File
-        </button>
-
-
-        <p id="mediaMsg"></p>
-
-      </form>
-
-    </div>
-
-
-    <div class="card">
-
-      <h3>
-        Uploaded Files
-      </h3>
-
-      <div id="mediaList">
-        Loading...
-      </div>
-
-    </div>
-
-  `);
-
-
-  $('#mediaForm')
-    ?.addEventListener(
-      'submit',
-      uploadFromMediaLibrary
-    );
-
-
-  await refreshMediaList();
-
-}
-
-
-async function uploadFromMediaLibrary(e) {
-
-  e.preventDefault();
-
-
-  const msg =
-    $('#mediaMsg');
-
-  const file =
-    $('#mediaFile')
-      .files[0];
-
-  const folder =
-    $('#mediaFolder')
-      .value;
-
-
-  if (!file) return;
-
-
-  try {
-
-    if (msg)
-      msg.textContent =
-        'Uploading...';
-
-
-    await uploadMedia(
-      file,
-      folder
-    );
-
-
-    if (msg) {
-
-      msg.style.color =
-        '#166534';
-
-      msg.textContent =
-        'File uploaded successfully.';
-
-    }
-
-
-    $('#mediaForm').reset();
-
-    await refreshMediaList();
-
-
-  } catch (err) {
-
-    if (msg) {
-
-      msg.style.color =
-        '#dc2626';
-
-      msg.textContent =
-        err.message;
-
-    }
-
-  }
-
-}
-
-
-async function refreshMediaList() {
-
-  const box =
-    $('#mediaList');
-
-  if (!box) return;
-
-
-  try {
-
-    const files =
-      await listAllFiles('');
-
-
-    if (!files.length) {
-
-      box.innerHTML =
-        '<p>No files uploaded yet.</p>';
-
+/* =========================================================
+   AUTH STATE LISTENER
+   ========================================================= */
+
+sb.auth.onAuthStateChange(
+  async (event, session) => {
+
+    if (
+      event === 'SIGNED_OUT'
+    ) {
       return;
-
     }
 
-
-    box.innerHTML = `
-
-      <div style="
-        display:grid;
-        grid-template-columns:
-          repeat(auto-fill,minmax(220px,1fr));
-        gap:16px
-      ">
-
-        ${files.map(file => {
-
-          const {
-            data
-          } =
-            sb.storage
-              .from(BUCKET)
-              .getPublicUrl(
-                file.path
-              );
-
-          const url =
-            data.publicUrl;
-
-
-          const type =
-            file.metadata?.mimetype ||
-            '';
-
-
-          let preview = '';
-
-
-          if (
-            type.startsWith('image/')
-          ) {
-
-            preview = `
-
-              <img
-                src="${esc(url)}"
-                style="
-                  width:100%;
-                  height:160px;
-                  object-fit:contain;
-                  background:#f3f4f6;
-                  border-radius:8px
-                "
-              >
-
-            `;
-
-          } else if (
-            type.startsWith('video/')
-          ) {
-
-            preview = `
-
-              <video
-                src="${esc(url)}"
-                controls
-                style="
-                  width:100%;
-                  height:160px;
-                  background:#000;
-                  border-radius:8px
-                "
-              ></video>
-
-            `;
-
-          } else if (
-            type ===
-            'application/pdf' ||
-            file.name
-              .toLowerCase()
-              .endsWith('.pdf')
-          ) {
-
-            preview = `
-
-              <iframe
-                src="${esc(url)}"
-                style="
-                  width:100%;
-                  height:160px;
-                  border:0;
-                  border-radius:8px
-                "
-              ></iframe>
-
-            `;
-
-          } else {
-
-            preview = `
-
-              <div style="
-                height:160px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                background:#f3f4f6;
-                border-radius:8px;
-                font-size:42px
-              ">
-                📄
-              </div>
-
-            `;
-
-          }
-
-
-          return `
-
-            <div style="
-              border:1px solid #e5e7eb;
-              border-radius:10px;
-              padding:10px;
-              background:#fff
-            ">
-
-              ${preview}
-
-              <div style="
-                margin-top:9px;
-                font-size:13px;
-                font-weight:700;
-                word-break:break-word
-              ">
-                ${esc(file.name)}
-              </div>
-
-              <div style="
-                display:flex;
-                gap:7px;
-                margin-top:9px
-              ">
-
-                <a
-                  href="${esc(url)}"
-                  target="_blank"
-                  rel="noopener"
-                  class="btn btn-primary"
-                  style="
-                    text-decoration:none
-                  "
-                >
-                  Open
-                </a>
-
-                <button
-                  class="btn btn-danger"
-                  data-delete-media="${esc(file.path)}"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }).join('')}
-
-      </div>
-
-    `;
-
-
-    $$('[data-delete-media]')
-      .forEach(btn => {
-
-        btn.addEventListener(
-          'click',
-          () =>
-            deleteMediaFile(
-              btn.dataset.deleteMedia
-            )
-        );
-
-      });
-
-
-  } catch (err) {
-
-    box.innerHTML = `
-
-      <p style="color:#dc2626">
-        ${esc(err.message)}
-      </p>
-
-    `;
+    if (
+      event === 'TOKEN_REFRESHED'
+    ) {
+      return;
+    }
 
   }
-
-}
-
-
-async function deleteMediaFile(path) {
-
-  if (
-    !confirm(
-      'Delete this file?'
-    )
-  ) return;
-
-
-  const {
-    error
-  } = await sb.storage
-    .from(BUCKET)
-    .remove([path]);
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-
-  await refreshMediaList();
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-boot();
+);
