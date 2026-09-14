@@ -1187,7 +1187,7 @@ async function saveProduct(e) {
         await sb
           .from('products')
           .update(payload)
-          .eq('id', id);
+          .eq('key', originalKey);
 
     } else {
 
@@ -1888,7 +1888,7 @@ async function homepage() {
   } = await sb
     .from('site_content')
     .select('*')
-    .order('id');
+    .order('key');
 
 
   if (error) {
@@ -1989,7 +1989,7 @@ async function homepage() {
 
             <button
               class="btn btn-primary"
-              data-save-site="${esc(item.id)}"
+              data-save-site="${esc(item.key || item.section_key || item.id || '')}"
             >
               Save
             </button>
