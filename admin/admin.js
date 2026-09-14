@@ -1,13 +1,13 @@
-/* =========================================================
-   DEVI GROUPS ADMIN PANEL
-   PART 1 — CONFIG + AUTH + LOGIN + LOGOUT + PASSWORD RESET
-========================================================= */
-
 const cfg = window.DEVI_CMS_CONFIG;
 
 if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey) {
-  alert("Supabase configuration not found. Check cms-config.js");
-  throw new Error("DEVI_CMS_CONFIG missing");
+  document.body.innerHTML = `
+    <div style="font-family:Arial;padding:40px;color:#b91c1c">
+      <h2>Supabase configuration not found.</h2>
+      <p>Check admin/cms-config.js</p>
+    </div>
+  `;
+  throw new Error('Supabase configuration not found');
 }
 
 const sb = supabase.createClient(
@@ -15,3467 +15,1964 @@ const sb = supabase.createClient(
   cfg.supabaseKey
 );
 
-let currentView = "dashboard";
+let currentView = 'dashboard';
+
+const $ = s => document.querySelector(s);
+
+const esc = s =>
+  String(s ?? '').replace(
+    /[&<>"']/g,
+    m => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[m])
+  );
+
 
 /* =========================
-   HELPERS
+   AUTH
 ========================= */
 
-const $ = (selector) =>
-  document.querySelector(selector);
+async function boot() {
 
-function esc(value) {
-  return String(value ?? "").replace(
-    /[&<>"']/g,
-    (m) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    })[m]
-  );
-}
+  const {
+    data: { session }
+  } = await sb.auth.getSession();
 
-function showMessage(selector, message, type = "error") {
-  const el = $(selector);
-  if (!el) return;
+  if (session) {
+    showApp(session);
+  } else {
+    $('#login').classList.remove('hidden');
+  }
 
-  el.textContent = message;
+  sb.auth.onAuthStateChange((_event, session) => {
 
-  el.className =
-    type === "success"
-      ? "text-sm mt-3 text-emerald-600"
-      : "text-sm mt-3 text-rose-600";
+    if (session) {
+      showApp(session);
+    } else {
+      location.reload();
+    }
+
+  });
+
 }
 
 
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function loginUser(event) {
-  event.preventDefault();
-
-  const email = $("#email")?.value?.trim();
-  const password = $("#password")?.value;
-
-  if (!email || !password) {
-    showMessage(
-      "#loginMsg",
-      "Please enter email and password."
-    );
-    return;
-  }
-
-  showMessage(
-    "#loginMsg",
-    "Signing in...",
-    "success"
-  );
-
-  const { data, error } =
-    await sb.auth.signInWithPassword({
-      email,
-      password
-    });
-
-  if (error) {
-    showMessage(
-      "#loginMsg",
-      error.message
-    );
-    return;
-  }
-
-  if (data?.session) {
-    await showApp(data.session);
-  }
-}
-
-
-/* =========================================================
-   SHOW ADMIN APP
-========================================================= */
+/* SHOW APP */
 
 async function showApp(session) {
 
-  const login = $("#login");
-  const app = $("#app");
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
 
-  if (login) {
-    login.classList.add("hidden");
-  }
+  $('#userEmail').textContent =
+    session.user.email || '';
 
-  if (app) {
-    app.classList.remove("hidden");
-  }
+  render();
 
-  const userEmail = $("#userEmail");
-
-  if (userEmail) {
-    userEmail.textContent =
-      session?.user?.email || "";
-  }
-
-  await render();
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+/* LOGIN */
 
-async function logoutUser() {
+$('#loginForm').onsubmit = async e => {
 
-  const { error } =
-    await sb.auth.signOut();
+  e.preventDefault();
 
-  if (error) {
-    console.error(
-      "Logout error:",
-      error
-    );
-  }
-}
-
-
-/* =========================================================
-   FORGOT PASSWORD BOX
-========================================================= */
-
-function showResetBox() {
-
-  let box = document.getElementById(
-    "resetBox"
-  );
-
-  if (box) {
-    box.remove();
-    return;
-  }
-
-  const loginForm =
-    document.getElementById("loginForm");
-
-  if (!loginForm) return;
-
-  box = document.createElement("div");
-
-  box.id = "resetBox";
-
-  box.className =
-    "mt-5 p-5 border rounded-2xl bg-slate-50";
-
-  box.innerHTML = `
-    <h3 class="font-bold text-lg mb-2">
-      Reset Password
-    </h3>
-
-    <p class="text-sm text-slate-500 mb-4">
-      Enter your admin email and we will send
-      you a password reset link.
-    </p>
-
-    <input
-      id="resetEmail"
-      type="email"
-      placeholder="Admin email"
-      class="w-full border rounded-xl p-3 mb-3"
-    >
-
-    <button
-      type="button"
-      id="resetButton"
-      class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold"
-    >
-      Send Reset Email
-    </button>
-
-    <p
-      id="resetMessage"
-      class="text-sm mt-3"
-    ></p>
-  `;
-
-  loginForm.parentNode.appendChild(box);
-
-  document
-    .getElementById("resetButton")
-    .onclick = function () {
-      sendReset(this);
-    };
-}
-
-
-/* =========================================================
-   SEND PASSWORD RESET EMAIL
-========================================================= */
-
-async function sendReset(button) {
-
-  const email =
-    document
-      .getElementById("resetEmail")
-      ?.value
-      ?.trim();
-
-  const message =
-    document.getElementById(
-      "resetMessage"
-    );
-
-  if (!email) {
-
-    if (message) {
-      message.textContent =
-        "Please enter your email address.";
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-    return;
-  }
-
-  if (button) {
-    button.disabled = true;
-    button.textContent =
-      "Sending reset email...";
-  }
-
-  if (message) {
-    message.textContent = "";
-  }
-
-  try {
-
-    /*
-      IMPORTANT:
-      This redirect goes to the Admin Panel,
-      not the public homepage.
-    */
-
-    const redirectTo =
-      window.location.origin +
-      window.location.pathname
-        .replace(/\/?$/, "/");
-
-    const { error } =
-      await sb.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo
-        }
-      );
-
-    if (error) {
-      throw error;
-    }
-
-    if (message) {
-      message.textContent =
-        "Reset email sent. Check your inbox.";
-      message.className =
-        "text-sm mt-3 text-emerald-600";
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Password reset error:",
-      error
-    );
-
-    if (message) {
-      message.textContent =
-        error.message ||
-        "Failed to send reset email.";
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-  } finally {
-
-    if (button) {
-      button.disabled = false;
-      button.textContent =
-        "Send Reset Email";
-    }
-
-  }
-}
-
-
-/* =========================================================
-   PASSWORD UPDATE
-========================================================= */
-
-async function updatePassword(event) {
-
-  if (event) {
-    event.preventDefault();
-  }
-
-  const password =
-    document.getElementById(
-      "newPassword"
-    )?.value;
-
-  const confirmPassword =
-    document.getElementById(
-      "confirmPassword"
-    )?.value;
-
-  const message =
-    document.getElementById(
-      "recoveryMessage"
-    );
-
-  if (!password || !confirmPassword) {
-
-    if (message) {
-      message.textContent =
-        "Please enter both password fields.";
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-    return;
-  }
-
-  if (password.length < 6) {
-
-    if (message) {
-      message.textContent =
-        "Password must be at least 6 characters.";
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-    return;
-  }
-
-  if (password !== confirmPassword) {
-
-    if (message) {
-      message.textContent =
-        "Passwords do not match.";
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-    return;
-  }
-
-  if (message) {
-    message.textContent =
-      "Updating password...";
-  }
-
-  const { error } =
-    await sb.auth.updateUser({
-      password
-    });
-
-  if (error) {
-
-    if (message) {
-      message.textContent =
-        error.message;
-      message.className =
-        "text-sm mt-3 text-rose-600";
-    }
-
-    return;
-  }
-
-  if (message) {
-    message.textContent =
-      "Password updated successfully. You can login now.";
-    message.className =
-      "text-sm mt-3 text-emerald-600";
-  }
-
-  setTimeout(() => {
-
-    const recovery =
-      document.getElementById(
-        "recoveryPage"
-      );
-
-    const login =
-      document.getElementById(
-        "login"
-      );
-
-    if (recovery) {
-      recovery.classList.add(
-        "hidden"
-      );
-    }
-
-    if (login) {
-      login.classList.remove(
-        "hidden"
-      );
-    }
-
-  }, 1500);
-}
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-async function checkAuth() {
+  $('#loginMsg').textContent =
+    'Signing in...';
 
   const {
-    data: {
-      session
-    }
-  } = await sb.auth.getSession();
+    error
+  } = await sb.auth.signInWithPassword({
 
-  /*
-    Password recovery session
-  */
+    email: $('#email').value.trim(),
 
-  if (
-    window.location.hash.includes(
-      "type=recovery"
-    )
-  ) {
+    password: $('#password').value
 
-    const recovery =
-      document.getElementById(
-        "recoveryPage"
-      );
+  });
 
-    const login =
-      document.getElementById(
-        "login"
-      );
+  if (error) {
 
-    const app =
-      document.getElementById(
-        "app"
-      );
-
-    if (login) {
-      login.classList.add(
-        "hidden"
-      );
-    }
-
-    if (app) {
-      app.classList.add(
-        "hidden"
-      );
-    }
-
-    if (recovery) {
-      recovery.classList.remove(
-        "hidden"
-      );
-    }
-
-    return;
-  }
-
-
-  if (session) {
-
-    await showApp(session);
+    $('#loginMsg').textContent =
+      error.message;
 
   } else {
 
-    const login =
-      document.getElementById(
-        "login"
-      );
-
-    const app =
-      document.getElementById(
-        "app"
-      );
-
-    if (login) {
-      login.classList.remove(
-        "hidden"
-      );
-    }
-
-    if (app) {
-      app.classList.add(
-        "hidden"
-      );
-    }
+    $('#loginMsg').textContent = '';
 
   }
+
+};
+
+
+/* LOGOUT */
+
+$('#logout').onclick = async () => {
+
+  await sb.auth.signOut();
+
+};
+
+
+/* =========================
+   TABS
+========================= */
+
+document
+  .querySelectorAll('.tab')
+  .forEach(button => {
+
+    button.onclick = () => {
+
+      document
+        .querySelectorAll('.tab')
+        .forEach(x =>
+          x.classList.remove('active')
+        );
+
+      button.classList.add('active');
+
+      currentView =
+        button.dataset.view;
+
+      render();
+
+    };
+
+  });
+
+
+/* =========================
+   RENDER
+========================= */
+
+async function render() {
+
+  const main = $('#main');
+
+  if (!main) return;
+
+  main.innerHTML =
+    '<div style="padding:40px;text-align:center">Loading...</div>';
+
+  if (currentView === 'dashboard')
+    return dashboard();
+
+  if (currentView === 'products')
+    return crudProducts();
+
+  if (currentView === 'units')
+    return crudUnits();
+
+  if (currentView === 'homepage')
+    return homepage();
+
+  if (currentView === 'enquiries')
+    return enquiries();
+
+  if (currentView === 'reviews')
+    return reviews();
+
+  if (currentView === 'company')
+    return company();
+
+  if (currentView === 'documents')
+    return documents();
+
+  if (currentView === 'tracking')
+    return tracking();
+
 }
 
 
-/* =========================================================
-   AUTH LISTENER
-========================================================= */
+/* =========================
+   DASHBOARD
+========================= */
 
-sb.auth.onAuthStateChange(
-  async (_event, session) => {
+async function dashboard() {
 
-    if (session) {
-      await showApp(session);
-    }
+  const tables = [
+    'products',
+    'business_units',
+    'enquiries',
+    'reviews',
+    'documents',
+    'tracking'
+  ];
 
-  }
-);
+  const nums = {};
 
+  for (const table of tables) {
 
-/* =========================================================
-   STARTUP
-========================================================= */
+    const {
+      count,
+      error
+    } = await sb
+      .from(table)
+      .select('*', {
+        count: 'exact',
+        head: true
+      });
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    /*
-      Login form
-    */
-
-    const loginForm =
-      document.getElementById(
-        "loginForm"
-      );
-
-    if (loginForm) {
-
-      loginForm.addEventListener(
-        "submit",
-        loginUser
-      );
-
-    }
-
-
-    /*
-      Logout
-    */
-
-    const logout =
-      document.getElementById(
-        "logout"
-      );
-
-    if (logout) {
-
-      logout.addEventListener(
-        "click",
-        logoutUser
-      );
-
-    }
-
-
-    /*
-      Recovery form
-    */
-
-    const recoveryForm =
-      document.getElementById(
-        "recoveryForm"
-      );
-
-    if (recoveryForm) {
-
-      recoveryForm.addEventListener(
-        "submit",
-        updatePassword
-      );
-
-    }
-
-
-    /*
-      Check existing login
-    */
-
-    checkAuth();
+    nums[table] =
+      error ? 0 : (count || 0);
 
   }
-);
 
 
-/* =========================================================
-   GLOBAL FUNCTIONS
-   =========================================================
-   These are kept global so inline buttons
-   in admin/index.html can call them.
-========================================================= */
+  $('#main').innerHTML = `
 
-window.showResetBox =
-  showResetBox;
+    <h2 style="font-size:30px;font-weight:800;margin-bottom:25px">
+      Dashboard
+    </h2>
 
-window.sendReset =
-  sendReset;
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+    ">
 
-window.updatePassword =
-  updatePassword;
+      ${tables.map(t => `
 
-window.loginUser =
-  loginUser;
+        <div style="
+          border:1px solid #e5e7eb;
+          border-radius:16px;
+          padding:22px;
+          background:#fff;
+        ">
 
-window.logoutUser =
-  logoutUser;
+          <div style="
+            color:#64748b;
+            text-transform:uppercase;
+            font-size:12px;
+            font-weight:700;
+          ">
+            ${esc(t.replace('_',' '))}
+          </div>
+
+          <div style="
+            font-size:38px;
+            font-weight:900;
+            margin-top:8px;
+          ">
+            ${nums[t]}
+          </div>
+
+        </div>
+
+      `).join('')}
+
+    </div>
+  `;
+
+}
 
 
-/*
-   PART 1 END
-*/
-/* =========================================================
-   PART 2 — PRODUCTS + BUSINESS UNITS
-   ========================================================= */
+/* =========================
+   PRODUCT FORM
+========================= */
+
+function productFormHtml(item = {}) {
+
+  return `
+
+    <form
+      id="editForm"
+      data-type="product"
+      style="display:grid;gap:12px"
+    >
+
+      <input
+        name="id"
+        type="hidden"
+        value="${esc(item.id)}"
+      >
+
+      <input
+        name="name"
+        required
+        placeholder="Product Name"
+        value="${esc(item.name)}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="business_unit"
+        required
+        placeholder="Business Unit"
+        value="${esc(item.business_unit || 'DEVI CHEMICALS')}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <textarea
+        name="description"
+        placeholder="Description"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;min-height:100px"
+      >${esc(item.description)}</textarea>
+
+      <input
+        name="packing"
+        placeholder="Packing"
+        value="${esc(item.packing)}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="photo_url"
+        placeholder="Photo URL"
+        value="${esc(item.photo_url || item.image_url)}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="brochure_url"
+        placeholder="Brochure URL"
+        value="${esc(item.brochure_url)}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="sort_order"
+        type="number"
+        value="${item.sort_order || 0}"
+        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <label style="display:flex;gap:8px;align-items:center">
+
+        <input
+          name="active"
+          type="checkbox"
+          ${item.active !== false ? 'checked' : ''}
+        >
+
+        Active
+
+      </label>
+
+      <button
+        type="submit"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:13px 18px;
+          border-radius:10px;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >
+        Save Product
+      </button>
+
+    </form>
+
+  `;
+
+}
 
 
 /* =========================
    PRODUCTS
-   ========================= */
+========================= */
 
-async function products() {
-  main.innerHTML = `
-    <div class="page-head">
-      <div>
-        <h2>Products</h2>
-        <p>Manage website products</p>
-      </div>
+async function crudProducts() {
 
-      <button class="btn primary" id="addProductBtn">
-        + Add Product
-      </button>
-    </div>
+  const {
+    data,
+    error
+  } = await sb
+    .from('products')
+    .select('*')
+    .order('business_unit')
+    .order('sort_order');
 
-    <div id="productFormWrap"></div>
-
-    <div class="card">
-      <div id="productsTable">
-        Loading products...
-      </div>
-    </div>
-  `;
-
-  document
-    .getElementById("addProductBtn")
-    .addEventListener("click", () => {
-      showProductForm();
-    });
-
-  await loadProducts();
-}
-
-
-async function loadProducts() {
-  const box = document.getElementById("productsTable");
-
-  if (!box) return;
-
-  const { data, error } = await sb
-    .from("products")
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .order("id", { ascending: true });
 
   if (error) {
-    box.innerHTML = `
-      <div class="error">
-        ${esc(error.message)}
+
+    $('#main').innerHTML = `
+      <div style="color:#dc2626;padding:20px">
+        <h2>Products Error</h2>
+        <p>${esc(error.message)}</p>
       </div>
     `;
+
     return;
+
   }
 
-  if (!data || data.length === 0) {
-    box.innerHTML = `
-      <div class="empty">
-        No products found.
-      </div>
-    `;
-    return;
-  }
 
-  box.innerHTML = `
-    <div class="table-wrap">
-      <table>
+  $('#main').innerHTML = `
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      margin-bottom:20px;
+    ">
+
+      <h2 style="
+        font-size:30px;
+        font-weight:800;
+        margin:0;
+      ">
+        Products
+      </h2>
+
+      <button
+        id="new"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:10px 16px;
+          border-radius:10px;
+          cursor:pointer;
+        "
+      >
+        + Add Product
+      </button>
+
+    </div>
+
+    <div
+      id="editor"
+      class="hidden"
+      style="
+        border:1px solid #e5e7eb;
+        border-radius:16px;
+        padding:20px;
+        margin-bottom:20px;
+        background:#fff;
+      "
+    ></div>
+
+    <div style="
+      overflow:auto;
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+    ">
+
+      <table style="width:100%;border-collapse:collapse">
+
         <thead>
-          <tr>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Business Unit</th>
-            <th>Packing</th>
-            <th>Status</th>
-            <th>Actions</th>
+
+          <tr style="background:#f8fafc;text-align:left">
+
+            <th style="padding:12px">
+              Product
+            </th>
+
+            <th style="padding:12px">
+              Unit
+            </th>
+
+            <th style="padding:12px">
+              Packing
+            </th>
+
+            <th style="padding:12px">
+              Active
+            </th>
+
+            <th style="padding:12px">
+              Action
+            </th>
+
           </tr>
+
         </thead>
 
         <tbody>
-          ${data.map(p => `
-            <tr>
 
-              <td>
-                ${
-                  p.image_url || p.photo_url
-                    ? `
-                      <img
-                        src="${esc(p.image_url || p.photo_url)}"
-                        style="
-                          width:60px;
-                          height:60px;
-                          object-fit:contain;
-                          border-radius:8px;
-                          border:1px solid #ddd;
-                        "
-                      >
-                    `
-                    : `
-                      <span>No image</span>
-                    `
-                }
+          ${(data || []).map(p => `
+
+            <tr style="border-top:1px solid #e5e7eb">
+
+              <td style="padding:12px;font-weight:700">
+                ${esc(p.name)}
               </td>
 
-              <td>
-                <strong>${esc(p.name || "")}</strong>
+              <td style="padding:12px">
+                ${esc(p.business_unit)}
               </td>
 
-              <td>
-                ${esc(p.business_unit || "-")}
+              <td style="padding:12px">
+                ${esc(p.packing)}
               </td>
 
-              <td>
-                ${esc(p.packing || "-")}
+              <td style="padding:12px">
+                ${p.active ? 'Yes' : 'No'}
               </td>
 
-              <td>
-                ${
-                  p.active === false
-                    ? `<span class="badge danger">Inactive</span>`
-                    : `<span class="badge success">Active</span>`
-                }
-              </td>
+              <td style="padding:12px">
 
-              <td>
                 <button
-                  class="btn small"
-                  onclick="editProduct(${p.id})"
+                  class="edit"
+                  data-id="${p.id}"
+                  style="
+                    color:#2563eb;
+                    background:none;
+                    border:0;
+                    cursor:pointer;
+                    margin-right:12px;
+                  "
                 >
                   Edit
                 </button>
 
                 <button
-                  class="btn small danger"
-                  onclick="deleteProduct(${p.id})"
+                  class="del"
+                  data-id="${p.id}"
+                  style="
+                    color:#dc2626;
+                    background:none;
+                    border:0;
+                    cursor:pointer;
+                  "
                 >
                   Delete
                 </button>
+
               </td>
 
             </tr>
-          `).join("")}
+
+          `).join('')}
+
         </tbody>
+
       </table>
-    </div>
-  `;
-}
-
-
-function showProductForm(product = null) {
-
-  const wrap = document.getElementById("productFormWrap");
-
-  if (!wrap) return;
-
-  const isEdit = !!product;
-
-  wrap.innerHTML = `
-    <div class="card form-card">
-
-      <div class="page-head">
-        <div>
-          <h3>
-            ${isEdit ? "Edit Product" : "Add Product"}
-          </h3>
-        </div>
-
-        <button
-          class="btn"
-          onclick="closeProductForm()"
-        >
-          Close
-        </button>
-      </div>
-
-      <form id="productForm">
-
-        <input
-          type="hidden"
-          id="productId"
-          value="${isEdit ? esc(product.id) : ""}"
-        >
-
-        <label>Product Name</label>
-
-        <input
-          type="text"
-          id="productName"
-          required
-          value="${isEdit ? esc(product.name || "") : ""}"
-          placeholder="Product name"
-        >
-
-
-        <label>Business Unit</label>
-
-        <input
-          type="text"
-          id="productBusinessUnit"
-          value="${isEdit ? esc(product.business_unit || "") : ""}"
-          placeholder="Business unit"
-        >
-
-
-        <label>Description</label>
-
-        <textarea
-          id="productDescription"
-          rows="5"
-          placeholder="Product description"
-        >${isEdit ? esc(product.description || "") : ""}</textarea>
-
-
-        <label>Packing</label>
-
-        <input
-          type="text"
-          id="productPacking"
-          value="${isEdit ? esc(product.packing || "") : ""}"
-          placeholder="Example: 25 Kg Bag"
-        >
-
-
-        <label>Product Image URL</label>
-
-        <input
-          type="url"
-          id="productImage"
-          value="${isEdit ? esc(product.image_url || product.photo_url || "") : ""}"
-          placeholder="https://..."
-        >
-
-        ${
-          isEdit && (product.image_url || product.photo_url)
-            ? `
-              <div style="margin:10px 0;">
-                <img
-                  src="${esc(product.image_url || product.photo_url)}"
-                  style="
-                    max-width:180px;
-                    max-height:150px;
-                    object-fit:contain;
-                    border:1px solid #ddd;
-                    border-radius:8px;
-                    padding:5px;
-                  "
-                >
-              </div>
-            `
-            : ""
-        }
-
-
-        <label>Brochure URL</label>
-
-        <input
-          type="url"
-          id="productBrochure"
-          value="${isEdit ? esc(product.brochure_url || "") : ""}"
-          placeholder="PDF brochure URL"
-        >
-
-
-        <label>Sort Order</label>
-
-        <input
-          type="number"
-          id="productSort"
-          value="${isEdit ? esc(product.sort_order ?? 0) : 0}"
-        >
-
-
-        <label class="checkbox-row">
-
-          <input
-            type="checkbox"
-            id="productActive"
-            ${!isEdit || product.active !== false ? "checked" : ""}
-          >
-
-          Active
-
-        </label>
-
-
-        <div style="margin-top:20px;">
-
-          <button
-            type="submit"
-            class="btn primary"
-          >
-            ${isEdit ? "Update Product" : "Save Product"}
-          </button>
-
-        </div>
-
-        <p id="productFormMsg"></p>
-
-      </form>
 
     </div>
+
   `;
+
+
+  $('#new').onclick = () =>
+    openProduct({});
 
 
   document
-    .getElementById("productForm")
-    .addEventListener("submit", saveProduct);
+    .querySelectorAll('.edit')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        const {
+          data,
+          error
+        } = await sb
+          .from('products')
+          .select('*')
+          .eq('id', button.dataset.id)
+          .single();
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        openProduct(data);
+
+      };
+
+    });
+
+
+  document
+    .querySelectorAll('.del')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        if (!confirm('Delete this product?'))
+          return;
+
+        const {
+          error
+        } = await sb
+          .from('products')
+          .delete()
+          .eq('id', button.dataset.id);
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        render();
+
+      };
+
+    });
+
 }
 
 
-function closeProductForm() {
+/* OPEN PRODUCT */
 
-  const wrap = document.getElementById("productFormWrap");
+function openProduct(item) {
 
-  if (wrap) {
-    wrap.innerHTML = "";
-  }
-}
+  const editor = $('#editor');
 
+  editor.classList.remove('hidden');
 
-async function editProduct(id) {
-
-  const { data, error } = await sb
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  showProductForm(data);
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
+  editor.innerHTML =
+    productFormHtml(item);
 
 
-async function saveProduct(e) {
+  $('#editForm').onsubmit =
+    async event => {
 
-  e.preventDefault();
+      event.preventDefault();
 
-  const msg = document.getElementById("productFormMsg");
+      const fd =
+        new FormData(event.target);
 
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
+      const obj =
+        Object.fromEntries(fd);
 
+      obj.active =
+        fd.has('active');
 
-  const id = document.getElementById("productId").value;
-
-  const product = {
-    name: document.getElementById("productName").value.trim(),
-
-    business_unit:
-      document
-        .getElementById("productBusinessUnit")
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById("productDescription")
-        .value
-        .trim(),
-
-    packing:
-      document
-        .getElementById("productPacking")
-        .value
-        .trim(),
-
-    image_url:
-      document
-        .getElementById("productImage")
-        .value
-        .trim(),
-
-    brochure_url:
-      document
-        .getElementById("productBrochure")
-        .value
-        .trim(),
-
-    sort_order:
-      Number(
-        document
-          .getElementById("productSort")
-          .value || 0
-      ),
-
-    active:
-      document
-        .getElementById("productActive")
-        .checked
-  };
+      obj.sort_order =
+        Number(obj.sort_order || 0);
 
 
-  let result;
+      if (obj.id) {
 
+        const {
+          error
+        } = await sb
+          .from('products')
+          .update(obj)
+          .eq('id', obj.id);
 
-  if (id) {
+        if (error) {
 
-    result = await sb
-      .from("products")
-      .update(product)
-      .eq("id", id);
+          alert(error.message);
 
-  } else {
+          return;
 
-    result = await sb
-      .from("products")
-      .insert(product);
+        }
 
-  }
+      } else {
 
+        delete obj.id;
 
-  if (result.error) {
+        const {
+          error
+        } = await sb
+          .from('products')
+          .insert(obj);
 
-    if (msg) {
-      msg.textContent =
-        "Error: " + result.error.message;
-    }
+        if (error) {
 
-    return;
-  }
+          alert(error.message);
 
+          return;
 
-  if (msg) {
-    msg.textContent = "Saved successfully.";
-  }
+        }
 
+      }
 
-  closeProductForm();
+      render();
 
-  await loadProducts();
-}
+    };
 
-
-async function deleteProduct(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this product?"
-  );
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("products")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadProducts();
 }
 
 
 /* =========================
    BUSINESS UNITS
-   ========================= */
+========================= */
 
-async function units() {
+async function crudUnits() {
 
-  main.innerHTML = `
-    <div class="page-head">
+  const {
+    data,
+    error
+  } = await sb
+    .from('business_units')
+    .select('*')
+    .order('sort_order');
 
-      <div>
-        <h2>Business Units</h2>
-        <p>Manage DEVI GROUPS business units</p>
+
+  if (error) {
+
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
+        ${esc(error.message)}
       </div>
+    `;
+
+    return;
+
+  }
+
+
+  $('#main').innerHTML = `
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    ">
+
+      <h2 style="font-size:30px;font-weight:800">
+        Business Units
+      </h2>
 
       <button
-        class="btn primary"
-        id="addUnitBtn"
+        id="new"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:10px 16px;
+          border-radius:10px;
+        "
       >
-        + Add Business Unit
+        + Add Unit
       </button>
 
     </div>
 
-    <div id="unitFormWrap"></div>
+    <div
+      id="editor"
+      class="hidden"
+      style="
+        border:1px solid #ddd;
+        border-radius:16px;
+        padding:20px;
+        margin-bottom:20px;
+        background:#fff;
+      "
+    ></div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:16px;
+    ">
+
+      ${(data || []).map(u => `
+
+        <div style="
+          border:1px solid #e5e7eb;
+          border-radius:16px;
+          padding:18px;
+          background:#fff;
+        ">
+
+          <h3 style="
+            margin:0;
+            font-size:20px;
+            font-weight:800;
+          ">
+            ${esc(u.name)}
+          </h3>
+
+          <p style="
+            color:#64748b;
+            line-height:1.5;
+          ">
+            ${esc(u.description)}
+          </p>
 
-    <div class="card">
-
-      <div id="unitsTable">
-        Loading business units...
-      </div>
-
-    </div>
-  `;
-
-
-  document
-    .getElementById("addUnitBtn")
-    .addEventListener(
-      "click",
-      () => showUnitForm()
-    );
-
-
-  await loadUnits();
-}
-
-
-async function loadUnits() {
-
-  const box =
-    document.getElementById("unitsTable");
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("business_units")
-    .select("*")
-    .order("sort_order", {
-      ascending: true
-    })
-    .order("id", {
-      ascending: true
-    });
-
-
-  if (error) {
-
-    box.innerHTML = `
-      <div class="error">
-        ${esc(error.message)}
-      </div>
-    `;
-
-    return;
-  }
-
-
-  if (!data || data.length === 0) {
-
-    box.innerHTML = `
-      <div class="empty">
-        No business units found.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  box.innerHTML = `
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Website</th>
-            <th>Actions</th>
-          </tr>
-
-        </thead>
-
-
-        <tbody>
-
-          ${data.map(unit => `
-
-            <tr>
-
-              <td>
-
-                ${
-                  unit.image_url
-                    ? `
-                      <img
-                        src="${esc(unit.image_url)}"
-                        style="
-                          width:60px;
-                          height:60px;
-                          object-fit:contain;
-                          border-radius:8px;
-                          border:1px solid #ddd;
-                        "
-                      >
-                    `
-                    : `
-                      <span>No image</span>
-                    `
-                }
-
-              </td>
-
-
-              <td>
-                <strong>
-                  ${esc(unit.name || "")}
-                </strong>
-              </td>
-
-
-              <td>
-                ${esc(unit.description || "-")}
-              </td>
-
-
-              <td>
-
-                ${
-                  unit.website_url
-                    ? `
-                      <a
-                        href="${esc(unit.website_url)}"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        Open
-                      </a>
-                    `
-                    : "-"
-                }
-
-              </td>
-
-
-              <td>
-
-                <button
-                  class="btn small"
-                  onclick="editUnit(${unit.id})"
-                >
-                  Edit
-                </button>
-
-
-                <button
-                  class="btn small danger"
-                  onclick="deleteUnit(${unit.id})"
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-}
-
-
-function showUnitForm(unit = null) {
-
-  const wrap =
-    document.getElementById("unitFormWrap");
-
-  if (!wrap) return;
-
-
-  const isEdit = !!unit;
-
-
-  wrap.innerHTML = `
-
-    <div class="card form-card">
-
-      <div class="page-head">
-
-        <h3>
           ${
-            isEdit
-              ? "Edit Business Unit"
-              : "Add Business Unit"
-          }
-        </h3>
-
-
-        <button
-          class="btn"
-          onclick="closeUnitForm()"
-        >
-          Close
-        </button>
-
-      </div>
-
-
-      <form id="unitForm">
-
-
-        <input
-          type="hidden"
-          id="unitId"
-          value="${isEdit ? esc(unit.id) : ""}"
-        >
-
-
-        <label>Name</label>
-
-        <input
-          type="text"
-          id="unitName"
-          required
-          value="${isEdit ? esc(unit.name || "") : ""}"
-          placeholder="Business unit name"
-        >
-
-
-        <label>Description</label>
-
-        <textarea
-          id="unitDescription"
-          rows="5"
-          placeholder="Business unit description"
-        >${
-          isEdit
-            ? esc(unit.description || "")
-            : ""
-        }</textarea>
-
-
-        <label>Image URL</label>
-
-        <input
-          type="url"
-          id="unitImage"
-          value="${
-            isEdit
-              ? esc(unit.image_url || "")
-              : ""
-          }"
-          placeholder="https://..."
-        >
-
-
-        ${
-          isEdit && unit.image_url
-            ? `
-              <div style="margin:10px 0;">
-
+            u.image_url
+              ? `
                 <img
-                  src="${esc(unit.image_url)}"
+                  src="${esc(u.image_url)}"
+                  alt="${esc(u.name)}"
                   style="
-                    max-width:180px;
-                    max-height:150px;
-                    object-fit:contain;
-                    border:1px solid #ddd;
-                    border-radius:8px;
-                    padding:5px;
+                    width:100%;
+                    max-height:180px;
+                    object-fit:cover;
+                    border-radius:10px;
+                    margin:10px 0;
                   "
                 >
+              `
+              : ''
+          }
 
-              </div>
-            `
-            : ""
-        }
+          <div style="margin-top:12px">
 
+            <button
+              class="edit"
+              data-id="${u.id}"
+              style="
+                color:#2563eb;
+                border:0;
+                background:none;
+                cursor:pointer;
+                margin-right:12px;
+              "
+            >
+              Edit
+            </button>
 
-        <label>Website URL</label>
+            <button
+              class="del"
+              data-id="${u.id}"
+              style="
+                color:#dc2626;
+                border:0;
+                background:none;
+                cursor:pointer;
+              "
+            >
+              Delete
+            </button>
 
-        <input
-          type="url"
-          id="unitWebsite"
-          value="${
-            isEdit
-              ? esc(unit.website_url || "")
-              : ""
-          }"
-          placeholder="https://..."
-        >
-
-
-        <label>Sort Order</label>
-
-        <input
-          type="number"
-          id="unitSort"
-          value="${
-            isEdit
-              ? esc(unit.sort_order ?? 0)
-              : 0
-          }"
-        >
-
-
-        <div style="margin-top:20px;">
-
-          <button
-            type="submit"
-            class="btn primary"
-          >
-            ${
-              isEdit
-                ? "Update Business Unit"
-                : "Save Business Unit"
-            }
-          </button>
+          </div>
 
         </div>
 
-
-        <p id="unitFormMsg"></p>
-
-      </form>
+      `).join('')}
 
     </div>
+
   `;
 
 
+  $('#new').onclick = () =>
+    openUnit({});
+
+
   document
-    .getElementById("unitForm")
-    .addEventListener(
-      "submit",
-      saveUnit
-    );
+    .querySelectorAll('.edit')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        const {
+          data,
+          error
+        } = await sb
+          .from('business_units')
+          .select('*')
+          .eq('id', button.dataset.id)
+          .single();
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        openUnit(data);
+
+      };
+
+    });
+
+
+  document
+    .querySelectorAll('.del')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        if (!confirm('Delete this business unit?'))
+          return;
+
+        const {
+          error
+        } = await sb
+          .from('business_units')
+          .delete()
+          .eq('id', button.dataset.id);
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        render();
+
+      };
+
+    });
+
 }
 
 
-function closeUnitForm() {
+/* UNIT FORM */
 
-  const wrap =
-    document.getElementById("unitFormWrap");
+function openUnit(item) {
 
-  if (wrap) {
-    wrap.innerHTML = "";
-  }
+  const editor = $('#editor');
+
+  editor.classList.remove('hidden');
+
+  editor.innerHTML = `
+
+    <form
+      id="unitForm"
+      style="display:grid;gap:12px"
+    >
+
+      <input
+        name="id"
+        type="hidden"
+        value="${esc(item.id)}"
+      >
+
+      <input
+        name="name"
+        required
+        placeholder="Business Unit Name"
+        value="${esc(item.name)}"
+        style="padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <textarea
+        name="description"
+        placeholder="Description"
+        style="padding:12px;border:1px solid #ddd;border-radius:10px;min-height:100px"
+      >${esc(item.description)}</textarea>
+
+      <input
+        name="image_url"
+        placeholder="Image URL"
+        value="${esc(item.image_url)}"
+        style="padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="website_url"
+        placeholder="Website URL"
+        value="${esc(item.website_url)}"
+        style="padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <input
+        name="sort_order"
+        type="number"
+        value="${item.sort_order || 0}"
+        style="padding:12px;border:1px solid #ddd;border-radius:10px"
+      >
+
+      <button
+        type="submit"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:13px;
+          border-radius:10px;
+          font-weight:700;
+        "
+      >
+        Save Business Unit
+      </button>
+
+    </form>
+
+  `;
+
+
+  $('#unitForm').onsubmit =
+    async event => {
+
+      event.preventDefault();
+
+      const fd =
+        new FormData(event.target);
+
+      const obj =
+        Object.fromEntries(fd);
+
+      obj.sort_order =
+        Number(obj.sort_order || 0);
+
+
+      if (obj.id) {
+
+        const {
+          error
+        } = await sb
+          .from('business_units')
+          .update(obj)
+          .eq('id', obj.id);
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+      } else {
+
+        delete obj.id;
+
+        const {
+          error
+        } = await sb
+          .from('business_units')
+          .insert(obj);
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+      }
+
+      render();
+
+    };
+
 }
-
-
-async function editUnit(id) {
-
-  const { data, error } = await sb
-    .from("business_units")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  showUnitForm(data);
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-
-async function saveUnit(e) {
-
-  e.preventDefault();
-
-
-  const msg =
-    document.getElementById(
-      "unitFormMsg"
-    );
-
-
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
-
-
-  const id =
-    document.getElementById(
-      "unitId"
-    ).value;
-
-
-  const unit = {
-
-    name:
-      document
-        .getElementById("unitName")
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById("unitDescription")
-        .value
-        .trim(),
-
-    image_url:
-      document
-        .getElementById("unitImage")
-        .value
-        .trim(),
-
-    website_url:
-      document
-        .getElementById("unitWebsite")
-        .value
-        .trim(),
-
-    sort_order:
-      Number(
-        document
-          .getElementById("unitSort")
-          .value || 0
-      )
-
-  };
-
-
-  let result;
-
-
-  if (id) {
-
-    result = await sb
-      .from("business_units")
-      .update(unit)
-      .eq("id", id);
-
-  } else {
-
-    result = await sb
-      .from("business_units")
-      .insert(unit);
-
-  }
-
-
-  if (result.error) {
-
-    if (msg) {
-
-      msg.textContent =
-        "Error: " +
-        result.error.message;
-
-    }
-
-    return;
-  }
-
-
-  if (msg) {
-    msg.textContent =
-      "Saved successfully.";
-  }
-
-
-  closeUnitForm();
-
-  await loadUnits();
-}
-
-
-async function deleteUnit(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this business unit?"
-  );
-
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("business_units")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadUnits();
-}
-
-
-/* =========================================================
-   PART 2 END
-   ========================================================= */
-/* =========================================================
-   PART 3 — HOMEPAGE + ENQUIRIES + REVIEWS
-   ========================================================= */
 
 
 /* =========================
    HOMEPAGE
-   ========================= */
+========================= */
 
 async function homepage() {
 
-  main.innerHTML = `
-    <div class="page-head">
-      <div>
-        <h2>Homepage</h2>
-        <p>Manage homepage content</p>
-      </div>
-    </div>
+  const {
+    data,
+    error
+  } = await sb
+    .from('site_content')
+    .select('*')
+    .order('key');
 
-    <div class="card">
-      <div id="homepageContent">
-        Loading homepage content...
-      </div>
-    </div>
-  `;
-
-  await loadHomepage();
-}
-
-
-async function loadHomepage() {
-
-  const box =
-    document.getElementById("homepageContent");
-
-  if (!box) return;
-
-  const { data, error } = await sb
-    .from("site_content")
-    .select("*")
-    .order("id", { ascending: true });
 
   if (error) {
 
-    box.innerHTML = `
-      <div class="error">
-        ${esc(error.message)}
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
+        <h2>Homepage Error</h2>
+        <p>${esc(error.message)}</p>
       </div>
     `;
 
     return;
+
   }
 
-  if (!data || data.length === 0) {
 
-    box.innerHTML = `
-      <div class="empty">
-        No homepage content found.
-      </div>
-    `;
+  $('#main').innerHTML = `
 
-    return;
-  }
+    <h2 style="
+      font-size:30px;
+      font-weight:800;
+      margin-bottom:20px;
+    ">
+      Homepage Content
+    </h2>
 
-  box.innerHTML = `
-    <div class="table-wrap">
+    <div style="
+      display:grid;
+      gap:15px;
+    ">
 
-      <table>
+      ${(data || []).map(x => `
 
-        <thead>
-          <tr>
-            <th>Key</th>
-            <th>Value</th>
-            <th>Type</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+        <div style="
+          border:1px solid #e5e7eb;
+          border-radius:14px;
+          padding:18px;
+          background:#fff;
+        ">
 
-        <tbody>
+          <div style="
+            font-weight:800;
+            margin-bottom:8px;
+          ">
+            ${esc(x.key)}
+          </div>
 
-          ${data.map(item => `
-
-            <tr>
-
-              <td>
-                <strong>
-                  ${esc(item.key || item.section_key || "")}
-                </strong>
-              </td>
-
-              <td>
-                <div style="
-                  max-width:500px;
-                  white-space:pre-wrap;
-                  word-break:break-word;
-                ">
-                  ${esc(item.value || item.title || "")}
-                </div>
-              </td>
-
-              <td>
-                ${esc(item.value_type || "text")}
-              </td>
-
-              <td>
-
-                <button
-                  class="btn small"
-                  onclick="editHomepage(${item.id})"
-                >
-                  Edit
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-}
-
-
-async function editHomepage(id) {
-
-  const { data, error } = await sb
-    .from("site_content")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-  showHomepageForm(data);
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-
-function showHomepageForm(item) {
-
-  const wrap =
-    document.getElementById("homepageContent");
-
-  if (!wrap) return;
-
-  const key =
-    item.key ||
-    item.section_key ||
-    "";
-
-  const value =
-    item.value ||
-    item.title ||
-    "";
-
-  wrap.innerHTML = `
-
-    <div class="card form-card">
-
-      <div class="page-head">
-
-        <h3>
-          Edit Homepage Content
-        </h3>
-
-        <button
-          class="btn"
-          onclick="loadHomepage()"
-        >
-          Close
-        </button>
-
-      </div>
-
-
-      <form id="homepageForm">
-
-        <label>Key</label>
-
-        <input
-          type="text"
-          id="homepageKey"
-          value="${esc(key)}"
-          readonly
-        >
-
-
-        <label>Content</label>
-
-        <textarea
-          id="homepageValue"
-          rows="8"
-        >${esc(value)}</textarea>
-
-
-        <label>Value Type</label>
-
-        <select id="homepageType">
-
-          <option
-            value="text"
-            ${
-              (item.value_type || "text") === "text"
-                ? "selected"
-                : ""
-            }
-          >
-            Text
-          </option>
-
-          <option
-            value="image"
-            ${
-              item.value_type === "image"
-                ? "selected"
-                : ""
-            }
-          >
-            Image
-          </option>
-
-          <option
-            value="html"
-            ${
-              item.value_type === "html"
-                ? "selected"
-                : ""
-            }
-          >
-            HTML
-          </option>
-
-        </select>
-
-
-        <div style="margin-top:20px;">
+          <textarea
+            class="siteValue"
+            data-id="${x.id}"
+            style="
+              width:100%;
+              min-height:100px;
+              padding:12px;
+              border:1px solid #ddd;
+              border-radius:10px;
+            "
+          >${esc(x.value)}</textarea>
 
           <button
-            type="submit"
-            class="btn primary"
+            class="saveSite"
+            data-id="${x.id}"
+            style="
+              margin-top:10px;
+              background:#111827;
+              color:#fff;
+              border:0;
+              padding:9px 15px;
+              border-radius:8px;
+            "
           >
-            Save Homepage
+            Save
           </button>
 
         </div>
 
-
-        <p id="homepageMsg"></p>
-
-      </form>
+      `).join('')}
 
     </div>
+
   `;
 
 
   document
-    .getElementById("homepageForm")
-    .addEventListener(
-      "submit",
-      saveHomepage
-    );
-}
+    .querySelectorAll('.saveSite')
+    .forEach(button => {
 
+      button.onclick = async () => {
 
-async function saveHomepage(e) {
+        const textarea =
+          document.querySelector(
+            `.siteValue[data-id="${button.dataset.id}"]`
+          );
 
-  e.preventDefault();
+        const {
+          error
+        } = await sb
+          .from('site_content')
+          .update({
+            value: textarea.value
+          })
+          .eq('id', button.dataset.id);
 
-  const msg =
-    document.getElementById(
-      "homepageMsg"
-    );
+        if (error) {
 
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
+          alert(error.message);
 
+          return;
 
-  const id =
-    document.getElementById(
-      "homepageForm"
-    )
-    ? null
-    : null;
+        }
 
+        alert('Homepage content saved.');
 
-  const key =
-    document
-      .getElementById("homepageKey")
-      .value;
+      };
 
+    });
 
-  const value =
-    document
-      .getElementById("homepageValue")
-      .value;
-
-
-  const value_type =
-    document
-      .getElementById("homepageType")
-      .value;
-
-
-  const { error } = await sb
-    .from("site_content")
-    .update({
-      value,
-      value_type
-    })
-    .eq("key", key);
-
-
-  if (error) {
-
-    if (msg) {
-      msg.textContent =
-        "Error: " + error.message;
-    }
-
-    return;
-  }
-
-
-  if (msg) {
-    msg.textContent =
-      "Homepage updated successfully.";
-  }
-
-
-  setTimeout(
-    loadHomepage,
-    700
-  );
 }
 
 
 /* =========================
    ENQUIRIES
-   ========================= */
+========================= */
 
 async function enquiries() {
 
-  main.innerHTML = `
-
-    <div class="page-head">
-
-      <div>
-        <h2>Customer Enquiries</h2>
-        <p>View and manage customer enquiries</p>
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div id="enquiriesTable">
-        Loading enquiries...
-      </div>
-
-    </div>
-  `;
-
-
-  await loadEnquiries();
-}
-
-
-async function loadEnquiries() {
-
-  const box =
-    document.getElementById(
-      "enquiriesTable"
-    );
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("enquiries")
-    .select("*")
-    .order("created_at", {
+  const {
+    data,
+    error
+  } = await sb
+    .from('enquiries')
+    .select('*')
+    .order('created_at', {
       ascending: false
     });
 
 
   if (error) {
 
-    box.innerHTML = `
-      <div class="error">
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
         ${esc(error.message)}
       </div>
     `;
 
     return;
+
   }
 
 
-  if (!data || data.length === 0) {
+  $('#main').innerHTML = `
 
-    box.innerHTML = `
-      <div class="empty">
-        No enquiries found.
-      </div>
-    `;
+    <h2 style="
+      font-size:30px;
+      font-weight:800;
+      margin-bottom:20px;
+    ">
+      Customer Enquiries
+    </h2>
 
-    return;
-  }
+    <div style="
+      display:grid;
+      gap:15px;
+    ">
 
+      ${(data || []).map(x => `
 
-  box.innerHTML = `
+        <article style="
+          border:1px solid #e5e7eb;
+          border-radius:14px;
+          padding:18px;
+          background:#fff;
+        ">
 
-    <div class="table-wrap">
+          <h3 style="
+            margin:0 0 6px;
+            font-size:19px;
+          ">
+            ${esc(x.name)}
+          </h3>
 
-      <table>
+          <div style="color:#64748b">
+            ${esc(x.email)}
+          </div>
 
-        <thead>
+          <div style="color:#64748b">
+            ${esc(x.phone)}
+          </div>
 
-          <tr>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Products</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
+          ${
+            Array.isArray(x.products)
+              ? `
+                <p>
+                  <b>Products:</b>
+                  ${esc(x.products.join(', '))}
+                </p>
+              `
+              : ''
+          }
 
-        </thead>
+          <p style="white-space:pre-wrap">
+            ${esc(x.message)}
+          </p>
 
+          <select
+            class="status"
+            data-id="${x.id}"
+            style="
+              padding:9px;
+              border:1px solid #ddd;
+              border-radius:8px;
+            "
+          >
 
-        <tbody>
+            <option
+              value="new"
+              ${x.status === 'new' ? 'selected' : ''}
+            >
+              new
+            </option>
 
-          ${data.map(item => `
+            <option
+              value="contacted"
+              ${x.status === 'contacted' ? 'selected' : ''}
+            >
+              contacted
+            </option>
 
-            <tr>
+            <option
+              value="quoted"
+              ${x.status === 'quoted' ? 'selected' : ''}
+            >
+              quoted
+            </option>
 
-              <td>
-                ${formatDate(item.created_at)}
-              </td>
+            <option
+              value="closed"
+              ${x.status === 'closed' ? 'selected' : ''}
+            >
+              closed
+            </option>
 
+            <option
+              value="spam"
+              ${x.status === 'spam' ? 'selected' : ''}
+            >
+              spam
+            </option>
 
-              <td>
-                <strong>
-                  ${esc(item.name || "-")}
-                </strong>
-              </td>
+          </select>
 
+        </article>
 
-              <td>
-                ${esc(item.email || "-")}
-              </td>
-
-
-              <td>
-                ${esc(item.phone || "-")}
-              </td>
-
-
-              <td>
-                ${formatProducts(item.products)}
-              </td>
-
-
-              <td>
-
-                <select
-                  onchange="
-                    updateEnquiryStatus(
-                      ${item.id},
-                      this.value
-                    )
-                  "
-                >
-
-                  <option
-                    value="new"
-                    ${
-                      item.status === "new"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    New
-                  </option>
-
-                  <option
-                    value="contacted"
-                    ${
-                      item.status === "contacted"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Contacted
-                  </option>
-
-                  <option
-                    value="quoted"
-                    ${
-                      item.status === "quoted"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Quoted
-                  </option>
-
-                  <option
-                    value="closed"
-                    ${
-                      item.status === "closed"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Closed
-                  </option>
-
-                  <option
-                    value="spam"
-                    ${
-                      item.status === "spam"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Spam
-                  </option>
-
-                </select>
-
-              </td>
-
-
-              <td>
-
-                <button
-                  class="btn small"
-                  onclick="viewEnquiry(${item.id})"
-                >
-                  View
-                </button>
-
-                <button
-                  class="btn small danger"
-                  onclick="deleteEnquiry(${item.id})"
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
+      `).join('')}
 
     </div>
+
   `;
-}
 
 
-function formatProducts(products) {
+  document
+    .querySelectorAll('.status')
+    .forEach(select => {
 
-  if (!products) return "-";
+      select.onchange =
+        async () => {
 
-  if (Array.isArray(products)) {
+          const {
+            error
+          } = await sb
+            .from('enquiries')
+            .update({
+              status: select.value
+            })
+            .eq(
+              'id',
+              select.dataset.id
+            );
 
-    return products
-      .map(x => esc(String(x)))
-      .join(", ");
-  }
+          if (error)
+            alert(error.message);
 
-  if (typeof products === "object") {
+        };
 
-    return esc(
-      JSON.stringify(products)
-    );
-  }
+    });
 
-  return esc(String(products));
-}
-
-
-function formatDate(date) {
-
-  if (!date) return "-";
-
-  try {
-
-    return new Date(date)
-      .toLocaleString();
-
-  } catch {
-
-    return esc(String(date));
-
-  }
-}
-
-
-async function viewEnquiry(id) {
-
-  const { data, error } = await sb
-    .from("enquiries")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  const message =
-    `
-Name: ${data.name || "-"}
-
-Email: ${data.email || "-"}
-
-Phone: ${data.phone || "-"}
-
-Products:
-${formatProducts(data.products)}
-
-Message:
-${data.message || "-"}
-
-Status:
-${data.status || "-"}
-    `;
-
-
-  alert(message);
-}
-
-
-async function updateEnquiryStatus(
-  id,
-  status
-) {
-
-  const { error } = await sb
-    .from("enquiries")
-    .update({ status })
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Status update failed: " +
-      error.message
-    );
-
-    await loadEnquiries();
-
-    return;
-  }
-}
-
-
-async function deleteEnquiry(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this enquiry?"
-  );
-
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("enquiries")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadEnquiries();
 }
 
 
 /* =========================
    REVIEWS
-   ========================= */
+========================= */
 
 async function reviews() {
 
-  main.innerHTML = `
-
-    <div class="page-head">
-
-      <div>
-        <h2>Reviews</h2>
-        <p>Manage customer reviews</p>
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div id="reviewsTable">
-        Loading reviews...
-      </div>
-
-    </div>
-  `;
-
-
-  await loadReviews();
-}
-
-
-async function loadReviews() {
-
-  const box =
-    document.getElementById(
-      "reviewsTable"
-    );
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("reviews")
-    .select("*")
-    .order("created_at", {
+  const {
+    data,
+    error
+  } = await sb
+    .from('reviews')
+    .select('*')
+    .order('created_at', {
       ascending: false
     });
 
 
   if (error) {
 
-    box.innerHTML = `
-      <div class="error">
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
         ${esc(error.message)}
       </div>
     `;
 
     return;
+
   }
 
 
-  if (!data || data.length === 0) {
-
-    box.innerHTML = `
-      <div class="empty">
-        No reviews found.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  box.innerHTML = `
-
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Rating</th>
-            <th>Review</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-
-        </thead>
-
-
-        <tbody>
-
-          ${data.map(review => `
-
-            <tr>
-
-              <td>
-                ${formatDate(review.created_at)}
-              </td>
-
-
-              <td>
-                <strong>
-                  ${esc(
-                    review.customer_name || "-"
-                  )}
-                </strong>
-              </td>
-
-
-              <td>
-                ${renderStars(review.rating)}
-              </td>
-
-
-              <td>
-
-                <div style="
-                  max-width:400px;
-                  white-space:pre-wrap;
-                ">
-                  ${esc(review.message || "-")}
-                </div>
-
-              </td>
-
-
-              <td>
-
-                <select
-                  onchange="
-                    updateReviewStatus(
-                      ${review.id},
-                      this.value
-                    )
-                  "
-                >
-
-                  <option
-                    value="pending"
-                    ${
-                      review.status === "pending"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Pending
-                  </option>
-
-                  <option
-                    value="approved"
-                    ${
-                      review.status === "approved"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Approved
-                  </option>
-
-                  <option
-                    value="rejected"
-                    ${
-                      review.status === "rejected"
-                        ? "selected"
-                        : ""
-                    }
-                  >
-                    Rejected
-                  </option>
-
-                </select>
-
-              </td>
-
-
-              <td>
-
-                <button
-                  class="btn small danger"
-                  onclick="
-                    deleteReview(${review.id})
-                  "
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-}
-
-
-function renderStars(rating) {
-
-  const n =
-    Math.max(
-      0,
-      Math.min(
-        5,
-        Number(rating || 0)
-      )
-    );
-
-
-  return `
-    <span
-      aria-label="${n} out of 5"
-      style="font-size:18px;"
-    >
-      ${"★".repeat(n)}
-      ${"☆".repeat(5 - n)}
-    </span>
-  `;
-}
-
-
-async function updateReviewStatus(
-  id,
-  status
-) {
-
-  const { error } = await sb
-    .from("reviews")
-    .update({ status })
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Status update failed: " +
-      error.message
-    );
-
-    await loadReviews();
-
-    return;
-  }
-}
-
-
-async function deleteReview(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this review?"
-  );
-
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("reviews")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadReviews();
-}
-
-
-/* =========================================================
-   PART 3 END
-   ========================================================= */
-/* =========================================================
-   PART 4 — COMPANY + DOCUMENTS + TRACKING + FINAL
-   ========================================================= */
-
-
-/* =========================
-   COMPANY INFORMATION
-   ========================= */
-
-async function company() {
-
-  main.innerHTML = `
-
-    <div class="page-head">
-
-      <div>
-        <h2>Company Information</h2>
-        <p>Edit company contact details</p>
-      </div>
+  $('#main').innerHTML = `
+
+    <h2 style="
+      font-size:30px;
+      font-weight:800;
+      margin-bottom:20px;
+    ">
+      Reviews
+    </h2>
+
+    <div style="display:grid;gap:15px">
+
+      ${(data || []).map(x => `
+
+        <article style="
+          border:1px solid #e5e7eb;
+          border-radius:14px;
+          padding:18px;
+          background:#fff;
+        ">
+
+          <b>
+            ${esc(x.customer_name)}
+          </b>
+
+          <span>
+            ·
+            ${'★'.repeat(
+              Math.max(0, Math.min(5, Number(x.rating || 0)))
+            )}
+          </span>
+
+          <p style="white-space:pre-wrap">
+            ${esc(x.message)}
+          </p>
+
+          <select
+            class="rv"
+            data-id="${x.id}"
+            style="
+              padding:9px;
+              border:1px solid #ddd;
+              border-radius:8px;
+            "
+          >
+
+            <option
+              value="pending"
+              ${x.status === 'pending' ? 'selected' : ''}
+            >
+              pending
+            </option>
+
+            <option
+              value="approved"
+              ${x.status === 'approved' ? 'selected' : ''}
+            >
+              approved
+            </option>
+
+            <option
+              value="rejected"
+              ${x.status === 'rejected' ? 'selected' : ''}
+            >
+              rejected
+            </option>
+
+          </select>
+
+          <button
+            class="rdel"
+            data-id="${x.id}"
+            style="
+              color:#dc2626;
+              background:none;
+              border:0;
+              margin-left:12px;
+              cursor:pointer;
+            "
+          >
+            Delete
+          </button>
+
+        </article>
+
+      `).join('')}
 
     </div>
 
-    <div class="card">
-      <div id="companyContent">
-        Loading company information...
-      </div>
-    </div>
-  `;
-
-  await loadCompany();
-}
-
-
-async function loadCompany() {
-
-  const box =
-    document.getElementById(
-      "companyContent"
-    );
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("company_info")
-    .select("*")
-    .eq("id", 1)
-    .maybeSingle();
-
-
-  if (error) {
-
-    box.innerHTML = `
-      <div class="error">
-        ${esc(error.message)}
-      </div>
-    `;
-
-    return;
-  }
-
-
-  const companyData = data || {};
-
-
-  box.innerHTML = `
-
-    <form id="companyForm">
-
-      <label>Company Name</label>
-
-      <input
-        type="text"
-        id="companyName"
-        value="${esc(
-          companyData.company_name || ""
-        )}"
-      >
-
-
-      <label>Email</label>
-
-      <input
-        type="email"
-        id="companyEmail"
-        value="${esc(
-          companyData.email || ""
-        )}"
-      >
-
-
-      <label>Phone</label>
-
-      <input
-        type="text"
-        id="companyPhone"
-        value="${esc(
-          companyData.phone || ""
-        )}"
-      >
-
-
-      <label>WhatsApp</label>
-
-      <input
-        type="text"
-        id="companyWhatsapp"
-        value="${esc(
-          companyData.whatsapp || ""
-        )}"
-      >
-
-
-      <label>Address</label>
-
-      <textarea
-        id="companyAddress"
-        rows="5"
-      >${esc(
-        companyData.address || ""
-      )}</textarea>
-
-
-      <label>Website</label>
-
-      <input
-        type="url"
-        id="companyWebsite"
-        value="${esc(
-          companyData.website || ""
-        )}"
-        placeholder="https://..."
-      >
-
-
-      <div style="margin-top:20px;">
-
-        <button
-          type="submit"
-          class="btn primary"
-        >
-          Save Company Information
-        </button>
-
-      </div>
-
-
-      <p id="companyMsg"></p>
-
-    </form>
   `;
 
 
   document
-    .getElementById("companyForm")
-    .addEventListener(
-      "submit",
-      saveCompany
-    );
+    .querySelectorAll('.rv')
+    .forEach(select => {
+
+      select.onchange =
+        async () => {
+
+          const {
+            error
+          } = await sb
+            .from('reviews')
+            .update({
+              status: select.value
+            })
+            .eq(
+              'id',
+              select.dataset.id
+            );
+
+          if (error)
+            alert(error.message);
+
+        };
+
+    });
+
+
+  document
+    .querySelectorAll('.rdel')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        if (!confirm('Delete review?'))
+          return;
+
+        const {
+          error
+        } = await sb
+          .from('reviews')
+          .delete()
+          .eq(
+            'id',
+            button.dataset.id
+          );
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        render();
+
+      };
+
+    });
+
 }
 
 
-async function saveCompany(e) {
+/* =========================
+   COMPANY
+========================= */
 
-  e.preventDefault();
+async function company() {
 
-
-  const msg =
-    document.getElementById(
-      "companyMsg"
-    );
-
-
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
-
-
-  const companyData = {
-
-    id: 1,
-
-    company_name:
-      document
-        .getElementById("companyName")
-        .value
-        .trim(),
-
-    email:
-      document
-        .getElementById("companyEmail")
-        .value
-        .trim(),
-
-    phone:
-      document
-        .getElementById("companyPhone")
-        .value
-        .trim(),
-
-    whatsapp:
-      document
-        .getElementById("companyWhatsapp")
-        .value
-        .trim(),
-
-    address:
-      document
-        .getElementById("companyAddress")
-        .value
-        .trim(),
-
-    website:
-      document
-        .getElementById("companyWebsite")
-        .value
-        .trim()
-
-  };
+  const {
+    data,
+    error
+  } = await sb
+    .from('company_info')
+    .select('*')
+    .eq('id', 1)
+    .single();
 
 
-  const { error } = await sb
-    .from("company_info")
-    .upsert(
-      companyData,
-      {
-        onConflict: "id"
-      }
-    );
+  if (error && error.code !== 'PGRST116') {
 
-
-  if (error) {
-
-    if (msg) {
-      msg.textContent =
-        "Error: " + error.message;
-    }
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
+        ${esc(error.message)}
+      </div>
+    `;
 
     return;
+
   }
 
 
-  if (msg) {
-    msg.textContent =
-      "Company information saved successfully.";
-  }
+  $('#main').innerHTML = `
+
+    <h2 style="
+      font-size:30px;
+      font-weight:800;
+      margin-bottom:20px;
+    ">
+      Company / Contact
+    </h2>
+
+    <form
+      id="co"
+      style="
+        display:grid;
+        gap:12px;
+        max-width:800px;
+      "
+    >
+
+      ${
+        [
+          'company_name',
+          'email',
+          'phone',
+          'whatsapp',
+          'address',
+          'website'
+        ].map(k => `
+
+          <input
+            name="${k}"
+            value="${esc(data?.[k])}"
+            placeholder="${k}"
+            style="
+              padding:12px;
+              border:1px solid #ddd;
+              border-radius:10px;
+            "
+          >
+
+        `).join('')
+      }
+
+      <button
+        type="submit"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:13px;
+          border-radius:10px;
+          font-weight:700;
+        "
+      >
+        Save Company Information
+      </button>
+
+    </form>
+
+  `;
+
+
+  $('#co').onsubmit =
+    async e => {
+
+      e.preventDefault();
+
+      const obj =
+        Object.fromEntries(
+          new FormData(e.target)
+        );
+
+      const {
+        error
+      } = await sb
+        .from('company_info')
+        .update(obj)
+        .eq('id', 1);
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+
+      }
+
+      alert('Company information saved.');
+
+    };
+
 }
 
 
 /* =========================
    DOCUMENTS
-   ========================= */
+========================= */
 
 async function documents() {
 
-  main.innerHTML = `
-
-    <div class="page-head">
-
-      <div>
-        <h2>Documents</h2>
-        <p>
-          Manage PDF, Brochure, TDS and MSDS files
-        </p>
-      </div>
-
-      <button
-        class="btn primary"
-        id="addDocumentBtn"
-      >
-        + Add Document
-      </button>
-
-    </div>
-
-
-    <div id="documentFormWrap"></div>
-
-
-    <div class="card">
-
-      <div id="documentsTable">
-        Loading documents...
-      </div>
-
-    </div>
-  `;
-
-
-  document
-    .getElementById("addDocumentBtn")
-    .addEventListener(
-      "click",
-      () => showDocumentForm()
-    );
-
-
-  await loadDocuments();
-}
-
-
-async function loadDocuments() {
-
-  const box =
-    document.getElementById(
-      "documentsTable"
-    );
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("documents")
-    .select("*")
-    .order("id", {
+  const {
+    data,
+    error
+  } = await sb
+    .from('documents')
+    .select('*')
+    .order('created_at', {
       ascending: false
     });
 
 
   if (error) {
 
-    box.innerHTML = `
-      <div class="error">
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
         ${esc(error.message)}
       </div>
     `;
 
     return;
+
   }
 
 
-  if (!data || data.length === 0) {
+  $('#main').innerHTML = `
+
+    <h2 style="
+      font-size:30px;
+      font-weight:800;
+      margin-bottom:20px;
+    ">
+      PDF / Brochure / TDS / MSDS
+    </h2>
+
+    <form
+      id="doc"
+      style="
+        border:1px solid #e5e7eb;
+        border-radius:14px;
+        padding:18px;
+        margin-bottom:20px;
+        display:grid;
+        gap:12px;
+        background:#fff;
+      "
+    >
+
+      <input
+        name="title"
+        required
+        placeholder="Title"
+        style="
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:10px;
+        "
+      >
+
+      <select
+        name="category"
+        style="
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:10px;
+        "
+      >
+
+        <option value="PDF">
+          PDF
+        </option>
+
+        <option value="Brochure">
+          Brochure
+        </option>
+
+        <option value="TDS">
+          TDS
+        </option>
+
+        <option value="MSDS">
+          MSDS
+        </option>
+
+        <option value="Other">
+          Other
+        </option>
+
+      </select>
+
+      <input
+        name="product_id"
+        type="number"
+        placeholder="Product ID (optional)"
+        style="
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:10px;
+        "
+      >
+
+      <input
+        name="file_url"
+        required
+        placeholder="Public file URL"
+        style="
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:10px;
+        "
+      >
+
+      <button
+        type="submit"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:13px;
+          border-radius:10px;
+          font-weight:700;
+        "
+      >
+        Add Document
+      </button>
+
+    </form>
 
-    box.innerHTML = `
-      <div class="empty">
-        No documents found.
-      </div>
-    `;
 
-    return;
-  }
+    <div style="display:grid;gap:10px">
 
+      ${(data || []).map(x => `
 
-  box.innerHTML = `
+        <div style="
+          border:1px solid #e5e7eb;
+          border-radius:12px;
+          padding:14px;
+          background:#fff;
+          display:flex;
+          justify-content:space-between;
+          gap:15px;
+        ">
 
-    <div class="table-wrap">
+          <span>
 
-      <table>
+            <b>
+              ${esc(x.title)}
+            </b>
 
-        <thead>
+            ·
 
-          <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Product ID</th>
-            <th>File</th>
-            <th>Action</th>
-          </tr>
+            ${esc(x.category)}
 
-        </thead>
-
-
-        <tbody>
-
-          ${data.map(doc => `
-
-            <tr>
-
-              <td>
-                <strong>
-                  ${esc(doc.title || "-")}
-                </strong>
-              </td>
-
-
-              <td>
-                ${esc(doc.category || "-")}
-              </td>
-
-
-              <td>
-                ${esc(
-                  doc.product_id ?? "-"
-                )}
-              </td>
-
-
-              <td>
-
-                ${
-                  doc.file_url
-                    ? `
-                      <a
-                        href="${esc(doc.file_url)}"
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        Open File
-                      </a>
-                    `
-                    : "-"
-                }
-
-              </td>
-
-
-              <td>
-
-                <button
-                  class="btn small"
-                  onclick="
-                    editDocument(${doc.id})
-                  "
-                >
-                  Edit
-                </button>
-
-
-                <button
-                  class="btn small danger"
-                  onclick="
-                    deleteDocument(${doc.id})
-                  "
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-}
-
-
-function showDocumentForm(doc = null) {
-
-  const wrap =
-    document.getElementById(
-      "documentFormWrap"
-    );
-
-  if (!wrap) return;
-
-
-  const isEdit = !!doc;
-
-
-  wrap.innerHTML = `
-
-    <div class="card form-card">
-
-      <div class="page-head">
-
-        <h3>
-          ${
-            isEdit
-              ? "Edit Document"
-              : "Add Document"
-          }
-        </h3>
-
-
-        <button
-          class="btn"
-          onclick="closeDocumentForm()"
-        >
-          Close
-        </button>
-
-      </div>
-
-
-      <form id="documentForm">
-
-
-        <input
-          type="hidden"
-          id="documentId"
-          value="${
-            isEdit
-              ? esc(doc.id)
-              : ""
-          }"
-        >
-
-
-        <label>Document Title</label>
-
-        <input
-          type="text"
-          id="documentTitle"
-          required
-          value="${
-            isEdit
-              ? esc(doc.title || "")
-              : ""
-          }"
-          placeholder="Example: Product Brochure"
-        >
-
-
-        <label>Category</label>
-
-        <select id="documentCategory">
-
-          <option
-            value="brochure"
-            ${
-              doc?.category === "brochure"
-                ? "selected"
-                : ""
-            }
-          >
-            Brochure
-          </option>
-
-          <option
-            value="tds"
-            ${
-              doc?.category === "tds"
-                ? "selected"
-                : ""
-            }
-          >
-            TDS
-          </option>
-
-          <option
-            value="msds"
-            ${
-              doc?.category === "msds"
-                ? "selected"
-                : ""
-            }
-          >
-            MSDS
-          </option>
-
-          <option
-            value="pdf"
-            ${
-              doc?.category === "pdf"
-                ? "selected"
-                : ""
-            }
-          >
-            PDF
-          </option>
-
-          <option
-            value="other"
-            ${
-              doc?.category === "other"
-                ? "selected"
-                : ""
-            }
-          >
-            Other
-          </option>
-
-        </select>
-
-
-        <label>Product ID</label>
-
-        <input
-          type="number"
-          id="documentProductId"
-          value="${
-            isEdit
-              ? esc(doc.product_id ?? "")
-              : ""
-          }"
-          placeholder="Optional"
-        >
-
-
-        <label>File URL</label>
-
-        <input
-          type="url"
-          id="documentFileUrl"
-          value="${
-            isEdit
-              ? esc(doc.file_url || "")
-              : ""
-          }"
-          placeholder="https://..."
-        >
-
-
-        <div style="margin-top:20px;">
+          </span>
 
           <button
-            type="submit"
-            class="btn primary"
+            class="dd"
+            data-id="${x.id}"
+            style="
+              color:#dc2626;
+              background:none;
+              border:0;
+              cursor:pointer;
+            "
           >
-            ${
-              isEdit
-                ? "Update Document"
-                : "Save Document"
-            }
+            Delete
           </button>
 
         </div>
 
-
-        <p id="documentMsg"></p>
-
-      </form>
+      `).join('')}
 
     </div>
+
   `;
 
 
+  $('#doc').onsubmit =
+    async e => {
+
+      e.preventDefault();
+
+      const obj =
+        Object.fromEntries(
+          new FormData(e.target)
+        );
+
+      if (!obj.product_id)
+        delete obj.product_id;
+
+      else
+        obj.product_id =
+          Number(obj.product_id);
+
+
+      const {
+        error
+      } = await sb
+        .from('documents')
+        .insert(obj);
+
+      if (error) {
+
+        alert(error.message);
+
+        return;
+
+      }
+
+      render();
+
+    };
+
+
   document
-    .getElementById("documentForm")
-    .addEventListener(
-      "submit",
-      saveDocument
-    );
-}
+    .querySelectorAll('.dd')
+    .forEach(button => {
 
+      button.onclick = async () => {
 
-function closeDocumentForm() {
+        if (!confirm('Delete this document?'))
+          return;
 
-  const wrap =
-    document.getElementById(
-      "documentFormWrap"
-    );
+        const {
+          error
+        } = await sb
+          .from('documents')
+          .delete()
+          .eq(
+            'id',
+            button.dataset.id
+          );
 
-  if (wrap) {
-    wrap.innerHTML = "";
-  }
-}
+        if (error) {
 
+          alert(error.message);
 
-async function editDocument(id) {
+          return;
 
-  const { data, error } = await sb
-    .from("documents")
-    .select("*")
-    .eq("id", id)
-    .single();
+        }
 
+        render();
 
-  if (error) {
+      };
 
-    alert(error.message);
+    });
 
-    return;
-  }
-
-
-  showDocumentForm(data);
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-
-async function saveDocument(e) {
-
-  e.preventDefault();
-
-
-  const msg =
-    document.getElementById(
-      "documentMsg"
-    );
-
-
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
-
-
-  const id =
-    document.getElementById(
-      "documentId"
-    ).value;
-
-
-  const productIdValue =
-    document.getElementById(
-      "documentProductId"
-    ).value;
-
-
-  const documentData = {
-
-    title:
-      document
-        .getElementById("documentTitle")
-        .value
-        .trim(),
-
-    category:
-      document
-        .getElementById("documentCategory")
-        .value,
-
-    product_id:
-      productIdValue
-        ? Number(productIdValue)
-        : null,
-
-    file_url:
-      document
-        .getElementById("documentFileUrl")
-        .value
-        .trim()
-
-  };
-
-
-  let result;
-
-
-  if (id) {
-
-    result = await sb
-      .from("documents")
-      .update(documentData)
-      .eq("id", id);
-
-  } else {
-
-    result = await sb
-      .from("documents")
-      .insert(documentData);
-
-  }
-
-
-  if (result.error) {
-
-    if (msg) {
-      msg.textContent =
-        "Error: " +
-        result.error.message;
-    }
-
-    return;
-  }
-
-
-  if (msg) {
-    msg.textContent =
-      "Document saved successfully.";
-  }
-
-
-  closeDocumentForm();
-
-  await loadDocuments();
-}
-
-
-async function deleteDocument(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this document?"
-  );
-
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("documents")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadDocuments();
 }
 
 
 /* =========================
    TRACKING
-   ========================= */
+========================= */
 
 async function tracking() {
 
-  main.innerHTML = `
+  const {
+    data,
+    error
+  } = await sb
+    .from('tracking')
+    .select('*')
+    .order('created_at', {
+      ascending: false
+    });
 
-    <div class="page-head">
 
-      <div>
-        <h2>Tracking</h2>
-        <p>Manage customer tracking information</p>
+  if (error) {
+
+    $('#main').innerHTML = `
+      <div style="color:#dc2626">
+        ${esc(error.message)}
       </div>
+    `;
+
+    return;
+
+  }
+
+
+  $('#main').innerHTML = `
+
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    ">
+
+      <h2 style="
+        font-size:30px;
+        font-weight:800;
+      ">
+        Tracking
+      </h2>
 
       <button
-        class="btn primary"
-        id="addTrackingBtn"
+        id="newT"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:10px 16px;
+          border-radius:10px;
+        "
       >
         + Add Tracking
       </button>
@@ -3483,629 +1980,300 @@ async function tracking() {
     </div>
 
 
-    <div id="trackingFormWrap"></div>
-
-
-    <div class="card">
-
-      <div id="trackingTable">
-        Loading tracking...
-      </div>
-
-    </div>
-  `;
-
-
-  document
-    .getElementById("addTrackingBtn")
-    .addEventListener(
-      "click",
-      () => showTrackingForm()
-    );
-
-
-  await loadTracking();
-}
-
-
-async function loadTracking() {
-
-  const box =
-    document.getElementById(
-      "trackingTable"
-    );
-
-  if (!box) return;
-
-
-  const { data, error } = await sb
-    .from("tracking")
-    .select("*")
-    .order("id", {
-      ascending: false
-    });
-
-
-  if (error) {
-
-    box.innerHTML = `
-      <div class="error">
-        ${esc(error.message)}
-      </div>
-    `;
-
-    return;
-  }
-
-
-  if (!data || data.length === 0) {
-
-    box.innerHTML = `
-      <div class="empty">
-        No tracking records found.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  box.innerHTML = `
-
-    <div class="table-wrap">
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Reference</th>
-            <th>Customer</th>
-            <th>Product</th>
-            <th>Status</th>
-            <th>Location</th>
-            <th>ETA</th>
-            <th>Action</th>
-          </tr>
-
-        </thead>
-
-
-        <tbody>
-
-          ${data.map(item => `
-
-            <tr>
-
-              <td>
-                <strong>
-                  ${esc(
-                    item.reference_no || "-"
-                  )}
-                </strong>
-              </td>
-
-
-              <td>
-                ${esc(
-                  item.customer_name || "-"
-                )}
-              </td>
-
-
-              <td>
-                ${esc(
-                  item.product || "-"
-                )}
-              </td>
-
-
-              <td>
-                ${esc(
-                  item.status || "-"
-                )}
-              </td>
-
-
-              <td>
-                ${esc(
-                  item.location || "-"
-                )}
-              </td>
-
-
-              <td>
-                ${esc(
-                  item.eta || "-"
-                )}
-              </td>
-
-
-              <td>
-
-                <button
-                  class="btn small"
-                  onclick="
-                    editTracking(${item.id})
-                  "
-                >
-                  Edit
-                </button>
-
-
-                <button
-                  class="btn small danger"
-                  onclick="
-                    deleteTracking(${item.id})
-                  "
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-
-          `).join("")}
-
-        </tbody>
-
-      </table>
-
-    </div>
-  `;
-}
-
-
-function showTrackingForm(item = null) {
-
-  const wrap =
-    document.getElementById(
-      "trackingFormWrap"
-    );
-
-  if (!wrap) return;
-
-
-  const isEdit = !!item;
-
-
-  wrap.innerHTML = `
-
-    <div class="card form-card">
-
-      <div class="page-head">
-
-        <h3>
-          ${
-            isEdit
-              ? "Edit Tracking"
-              : "Add Tracking"
-          }
-        </h3>
-
-
-        <button
-          class="btn"
-          onclick="closeTrackingForm()"
-        >
-          Close
-        </button>
-
-      </div>
-
-
-      <form id="trackingForm">
-
-
-        <input
-          type="hidden"
-          id="trackingId"
-          value="${
-            isEdit
-              ? esc(item.id)
-              : ""
-          }"
-        >
-
-
-        <label>Reference Number</label>
-
-        <input
-          type="text"
-          id="trackingReference"
-          required
-          value="${
-            isEdit
-              ? esc(item.reference_no || "")
-              : ""
-          }"
-          placeholder="Example: DEV-1001"
-        >
-
-
-        <label>Customer Name</label>
-
-        <input
-          type="text"
-          id="trackingCustomer"
-          value="${
-            isEdit
-              ? esc(item.customer_name || "")
-              : ""
-          }"
-        >
-
-
-        <label>Product</label>
-
-        <input
-          type="text"
-          id="trackingProduct"
-          value="${
-            isEdit
-              ? esc(item.product || "")
-              : ""
-          }"
-        >
-
-
-        <label>Status</label>
-
-        <input
-          type="text"
-          id="trackingStatus"
-          value="${
-            isEdit
-              ? esc(item.status || "")
-              : ""
-          }"
-          placeholder="Processing / Shipped / Delivered"
-        >
-
-
-        <label>Location</label>
-
-        <input
-          type="text"
-          id="trackingLocation"
-          value="${
-            isEdit
-              ? esc(item.location || "")
-              : ""
-          }"
-        >
-
-
-        <label>ETA</label>
-
-        <input
-          type="text"
-          id="trackingEta"
-          value="${
-            isEdit
-              ? esc(item.eta || "")
-              : ""
-          }"
-          placeholder="Example: 18 Sep 2026"
-        >
-
-
-        <label>Step 1</label>
-
-        <input
-          type="text"
-          id="trackingStep1"
-          value="${
-            isEdit
-              ? esc(item.step1 || "")
-              : ""
-          }"
-        >
-
-
-        <label>Step 2</label>
-
-        <input
-          type="text"
-          id="trackingStep2"
-          value="${
-            isEdit
-              ? esc(item.step2 || "")
-              : ""
-          }"
-        >
-
-
-        <label>Step 3</label>
-
-        <input
-          type="text"
-          id="trackingStep3"
-          value="${
-            isEdit
-              ? esc(item.step3 || "")
-              : ""
-          }"
-        >
-
-
-        <label>Step 4</label>
-
-        <input
-          type="text"
-          id="trackingStep4"
-          value="${
-            isEdit
-              ? esc(item.step4 || "")
-              : ""
-          }"
-        >
-
-
-        <div style="margin-top:20px;">
-
-          <button
-            type="submit"
-            class="btn primary"
-          >
-            ${
-              isEdit
-                ? "Update Tracking"
-                : "Save Tracking"
-            }
-          </button>
+    <div
+      id="te"
+      class="hidden"
+      style="
+        border:1px solid #ddd;
+        border-radius:14px;
+        padding:18px;
+        margin-bottom:20px;
+        background:#fff;
+      "
+    ></div>
+
+
+    <div style="display:grid;gap:10px">
+
+      ${(data || []).map(x => `
+
+        <div style="
+          border:1px solid #e5e7eb;
+          border-radius:12px;
+          padding:14px;
+          background:#fff;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:15px;
+        ">
+
+          <span>
+
+            <b>
+              ${esc(x.reference_no)}
+            </b>
+
+            ·
+
+            ${esc(x.status)}
+
+            ·
+
+            ${esc(x.product)}
+
+          </span>
+
+
+          <span>
+
+            <button
+              class="teb"
+              data-id="${x.id}"
+              style="
+                color:#2563eb;
+                background:none;
+                border:0;
+                cursor:pointer;
+                margin-right:10px;
+              "
+            >
+              Edit
+            </button>
+
+            <button
+              class="td"
+              data-id="${x.id}"
+              style="
+                color:#dc2626;
+                background:none;
+                border:0;
+                cursor:pointer;
+              "
+            >
+              Delete
+            </button>
+
+          </span>
 
         </div>
 
-
-        <p id="trackingMsg"></p>
-
-      </form>
+      `).join('')}
 
     </div>
+
   `;
 
 
+  $('#newT').onclick =
+    () => trackForm({});
+
+
   document
-    .getElementById("trackingForm")
-    .addEventListener(
-      "submit",
-      saveTracking
-    );
+    .querySelectorAll('.teb')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        const {
+          data,
+          error
+        } = await sb
+          .from('tracking')
+          .select('*')
+          .eq(
+            'id',
+            button.dataset.id
+          )
+          .single();
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        trackForm(data);
+
+      };
+
+    });
+
+
+  document
+    .querySelectorAll('.td')
+    .forEach(button => {
+
+      button.onclick = async () => {
+
+        if (!confirm('Delete tracking record?'))
+          return;
+
+        const {
+          error
+        } = await sb
+          .from('tracking')
+          .delete()
+          .eq(
+            'id',
+            button.dataset.id
+          );
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+        render();
+
+      };
+
+    });
+
 }
 
 
-function closeTrackingForm() {
+/* TRACKING FORM */
 
-  const wrap =
-    document.getElementById(
-      "trackingFormWrap"
-    );
+function trackForm(x) {
 
-  if (wrap) {
-    wrap.innerHTML = "";
-  }
+  const editor = $('#te');
+
+  editor.classList.remove('hidden');
+
+
+  editor.innerHTML = `
+
+    <form
+      id="tf"
+      style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+        gap:12px;
+      "
+    >
+
+      ${
+        [
+          'id',
+          'reference_no',
+          'customer_name',
+          'product',
+          'status',
+          'location',
+          'eta',
+          'step1',
+          'step2',
+          'step3',
+          'step4'
+        ].map(k => `
+
+          <input
+            name="${k}"
+            ${k === 'id'
+              ? 'type="hidden"'
+              : ''}
+            placeholder="${k}"
+            value="${esc(x[k])}"
+            ${k === 'reference_no'
+              ? 'required'
+              : ''}
+            style="
+              padding:12px;
+              border:1px solid #ddd;
+              border-radius:10px;
+            "
+          >
+
+        `).join('')
+      }
+
+
+      <button
+        type="submit"
+        style="
+          background:#111827;
+          color:#fff;
+          border:0;
+          padding:13px;
+          border-radius:10px;
+          font-weight:700;
+          grid-column:1/-1;
+        "
+      >
+        Save Tracking
+      </button>
+
+    </form>
+
+  `;
+
+
+  $('#tf').onsubmit =
+    async event => {
+
+      event.preventDefault();
+
+      const obj =
+        Object.fromEntries(
+          new FormData(event.target)
+        );
+
+
+      if (obj.id) {
+
+        const {
+          error
+        } = await sb
+          .from('tracking')
+          .update(obj)
+          .eq(
+            'id',
+            obj.id
+          );
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+      } else {
+
+        delete obj.id;
+
+        const {
+          error
+        } = await sb
+          .from('tracking')
+          .insert(obj);
+
+        if (error) {
+
+          alert(error.message);
+
+          return;
+
+        }
+
+      }
+
+      render();
+
+    };
+
 }
 
 
-async function editTracking(id) {
-
-  const { data, error } = await sb
-    .from("tracking")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-  }
-
-
-  showTrackingForm(data);
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-
-async function saveTracking(e) {
-
-  e.preventDefault();
-
-
-  const msg =
-    document.getElementById(
-      "trackingMsg"
-    );
-
-
-  if (msg) {
-    msg.textContent = "Saving...";
-  }
-
-
-  const id =
-    document.getElementById(
-      "trackingId"
-    ).value;
-
-
-  const trackingData = {
-
-    reference_no:
-      document
-        .getElementById(
-          "trackingReference"
-        )
-        .value
-        .trim(),
-
-    customer_name:
-      document
-        .getElementById(
-          "trackingCustomer"
-        )
-        .value
-        .trim(),
-
-    product:
-      document
-        .getElementById(
-          "trackingProduct"
-        )
-        .value
-        .trim(),
-
-    status:
-      document
-        .getElementById(
-          "trackingStatus"
-        )
-        .value
-        .trim(),
-
-    location:
-      document
-        .getElementById(
-          "trackingLocation"
-        )
-        .value
-        .trim(),
-
-    eta:
-      document
-        .getElementById(
-          "trackingEta"
-        )
-        .value
-        .trim(),
-
-    step1:
-      document
-        .getElementById(
-          "trackingStep1"
-        )
-        .value
-        .trim(),
-
-    step2:
-      document
-        .getElementById(
-          "trackingStep2"
-        )
-        .value
-        .trim(),
-
-    step3:
-      document
-        .getElementById(
-          "trackingStep3"
-        )
-        .value
-        .trim(),
-
-    step4:
-      document
-        .getElementById(
-          "trackingStep4"
-        )
-        .value
-        .trim()
-
-  };
-
-
-  let result;
-
-
-  if (id) {
-
-    result = await sb
-      .from("tracking")
-      .update(trackingData)
-      .eq("id", id);
-
-  } else {
-
-    result = await sb
-      .from("tracking")
-      .insert(trackingData);
-
-  }
-
-
-  if (result.error) {
-
-    if (msg) {
-      msg.textContent =
-        "Error: " +
-        result.error.message;
-    }
-
-    return;
-  }
-
-
-  if (msg) {
-    msg.textContent =
-      "Tracking saved successfully.";
-  }
-
-
-  closeTrackingForm();
-
-  await loadTracking();
-}
-
-
-async function deleteTracking(id) {
-
-  const ok = confirm(
-    "Are you sure you want to delete this tracking record?"
-  );
-
-
-  if (!ok) return;
-
-
-  const { error } = await sb
-    .from("tracking")
-    .delete()
-    .eq("id", id);
-
-
-  if (error) {
-
-    alert(
-      "Delete failed: " +
-      error.message
-    );
-
-    return;
-  }
-
-
-  await loadTracking();
-}
-
-
-/* =========================================================
-   FINAL
-   ========================================================= */
-
-console.log(
-  "DEVI GROUPS ADMIN PANEL loaded successfully."
-);
-
-
-/* =========================================================
-   PART 4 END
-   ========================================================= */
+/* =========================
+   START
+========================= */
+
+boot();
