@@ -19,7 +19,7 @@ const BUCKET = 'devi-media';
 
 let currentView = 'dashboard';
 
-const $ = (s, root = document) =>
+const $$ = (s, root = document) =>
   root.querySelector(s);
 
 const $$ = (s, root = document) =>
