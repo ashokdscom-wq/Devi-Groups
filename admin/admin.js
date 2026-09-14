@@ -2657,3 +2657,1455 @@ async function deleteReview(id) {
 /* =========================================================
    PART 3 END
    ========================================================= */
+/* =========================================================
+   PART 4 — COMPANY + DOCUMENTS + TRACKING + FINAL
+   ========================================================= */
+
+
+/* =========================
+   COMPANY INFORMATION
+   ========================= */
+
+async function company() {
+
+  main.innerHTML = `
+
+    <div class="page-head">
+
+      <div>
+        <h2>Company Information</h2>
+        <p>Edit company contact details</p>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div id="companyContent">
+        Loading company information...
+      </div>
+    </div>
+  `;
+
+  await loadCompany();
+}
+
+
+async function loadCompany() {
+
+  const box =
+    document.getElementById(
+      "companyContent"
+    );
+
+  if (!box) return;
+
+
+  const { data, error } = await sb
+    .from("company_info")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const companyData = data || {};
+
+
+  box.innerHTML = `
+
+    <form id="companyForm">
+
+      <label>Company Name</label>
+
+      <input
+        type="text"
+        id="companyName"
+        value="${esc(
+          companyData.company_name || ""
+        )}"
+      >
+
+
+      <label>Email</label>
+
+      <input
+        type="email"
+        id="companyEmail"
+        value="${esc(
+          companyData.email || ""
+        )}"
+      >
+
+
+      <label>Phone</label>
+
+      <input
+        type="text"
+        id="companyPhone"
+        value="${esc(
+          companyData.phone || ""
+        )}"
+      >
+
+
+      <label>WhatsApp</label>
+
+      <input
+        type="text"
+        id="companyWhatsapp"
+        value="${esc(
+          companyData.whatsapp || ""
+        )}"
+      >
+
+
+      <label>Address</label>
+
+      <textarea
+        id="companyAddress"
+        rows="5"
+      >${esc(
+        companyData.address || ""
+      )}</textarea>
+
+
+      <label>Website</label>
+
+      <input
+        type="url"
+        id="companyWebsite"
+        value="${esc(
+          companyData.website || ""
+        )}"
+        placeholder="https://..."
+      >
+
+
+      <div style="margin-top:20px;">
+
+        <button
+          type="submit"
+          class="btn primary"
+        >
+          Save Company Information
+        </button>
+
+      </div>
+
+
+      <p id="companyMsg"></p>
+
+    </form>
+  `;
+
+
+  document
+    .getElementById("companyForm")
+    .addEventListener(
+      "submit",
+      saveCompany
+    );
+}
+
+
+async function saveCompany(e) {
+
+  e.preventDefault();
+
+
+  const msg =
+    document.getElementById(
+      "companyMsg"
+    );
+
+
+  if (msg) {
+    msg.textContent = "Saving...";
+  }
+
+
+  const companyData = {
+
+    id: 1,
+
+    company_name:
+      document
+        .getElementById("companyName")
+        .value
+        .trim(),
+
+    email:
+      document
+        .getElementById("companyEmail")
+        .value
+        .trim(),
+
+    phone:
+      document
+        .getElementById("companyPhone")
+        .value
+        .trim(),
+
+    whatsapp:
+      document
+        .getElementById("companyWhatsapp")
+        .value
+        .trim(),
+
+    address:
+      document
+        .getElementById("companyAddress")
+        .value
+        .trim(),
+
+    website:
+      document
+        .getElementById("companyWebsite")
+        .value
+        .trim()
+
+  };
+
+
+  const { error } = await sb
+    .from("company_info")
+    .upsert(
+      companyData,
+      {
+        onConflict: "id"
+      }
+    );
+
+
+  if (error) {
+
+    if (msg) {
+      msg.textContent =
+        "Error: " + error.message;
+    }
+
+    return;
+  }
+
+
+  if (msg) {
+    msg.textContent =
+      "Company information saved successfully.";
+  }
+}
+
+
+/* =========================
+   DOCUMENTS
+   ========================= */
+
+async function documents() {
+
+  main.innerHTML = `
+
+    <div class="page-head">
+
+      <div>
+        <h2>Documents</h2>
+        <p>
+          Manage PDF, Brochure, TDS and MSDS files
+        </p>
+      </div>
+
+      <button
+        class="btn primary"
+        id="addDocumentBtn"
+      >
+        + Add Document
+      </button>
+
+    </div>
+
+
+    <div id="documentFormWrap"></div>
+
+
+    <div class="card">
+
+      <div id="documentsTable">
+        Loading documents...
+      </div>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("addDocumentBtn")
+    .addEventListener(
+      "click",
+      () => showDocumentForm()
+    );
+
+
+  await loadDocuments();
+}
+
+
+async function loadDocuments() {
+
+  const box =
+    document.getElementById(
+      "documentsTable"
+    );
+
+  if (!box) return;
+
+
+  const { data, error } = await sb
+    .from("documents")
+    .select("*")
+    .order("id", {
+      ascending: false
+    });
+
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No documents found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Product ID</th>
+            <th>File</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${data.map(doc => `
+
+            <tr>
+
+              <td>
+                <strong>
+                  ${esc(doc.title || "-")}
+                </strong>
+              </td>
+
+
+              <td>
+                ${esc(doc.category || "-")}
+              </td>
+
+
+              <td>
+                ${esc(
+                  doc.product_id ?? "-"
+                )}
+              </td>
+
+
+              <td>
+
+                ${
+                  doc.file_url
+                    ? `
+                      <a
+                        href="${esc(doc.file_url)}"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Open File
+                      </a>
+                    `
+                    : "-"
+                }
+
+              </td>
+
+
+              <td>
+
+                <button
+                  class="btn small"
+                  onclick="
+                    editDocument(${doc.id})
+                  "
+                >
+                  Edit
+                </button>
+
+
+                <button
+                  class="btn small danger"
+                  onclick="
+                    deleteDocument(${doc.id})
+                  "
+                >
+                  Delete
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+function showDocumentForm(doc = null) {
+
+  const wrap =
+    document.getElementById(
+      "documentFormWrap"
+    );
+
+  if (!wrap) return;
+
+
+  const isEdit = !!doc;
+
+
+  wrap.innerHTML = `
+
+    <div class="card form-card">
+
+      <div class="page-head">
+
+        <h3>
+          ${
+            isEdit
+              ? "Edit Document"
+              : "Add Document"
+          }
+        </h3>
+
+
+        <button
+          class="btn"
+          onclick="closeDocumentForm()"
+        >
+          Close
+        </button>
+
+      </div>
+
+
+      <form id="documentForm">
+
+
+        <input
+          type="hidden"
+          id="documentId"
+          value="${
+            isEdit
+              ? esc(doc.id)
+              : ""
+          }"
+        >
+
+
+        <label>Document Title</label>
+
+        <input
+          type="text"
+          id="documentTitle"
+          required
+          value="${
+            isEdit
+              ? esc(doc.title || "")
+              : ""
+          }"
+          placeholder="Example: Product Brochure"
+        >
+
+
+        <label>Category</label>
+
+        <select id="documentCategory">
+
+          <option
+            value="brochure"
+            ${
+              doc?.category === "brochure"
+                ? "selected"
+                : ""
+            }
+          >
+            Brochure
+          </option>
+
+          <option
+            value="tds"
+            ${
+              doc?.category === "tds"
+                ? "selected"
+                : ""
+            }
+          >
+            TDS
+          </option>
+
+          <option
+            value="msds"
+            ${
+              doc?.category === "msds"
+                ? "selected"
+                : ""
+            }
+          >
+            MSDS
+          </option>
+
+          <option
+            value="pdf"
+            ${
+              doc?.category === "pdf"
+                ? "selected"
+                : ""
+            }
+          >
+            PDF
+          </option>
+
+          <option
+            value="other"
+            ${
+              doc?.category === "other"
+                ? "selected"
+                : ""
+            }
+          >
+            Other
+          </option>
+
+        </select>
+
+
+        <label>Product ID</label>
+
+        <input
+          type="number"
+          id="documentProductId"
+          value="${
+            isEdit
+              ? esc(doc.product_id ?? "")
+              : ""
+          }"
+          placeholder="Optional"
+        >
+
+
+        <label>File URL</label>
+
+        <input
+          type="url"
+          id="documentFileUrl"
+          value="${
+            isEdit
+              ? esc(doc.file_url || "")
+              : ""
+          }"
+          placeholder="https://..."
+        >
+
+
+        <div style="margin-top:20px;">
+
+          <button
+            type="submit"
+            class="btn primary"
+          >
+            ${
+              isEdit
+                ? "Update Document"
+                : "Save Document"
+            }
+          </button>
+
+        </div>
+
+
+        <p id="documentMsg"></p>
+
+      </form>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("documentForm")
+    .addEventListener(
+      "submit",
+      saveDocument
+    );
+}
+
+
+function closeDocumentForm() {
+
+  const wrap =
+    document.getElementById(
+      "documentFormWrap"
+    );
+
+  if (wrap) {
+    wrap.innerHTML = "";
+  }
+}
+
+
+async function editDocument(id) {
+
+  const { data, error } = await sb
+    .from("documents")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+
+  showDocumentForm(data);
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+async function saveDocument(e) {
+
+  e.preventDefault();
+
+
+  const msg =
+    document.getElementById(
+      "documentMsg"
+    );
+
+
+  if (msg) {
+    msg.textContent = "Saving...";
+  }
+
+
+  const id =
+    document.getElementById(
+      "documentId"
+    ).value;
+
+
+  const productIdValue =
+    document.getElementById(
+      "documentProductId"
+    ).value;
+
+
+  const documentData = {
+
+    title:
+      document
+        .getElementById("documentTitle")
+        .value
+        .trim(),
+
+    category:
+      document
+        .getElementById("documentCategory")
+        .value,
+
+    product_id:
+      productIdValue
+        ? Number(productIdValue)
+        : null,
+
+    file_url:
+      document
+        .getElementById("documentFileUrl")
+        .value
+        .trim()
+
+  };
+
+
+  let result;
+
+
+  if (id) {
+
+    result = await sb
+      .from("documents")
+      .update(documentData)
+      .eq("id", id);
+
+  } else {
+
+    result = await sb
+      .from("documents")
+      .insert(documentData);
+
+  }
+
+
+  if (result.error) {
+
+    if (msg) {
+      msg.textContent =
+        "Error: " +
+        result.error.message;
+    }
+
+    return;
+  }
+
+
+  if (msg) {
+    msg.textContent =
+      "Document saved successfully.";
+  }
+
+
+  closeDocumentForm();
+
+  await loadDocuments();
+}
+
+
+async function deleteDocument(id) {
+
+  const ok = confirm(
+    "Are you sure you want to delete this document?"
+  );
+
+
+  if (!ok) return;
+
+
+  const { error } = await sb
+    .from("documents")
+    .delete()
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadDocuments();
+}
+
+
+/* =========================
+   TRACKING
+   ========================= */
+
+async function tracking() {
+
+  main.innerHTML = `
+
+    <div class="page-head">
+
+      <div>
+        <h2>Tracking</h2>
+        <p>Manage customer tracking information</p>
+      </div>
+
+      <button
+        class="btn primary"
+        id="addTrackingBtn"
+      >
+        + Add Tracking
+      </button>
+
+    </div>
+
+
+    <div id="trackingFormWrap"></div>
+
+
+    <div class="card">
+
+      <div id="trackingTable">
+        Loading tracking...
+      </div>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("addTrackingBtn")
+    .addEventListener(
+      "click",
+      () => showTrackingForm()
+    );
+
+
+  await loadTracking();
+}
+
+
+async function loadTracking() {
+
+  const box =
+    document.getElementById(
+      "trackingTable"
+    );
+
+  if (!box) return;
+
+
+  const { data, error } = await sb
+    .from("tracking")
+    .select("*")
+    .order("id", {
+      ascending: false
+    });
+
+
+  if (error) {
+
+    box.innerHTML = `
+      <div class="error">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    box.innerHTML = `
+      <div class="empty">
+        No tracking records found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Reference</th>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>ETA</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          ${data.map(item => `
+
+            <tr>
+
+              <td>
+                <strong>
+                  ${esc(
+                    item.reference_no || "-"
+                  )}
+                </strong>
+              </td>
+
+
+              <td>
+                ${esc(
+                  item.customer_name || "-"
+                )}
+              </td>
+
+
+              <td>
+                ${esc(
+                  item.product || "-"
+                )}
+              </td>
+
+
+              <td>
+                ${esc(
+                  item.status || "-"
+                )}
+              </td>
+
+
+              <td>
+                ${esc(
+                  item.location || "-"
+                )}
+              </td>
+
+
+              <td>
+                ${esc(
+                  item.eta || "-"
+                )}
+              </td>
+
+
+              <td>
+
+                <button
+                  class="btn small"
+                  onclick="
+                    editTracking(${item.id})
+                  "
+                >
+                  Edit
+                </button>
+
+
+                <button
+                  class="btn small danger"
+                  onclick="
+                    deleteTracking(${item.id})
+                  "
+                >
+                  Delete
+                </button>
+
+              </td>
+
+            </tr>
+
+          `).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+function showTrackingForm(item = null) {
+
+  const wrap =
+    document.getElementById(
+      "trackingFormWrap"
+    );
+
+  if (!wrap) return;
+
+
+  const isEdit = !!item;
+
+
+  wrap.innerHTML = `
+
+    <div class="card form-card">
+
+      <div class="page-head">
+
+        <h3>
+          ${
+            isEdit
+              ? "Edit Tracking"
+              : "Add Tracking"
+          }
+        </h3>
+
+
+        <button
+          class="btn"
+          onclick="closeTrackingForm()"
+        >
+          Close
+        </button>
+
+      </div>
+
+
+      <form id="trackingForm">
+
+
+        <input
+          type="hidden"
+          id="trackingId"
+          value="${
+            isEdit
+              ? esc(item.id)
+              : ""
+          }"
+        >
+
+
+        <label>Reference Number</label>
+
+        <input
+          type="text"
+          id="trackingReference"
+          required
+          value="${
+            isEdit
+              ? esc(item.reference_no || "")
+              : ""
+          }"
+          placeholder="Example: DEV-1001"
+        >
+
+
+        <label>Customer Name</label>
+
+        <input
+          type="text"
+          id="trackingCustomer"
+          value="${
+            isEdit
+              ? esc(item.customer_name || "")
+              : ""
+          }"
+        >
+
+
+        <label>Product</label>
+
+        <input
+          type="text"
+          id="trackingProduct"
+          value="${
+            isEdit
+              ? esc(item.product || "")
+              : ""
+          }"
+        >
+
+
+        <label>Status</label>
+
+        <input
+          type="text"
+          id="trackingStatus"
+          value="${
+            isEdit
+              ? esc(item.status || "")
+              : ""
+          }"
+          placeholder="Processing / Shipped / Delivered"
+        >
+
+
+        <label>Location</label>
+
+        <input
+          type="text"
+          id="trackingLocation"
+          value="${
+            isEdit
+              ? esc(item.location || "")
+              : ""
+          }"
+        >
+
+
+        <label>ETA</label>
+
+        <input
+          type="text"
+          id="trackingEta"
+          value="${
+            isEdit
+              ? esc(item.eta || "")
+              : ""
+          }"
+          placeholder="Example: 18 Sep 2026"
+        >
+
+
+        <label>Step 1</label>
+
+        <input
+          type="text"
+          id="trackingStep1"
+          value="${
+            isEdit
+              ? esc(item.step1 || "")
+              : ""
+          }"
+        >
+
+
+        <label>Step 2</label>
+
+        <input
+          type="text"
+          id="trackingStep2"
+          value="${
+            isEdit
+              ? esc(item.step2 || "")
+              : ""
+          }"
+        >
+
+
+        <label>Step 3</label>
+
+        <input
+          type="text"
+          id="trackingStep3"
+          value="${
+            isEdit
+              ? esc(item.step3 || "")
+              : ""
+          }"
+        >
+
+
+        <label>Step 4</label>
+
+        <input
+          type="text"
+          id="trackingStep4"
+          value="${
+            isEdit
+              ? esc(item.step4 || "")
+              : ""
+          }"
+        >
+
+
+        <div style="margin-top:20px;">
+
+          <button
+            type="submit"
+            class="btn primary"
+          >
+            ${
+              isEdit
+                ? "Update Tracking"
+                : "Save Tracking"
+            }
+          </button>
+
+        </div>
+
+
+        <p id="trackingMsg"></p>
+
+      </form>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById("trackingForm")
+    .addEventListener(
+      "submit",
+      saveTracking
+    );
+}
+
+
+function closeTrackingForm() {
+
+  const wrap =
+    document.getElementById(
+      "trackingFormWrap"
+    );
+
+  if (wrap) {
+    wrap.innerHTML = "";
+  }
+}
+
+
+async function editTracking(id) {
+
+  const { data, error } = await sb
+    .from("tracking")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+  }
+
+
+  showTrackingForm(data);
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+async function saveTracking(e) {
+
+  e.preventDefault();
+
+
+  const msg =
+    document.getElementById(
+      "trackingMsg"
+    );
+
+
+  if (msg) {
+    msg.textContent = "Saving...";
+  }
+
+
+  const id =
+    document.getElementById(
+      "trackingId"
+    ).value;
+
+
+  const trackingData = {
+
+    reference_no:
+      document
+        .getElementById(
+          "trackingReference"
+        )
+        .value
+        .trim(),
+
+    customer_name:
+      document
+        .getElementById(
+          "trackingCustomer"
+        )
+        .value
+        .trim(),
+
+    product:
+      document
+        .getElementById(
+          "trackingProduct"
+        )
+        .value
+        .trim(),
+
+    status:
+      document
+        .getElementById(
+          "trackingStatus"
+        )
+        .value
+        .trim(),
+
+    location:
+      document
+        .getElementById(
+          "trackingLocation"
+        )
+        .value
+        .trim(),
+
+    eta:
+      document
+        .getElementById(
+          "trackingEta"
+        )
+        .value
+        .trim(),
+
+    step1:
+      document
+        .getElementById(
+          "trackingStep1"
+        )
+        .value
+        .trim(),
+
+    step2:
+      document
+        .getElementById(
+          "trackingStep2"
+        )
+        .value
+        .trim(),
+
+    step3:
+      document
+        .getElementById(
+          "trackingStep3"
+        )
+        .value
+        .trim(),
+
+    step4:
+      document
+        .getElementById(
+          "trackingStep4"
+        )
+        .value
+        .trim()
+
+  };
+
+
+  let result;
+
+
+  if (id) {
+
+    result = await sb
+      .from("tracking")
+      .update(trackingData)
+      .eq("id", id);
+
+  } else {
+
+    result = await sb
+      .from("tracking")
+      .insert(trackingData);
+
+  }
+
+
+  if (result.error) {
+
+    if (msg) {
+      msg.textContent =
+        "Error: " +
+        result.error.message;
+    }
+
+    return;
+  }
+
+
+  if (msg) {
+    msg.textContent =
+      "Tracking saved successfully.";
+  }
+
+
+  closeTrackingForm();
+
+  await loadTracking();
+}
+
+
+async function deleteTracking(id) {
+
+  const ok = confirm(
+    "Are you sure you want to delete this tracking record?"
+  );
+
+
+  if (!ok) return;
+
+
+  const { error } = await sb
+    .from("tracking")
+    .delete()
+    .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadTracking();
+}
+
+
+/* =========================================================
+   FINAL
+   ========================================================= */
+
+console.log(
+  "DEVI GROUPS ADMIN PANEL loaded successfully."
+);
+
+
+/* =========================================================
+   PART 4 END
+   ========================================================= */
