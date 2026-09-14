@@ -6172,14 +6172,6 @@ function getStoragePublicUrl(path) {
    ========================================================= */
 
 
-
-function $$(selector, parent = document) {
-  return Array.from(
-    parent.querySelectorAll(selector)
-  );
-}
-
-
 function escapeHtml(value) {
 
   if (value === null ||
