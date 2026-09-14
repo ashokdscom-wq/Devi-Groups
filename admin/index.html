@@ -1,364 +1,355 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>DEVI GROUPS ADMIN PANEL</title>
 
   <style>
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f4f6f8;
+      color:#222
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f6f8;
-      color: #222;
+    .hidden{display:none!important}
+
+    #login{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(135deg,#111827,#374151)
     }
 
-    .hidden {
-      display: none !important;
+    .login-box{
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border-radius:14px;
+      padding:35px;
+      box-shadow:0 20px 60px rgba(0,0,0,.25)
     }
 
-    /* LOGIN */
-    #login {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: linear-gradient(135deg, #111827, #374151);
+    .login-box h1{
+      margin:0 0 8px;
+      text-align:center;
+      font-size:28px
     }
 
-    .login-box {
-      width: 100%;
-      max-width: 420px;
-      background: #fff;
-      border-radius: 14px;
-      padding: 35px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    .login-box p.sub{
+      text-align:center;
+      color:#666;
+      margin:0 0 25px
     }
 
-    .login-box h1 {
-      margin: 0 0 8px;
-      text-align: center;
-      font-size: 28px;
+    .login-box label{
+      display:block;
+      margin:14px 0 6px;
+      font-weight:600
     }
 
-    .login-box p.sub {
-      text-align: center;
-      color: #666;
-      margin: 0 0 25px;
+    .login-box input{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid #d1d5db;
+      border-radius:8px;
+      font-size:15px;
+      outline:none
     }
 
-    .login-box label {
-      display: block;
-      margin: 14px 0 6px;
-      font-weight: 600;
+    .login-box input:focus{border-color:#2563eb}
+
+    .login-btn{
+      width:100%;
+      margin-top:20px;
+      padding:13px;
+      border:0;
+      border-radius:8px;
+      background:#111827;
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer
     }
 
-    .login-box input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 15px;
-      outline: none;
+    .login-btn:hover{background:#000}
+
+    #loginMsg{
+      margin-top:15px;
+      color:#dc2626;
+      text-align:center;
+      min-height:20px
     }
 
-    .login-box input:focus {
-      border-color: #2563eb;
+    .forgot{
+      display:block;
+      text-align:center;
+      margin-top:14px;
+      color:#2563eb;
+      text-decoration:none;
+      cursor:pointer;
+      font-size:14px
     }
 
-    .login-btn {
-      width: 100%;
-      margin-top: 20px;
-      padding: 13px;
-      border: 0;
-      border-radius: 8px;
-      background: #111827;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
+    .forgot:hover{text-decoration:underline}
+
+    #resetBox{margin-top:10px}
+
+    #resetMsg{
+      text-align:center;
+      margin-top:12px;
+      min-height:20px;
+      color:#166534
     }
 
-    .login-btn:hover {
-      background: #000;
+    .back-login{
+      display:block;
+      text-align:center;
+      margin-top:12px;
+      color:#2563eb;
+      cursor:pointer;
+      font-size:14px
     }
 
-    #loginMsg {
-      margin-top: 15px;
-      color: #dc2626;
-      text-align: center;
-      min-height: 20px;
+    #app{min-height:100vh}
+
+    .topbar{
+      background:#111827;
+      color:#fff;
+      padding:14px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      position:sticky;
+      top:0;
+      z-index:20
     }
 
-    /* APP */
-    #app {
-      min-height: 100vh;
+    .brand{
+      font-size:20px;
+      font-weight:800
     }
 
-    .topbar {
-      background: #111827;
-      color: #fff;
-      padding: 14px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
+    .admin-user{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:14px
     }
 
-    .brand {
-      font-size: 20px;
-      font-weight: 800;
+    #logout{
+      border:1px solid rgba(255,255,255,.4);
+      background:transparent;
+      color:#fff;
+      padding:8px 14px;
+      border-radius:7px;
+      cursor:pointer
     }
 
-    .admin-user {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
+    #logout:hover{background:rgba(255,255,255,.1)}
+
+    .layout{
+      display:flex;
+      min-height:calc(100vh - 65px)
     }
 
-    #logout {
-      border: 1px solid rgba(255,255,255,.4);
-      background: transparent;
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: 7px;
-      cursor: pointer;
+    .sidebar{
+      width:230px;
+      background:#fff;
+      border-right:1px solid #e5e7eb;
+      padding:15px 10px;
+      flex-shrink:0
     }
 
-    #logout:hover {
-      background: rgba(255,255,255,.1);
+    .tab{
+      width:100%;
+      text-align:left;
+      border:0;
+      background:transparent;
+      padding:12px 14px;
+      margin-bottom:5px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+      color:#374151
     }
 
-    .layout {
-      display: flex;
-      min-height: calc(100vh - 65px);
+    .tab:hover{background:#f3f4f6}
+
+    .tab.active{
+      background:#111827;
+      color:#fff;
+      font-weight:700
     }
 
-    .sidebar {
-      width: 230px;
-      background: #fff;
-      border-right: 1px solid #e5e7eb;
-      padding: 15px 10px;
-      flex-shrink: 0;
+    .content{
+      flex:1;
+      padding:25px;
+      min-width:0
     }
 
-    .tab {
-      width: 100%;
-      text-align: left;
-      border: 0;
-      background: transparent;
-      padding: 12px 14px;
-      margin-bottom: 5px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #374151;
+    #main{
+      max-width:1400px;
+      margin:auto
     }
 
-    .tab:hover {
-      background: #f3f4f6;
+    .page-title{
+      font-size:28px;
+      font-weight:800;
+      margin:0 0 20px
     }
 
-    .tab.active {
-      background: #111827;
-      color: #fff;
-      font-weight: 700;
+    .card{
+      background:#fff;
+      border-radius:12px;
+      padding:20px;
+      border:1px solid #e5e7eb;
+      margin-bottom:20px
     }
 
-    .content {
-      flex: 1;
-      padding: 25px;
-      min-width: 0;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px
     }
 
-    #main {
-      max-width: 1400px;
-      margin: auto;
+    .stat{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:20px
     }
 
-    /* COMMON ADMIN ELEMENTS */
-    .page-title {
-      font-size: 28px;
-      font-weight: 800;
-      margin: 0 0 20px;
+    .stat h3{
+      margin:0 0 8px;
+      font-size:14px;
+      color:#6b7280
     }
 
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      border: 1px solid #e5e7eb;
-      margin-bottom: 20px;
+    .stat strong{font-size:28px}
+
+    button{font-family:inherit}
+
+    input,textarea,select{font-family:inherit}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
+    th,td{
+      padding:11px 10px;
+      border-bottom:1px solid #e5e7eb;
+      text-align:left;
+      vertical-align:top
     }
 
-    .stat {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 20px;
+    th{
+      background:#f9fafb;
+      font-size:13px
     }
 
-    .stat h3 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: #6b7280;
+    .table-wrap{
+      width:100%;
+      overflow-x:auto
     }
 
-    .stat strong {
-      font-size: 28px;
+    .btn{
+      border:0;
+      border-radius:7px;
+      padding:8px 12px;
+      cursor:pointer;
+      font-size:13px
     }
 
-    button {
-      font-family: inherit;
+    .btn-primary{
+      background:#111827;
+      color:#fff
     }
 
-    input,
-    textarea,
-    select {
-      font-family: inherit;
+    .btn-danger{
+      background:#dc2626;
+      color:#fff
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
+    .btn-secondary{
+      background:#e5e7eb;
+      color:#111827
     }
 
-    th,
-    td {
-      padding: 11px 10px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      vertical-align: top;
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:15px
     }
 
-    th {
-      background: #f9fafb;
-      font-size: 13px;
+    .form-group{margin-bottom:14px}
+
+    .form-group.full{
+      grid-column:1/-1
     }
 
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 7px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      background: #111827;
-      color: #fff;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 15px;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      font-weight: 700;
+    .form-group label{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:700
     }
 
     .form-group input,
     .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 7px;
-      outline: none;
+    .form-group select{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #d1d5db;
+      border-radius:7px;
+      outline:none
     }
 
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
+    .form-group textarea{
+      min-height:100px;
+      resize:vertical
     }
 
     .form-group input:focus,
     .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: #2563eb;
+    .form-group select:focus{
+      border-color:#2563eb
     }
 
-    @media (max-width: 800px) {
-      .layout {
-        display: block;
+    @media(max-width:800px){
+      .layout{display:block}
+
+      .sidebar{
+        width:100%;
+        display:flex;
+        overflow-x:auto;
+        gap:5px;
+        border-right:0;
+        border-bottom:1px solid #e5e7eb
       }
 
-      .sidebar {
-        width: 100%;
-        display: flex;
-        overflow-x: auto;
-        gap: 5px;
-        border-right: 0;
-        border-bottom: 1px solid #e5e7eb;
+      .tab{
+        min-width:max-content;
+        margin:0
       }
 
-      .tab {
-        min-width: max-content;
-        margin: 0;
-      }
+      .content{padding:15px}
 
-      .content {
-        padding: 15px;
-      }
+      .form-grid{grid-template-columns:1fr}
 
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+      .topbar{flex-wrap:wrap}
 
-      .topbar {
-        flex-wrap: wrap;
-      }
-
-      .admin-user {
-        width: 100%;
-        justify-content: space-between;
+      .admin-user{
+        width:100%;
+        justify-content:space-between
       }
     }
   </style>
@@ -366,205 +357,177 @@
 
 <body>
 
-  <!-- LOGIN PAGE -->
-  <section id="login">
+<section id="login">
 
-    <div class="login-box">
+  <div class="login-box">
 
-      <h1>DEVI GROUPS</h1>
+    <h1>DEVI GROUPS</h1>
 
-      <p class="sub">
-        Admin Panel
-      </p>
+    <p class="sub">Admin Panel</p>
 
-      <form id="loginForm">
+    <form id="loginForm">
 
-        <label for="email">
-          Email
-        </label>
+      <label for="email">Email</label>
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Admin Email"
+        autocomplete="username"
+        required
+      >
+
+      <label for="password">Password</label>
+
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" class="login-btn">
+        Login
+      </button>
+
+      <p id="loginMsg"></p>
+
+    </form>
+
+    <a href="#" id="forgotPassword" class="forgot">
+      Forgot password?
+    </a>
+
+    <div id="resetBox" class="hidden">
+
+      <form id="resetForm">
+
+        <label for="resetEmail">Admin Email</label>
 
         <input
           type="email"
-          id="email"
-          name="email"
-          placeholder="Admin Email"
-          autocomplete="username"
+          id="resetEmail"
+          placeholder="Enter your admin email"
           required
         >
 
-        <label for="password">
-          Password
-        </label>
-
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Password"
-          autocomplete="current-password"
-          required
-        >
-
-        <button
-          type="submit"
-          class="login-btn"
-        >
-          Login
+        <button type="submit" class="login-btn">
+          Send Reset Email
         </button>
-
-        <p id="loginMsg"></p>
 
       </form>
 
+      <p id="resetMsg"></p>
+
+      <span id="backToLogin" class="back-login">
+        ← Back to Login
+      </span>
+
     </div>
 
-  </section>
+  </div>
+
+</section>
 
 
-  <!-- ADMIN APP -->
-  <section id="app" class="hidden">
+<section id="app" class="hidden">
 
-    <!-- TOP BAR -->
-    <header class="topbar">
+  <header class="topbar">
 
-      <div class="brand">
-        DEVI GROUPS ADMIN
-      </div>
+    <div class="brand">
+      DEVI GROUPS ADMIN
+    </div>
 
-      <div class="admin-user">
+    <div class="admin-user">
 
-        <span id="userEmail">
-          Admin
-        </span>
+      <span id="userEmail">Admin</span>
 
-        <button id="logout" type="button">
-          Logout
-        </button>
+      <button id="logout" type="button">
+        Logout
+      </button>
 
-      </div>
+    </div>
 
-    </header>
+  </header>
 
 
-    <!-- MAIN LAYOUT -->
-    <div class="layout">
+  <div class="layout">
 
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
+    <aside class="sidebar">
 
-        <button
-          class="tab active"
-          data-view="dashboard"
-          type="button"
-        >
-          Dashboard
-        </button>
+      <button class="tab active" data-view="dashboard" type="button">
+        Dashboard
+      </button>
 
-        <button
-          class="tab"
-          data-view="products"
-          type="button"
-        >
-          Products
-        </button>
+      <button class="tab" data-view="products" type="button">
+        Products
+      </button>
 
-        <button
-          class="tab"
-          data-view="units"
-          type="button"
-        >
-          Business Units
-        </button>
+      <button class="tab" data-view="units" type="button">
+        Business Units
+      </button>
 
-        <button
-          class="tab"
-          data-view="homepage"
-          type="button"
-        >
-          Homepage
-        </button>
+      <button class="tab" data-view="homepage" type="button">
+        Homepage
+      </button>
 
-        <button
-          class="tab"
-          data-view="enquiries"
-          type="button"
-        >
-          Customer Enquiries
-        </button>
+      <button class="tab" data-view="enquiries" type="button">
+        Customer Enquiries
+      </button>
 
-        <button
-          class="tab"
-          data-view="reviews"
-          type="button"
-        >
-          Reviews
-        </button>
+      <button class="tab" data-view="reviews" type="button">
+        Reviews
+      </button>
 
-        <button
-          class="tab"
-          data-view="company"
-          type="button"
-        >
-          Company Info
-        </button>
+      <button class="tab" data-view="company" type="button">
+        Company Info
+      </button>
 
-        <button
-          class="tab"
-          data-view="documents"
-          type="button"
-        >
-          Documents
-        </button>
+      <button class="tab" data-view="documents" type="button">
+        Documents
+      </button>
 
-        <button
-          class="tab"
-          data-view="tracking"
-          type="button"
-        >
-          Tracking
-        </button>
+      <button class="tab" data-view="tracking" type="button">
+        Tracking
+      </button>
 
-      </aside>
+    </aside>
 
 
-      <!-- CONTENT -->
-      <main class="content">
+    <main class="content">
 
-        <div id="main">
+      <div id="main">
 
-          <div class="card">
+        <div class="card">
 
-            <h2 class="page-title">
-              DEVI GROUPS Admin Panel
-            </h2>
+          <h2 class="page-title">
+            DEVI GROUPS Admin Panel
+          </h2>
 
-            <p>
-              Welcome to the administration panel.
-              Select an option from the menu.
-            </p>
-
-          </div>
+          <p>
+            Welcome to the administration panel.
+            Select an option from the menu.
+          </p>
 
         </div>
 
-      </main>
+      </div>
 
-    </div>
+    </main>
 
-  </section>
+  </div>
+
+</section>
 
 
-  <!-- IMPORTANT:
-       cms-config.js MUST LOAD FIRST
-       admin.js MUST LOAD LAST
-  -->
+<script src="cms-config.js"></script>
 
-  <script src="cms-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="admin.js"></script>
+<script src="admin.js"></script>
 
 </body>
 </html>
-```
