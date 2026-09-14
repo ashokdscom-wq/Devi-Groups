@@ -1,56 +1,79 @@
-```javascript
 /* =========================================================
    DEVI GROUPS ADMIN PANEL
-   Supabase Connected + Password Reset Diagnostic Version
+   Supabase + Password Reset
    ========================================================= */
 
 const SUPABASE_URL = 'https://bgkymxdbmvbplnlehakd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
+
+const SUPABASE_KEY =
+  'sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
 
 const sb = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
+
 /* =========================================================
-   BASIC HELPERS
+   HELPERS
    ========================================================= */
 
 function $(id) {
   return document.getElementById(id);
 }
 
-function showMessage(message, type = 'info') {
-  const box = $('message');
+function loginMessage(text, type = 'info') {
+  const box = $('loginMessage');
 
-  if (!box) {
-    console.log(message);
-    return;
-  }
+  if (!box) return;
 
-  box.textContent = message;
-  box.style.display = 'block';
+  box.textContent = text;
 
-  if (type === 'error') {
-    box.style.color = '#b00020';
-    box.style.background = '#ffe8e8';
-  } else if (type === 'success') {
-    box.style.color = '#087f23';
-    box.style.background = '#e8f7ec';
-  } else {
-    box.style.color = '#333';
-    box.style.background = '#eeeeee';
-  }
+  box.className =
+    'text-sm mt-4 text-center ' +
+    (type === 'error'
+      ? 'text-red-600'
+      : type === 'success'
+        ? 'text-green-600'
+        : 'text-gray-600');
 }
 
-function hideMessage() {
-  const box = $('message');
+function resetMessage(text, type = 'info') {
+  const box = $('resetMessage');
 
-  if (box) {
-    box.style.display = 'none';
-    box.textContent = '';
-  }
+  if (!box) return;
+
+  box.textContent = text;
+
+  box.className =
+    'text-sm mt-3 text-center ' +
+    (type === 'error'
+      ? 'text-red-600'
+      : type === 'success'
+        ? 'text-green-600'
+        : 'text-gray-600');
 }
+
+function recoveryMessage(text, type = 'info') {
+  const box = $('recoveryMessage');
+
+  if (!box) return;
+
+  box.textContent = text;
+
+  box.className =
+    'text-sm mt-4 text-center ' +
+    (type === 'error'
+      ? 'text-red-600'
+      : type === 'success'
+        ? 'text-green-600'
+        : 'text-gray-600');
+}
+
+
+/* =========================================================
+   ADMIN URL
+   ========================================================= */
 
 function adminUrl() {
   return window.location.origin +
@@ -58,513 +81,690 @@ function adminUrl() {
     '/';
 }
 
+
 /* =========================================================
-   PASSWORD RESET BOX
+   FORGOT PASSWORD
    ========================================================= */
 
 function showResetBox() {
+
+  console.log('Forgot password clicked');
+
   const box = $('resetBox');
 
   if (!box) {
-    alert('Reset box not found. Please check admin/index.html');
+    alert('ERROR: resetBox not found in index.html');
     return;
   }
 
   box.classList.remove('hidden');
   box.style.display = 'block';
 
-  const loginEmail = $('email')?.value || '';
+  const loginEmail = $('email');
 
-  if ($('resetEmail')) {
-    $('resetEmail').value = loginEmail;
+  const resetEmail = $('resetEmail');
+
+  if (
+    loginEmail &&
+    resetEmail &&
+    loginEmail.value.trim() !== ''
+  ) {
+    resetEmail.value =
+      loginEmail.value.trim();
   }
 
-  hideMessage();
+  resetMessage('');
 
-  setTimeout(() => {
-    $('resetEmail')?.focus();
-  }, 100);
+  if (resetEmail) {
+    setTimeout(() => {
+      resetEmail.focus();
+    }, 100);
+  }
 }
 
+
 /* =========================================================
-   SEND PASSWORD RESET EMAIL
+   SEND RESET EMAIL
    ========================================================= */
 
 async function sendReset() {
-  const emailInput = $('resetEmail');
 
-  if (!emailInput) {
-    showMessage('Reset email field not found.', 'error');
+  console.log('SEND RESET CLICKED');
+
+  const emailBox = $('resetEmail');
+
+  if (!emailBox) {
+    alert('ERROR: resetEmail not found');
     return;
   }
 
-  const email = emailInput.value.trim();
+  const email = emailBox.value.trim();
 
   if (!email) {
-    showMessage('Please enter your admin email address.', 'error');
-    emailInput.focus();
+    resetMessage(
+      'Please enter your admin email.',
+      'error'
+    );
     return;
   }
 
-  const button = $('sendResetBtn');
+  const button =
+    event?.currentTarget || null;
 
   if (button) {
     button.disabled = true;
     button.textContent = 'Sending...';
   }
 
-  showMessage('Sending reset email...');
+  resetMessage(
+    'Sending reset email...'
+  );
 
-  console.log('=================================');
-  console.log('DEVI PASSWORD RESET START');
-  console.log('Email:', email);
-  console.log('Supabase URL:', SUPABASE_URL);
-  console.log('Redirect URL:', adminUrl());
-  console.log('=================================');
+  console.log(
+    'Reset email:',
+    email
+  );
+
+  console.log(
+    'Redirect URL:',
+    adminUrl()
+  );
 
   try {
-    /*
-      Timeout protection:
-      If Supabase does not respond within 15 seconds,
-      we show a useful error instead of staying on
-      "Sending reset email..." forever.
-    */
 
-    const resetPromise = sb.auth.resetPasswordForEmail(email, {
-      redirectTo: adminUrl()
-    });
+    const resetPromise =
+      sb.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: adminUrl()
+        }
+      );
 
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(
-          new Error(
-            'Request timed out after 15 seconds. Supabase did not return a response.'
-          )
-        );
-      }, 15000);
-    });
+    const timeoutPromise =
+      new Promise((_, reject) => {
 
-    const result = await Promise.race([
-      resetPromise,
-      timeoutPromise
-    ]);
+        setTimeout(() => {
 
-    console.log('Supabase reset result:', result);
+          reject(
+            new Error(
+              'Request timed out after 15 seconds. Please check Supabase Authentication settings.'
+            )
+          );
 
-    if (result && result.error) {
-      console.error('PASSWORD RESET ERROR:', result.error);
+        }, 15000);
 
-      showMessage(
-        'Password reset failed: ' +
-        (result.error.message || 'Unknown Supabase error'),
+      });
+
+    const result =
+      await Promise.race([
+        resetPromise,
+        timeoutPromise
+      ]);
+
+    console.log(
+      'Supabase reset response:',
+      result
+    );
+
+    if (result.error) {
+
+      console.error(
+        'Supabase reset error:',
+        result.error
+      );
+
+      resetMessage(
+        result.error.message ||
+        'Unable to send reset email.',
         'error'
       );
 
       return;
     }
 
-    showMessage(
-      'Reset email sent successfully. Please check your email inbox and Spam/Junk folder.',
+    resetMessage(
+      'Reset email sent successfully. Please check your Inbox and Spam/Junk folder.',
       'success'
     );
 
-    if ($('resetBox')) {
-      $('resetBox').style.display = 'block';
-    }
-
   } catch (error) {
-    console.error('PASSWORD RESET EXCEPTION:', error);
 
-    let errorText = 'Unknown error';
-
-    if (error && error.message) {
-      errorText = error.message;
-    } else {
-      errorText = String(error);
-    }
-
-    showMessage(
-      'Password reset error: ' + errorText,
-      'error'
+    console.error(
+      'RESET ERROR:',
+      error
     );
 
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = 'Send Reset Email';
-    }
-  }
-}
-
-/* =========================================================
-   UPDATE PASSWORD
-   ========================================================= */
-
-async function updatePassword() {
-  const passwordInput = $('newPassword');
-
-  if (!passwordInput) {
-    showMessage('New password field not found.', 'error');
-    return;
-  }
-
-  const password = passwordInput.value;
-
-  if (!password || password.length < 6) {
-    showMessage(
-      'Password must be at least 6 characters.',
-      'error'
-    );
-    return;
-  }
-
-  const button = $('updatePasswordBtn');
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = 'Updating...';
-  }
-
-  showMessage('Updating password...');
-
-  try {
-    const { data, error } = await sb.auth.updateUser({
-      password: password
-    });
-
-    console.log('Password update result:', data);
-
-    if (error) {
-      console.error('PASSWORD UPDATE ERROR:', error);
-
-      showMessage(
-        'Password update failed: ' + error.message,
-        'error'
-      );
-
-      return;
-    }
-
-    showMessage(
-      'Password updated successfully. You can now login with your new password.',
-      'success'
-    );
-
-    passwordInput.value = '';
-
-  } catch (error) {
-    console.error('PASSWORD UPDATE EXCEPTION:', error);
-
-    showMessage(
-      'Password update error: ' +
+    resetMessage(
+      'ERROR: ' +
       (error.message || String(error)),
       'error'
     );
 
   } finally {
+
     if (button) {
       button.disabled = false;
-      button.textContent = 'Update Password';
+      button.textContent =
+        'Send Reset Email';
     }
+
   }
 }
+
 
 /* =========================================================
    LOGIN
    ========================================================= */
 
-async function login() {
-  const email = $('email')?.value.trim();
-  const password = $('password')?.value;
+async function loginUser(email, password) {
 
-  if (!email || !password) {
-    showMessage(
-      'Please enter email and password.',
-      'error'
-    );
-    return;
-  }
-
-  const button = $('loginBtn');
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = 'Logging in...';
-  }
-
-  showMessage('Logging in...');
+  loginMessage(
+    'Signing in...'
+  );
 
   try {
-    const { data, error } =
+
+    const {
+      data,
+      error
+    } =
       await sb.auth.signInWithPassword({
         email: email,
         password: password
       });
 
-    console.log('Login result:', data);
-
     if (error) {
-      console.error('LOGIN ERROR:', error);
 
-      showMessage(
-        'Login failed: ' + error.message,
+      console.error(
+        'LOGIN ERROR:',
+        error
+      );
+
+      loginMessage(
+        error.message,
         'error'
       );
 
       return;
     }
 
-    showMessage(
+    console.log(
+      'LOGIN SUCCESS:',
+      data
+    );
+
+    loginMessage(
       'Login successful.',
       'success'
     );
 
-    setTimeout(() => {
-      showDashboard();
-    }, 500);
+    showAdmin();
 
   } catch (error) {
-    console.error('LOGIN EXCEPTION:', error);
 
-    showMessage(
-      'Login error: ' +
-      (error.message || String(error)),
-      'error'
+    console.error(
+      'LOGIN EXCEPTION:',
+      error
     );
 
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = 'Login';
-    }
+    loginMessage(
+      error.message ||
+      String(error),
+      'error'
+    );
   }
 }
 
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-async function logout() {
-  await sb.auth.signOut();
-
-  window.location.href = './';
-}
 
 /* =========================================================
-   SHOW DASHBOARD
+   SHOW ADMIN
    ========================================================= */
 
-function showDashboard() {
-  const loginPage = $('loginPage');
-  const dashboard = $('dashboard');
+function showAdmin() {
+
+  const loginPage =
+    $('loginPage');
+
+  const recoveryPage =
+    $('recoveryPage');
+
+  const adminPage =
+    $('adminPage');
 
   if (loginPage) {
-    loginPage.style.display = 'none';
+    loginPage.classList.add('hidden');
   }
 
-  if (dashboard) {
-    dashboard.style.display = 'block';
+  if (recoveryPage) {
+    recoveryPage.classList.add('hidden');
   }
+
+  if (adminPage) {
+    adminPage.classList.remove('hidden');
+  }
+
+  console.log(
+    'Admin panel displayed'
+  );
 }
+
 
 /* =========================================================
    SHOW LOGIN
    ========================================================= */
 
 function showLogin() {
-  const loginPage = $('loginPage');
-  const dashboard = $('dashboard');
 
-  if (dashboard) {
-    dashboard.style.display = 'none';
-  }
+  const loginPage =
+    $('loginPage');
+
+  const recoveryPage =
+    $('recoveryPage');
+
+  const adminPage =
+    $('adminPage');
 
   if (loginPage) {
-    loginPage.style.display = 'block';
+    loginPage.classList.remove('hidden');
+  }
+
+  if (recoveryPage) {
+    recoveryPage.classList.add('hidden');
+  }
+
+  if (adminPage) {
+    adminPage.classList.add('hidden');
   }
 }
 
+
 /* =========================================================
-   PASSWORD RECOVERY DETECTION
+   PASSWORD RECOVERY PAGE
    ========================================================= */
 
-function isRecoveryMode() {
-  const hash = window.location.hash || '';
-  const search = window.location.search || '';
+function showRecoveryPage() {
 
-  return (
-    hash.includes('type=recovery') ||
-    search.includes('type=recovery')
+  console.log(
+    'PASSWORD RECOVERY MODE'
   );
+
+  const loginPage =
+    $('loginPage');
+
+  const recoveryPage =
+    $('recoveryPage');
+
+  const adminPage =
+    $('adminPage');
+
+  if (loginPage) {
+    loginPage.classList.add('hidden');
+  }
+
+  if (adminPage) {
+    adminPage.classList.add('hidden');
+  }
+
+  if (recoveryPage) {
+    recoveryPage.classList.remove('hidden');
+  }
+
+  const newPassword =
+    $('newPassword');
+
+  if (newPassword) {
+    setTimeout(() => {
+      newPassword.focus();
+    }, 200);
+  }
 }
+
+
+/* =========================================================
+   UPDATE PASSWORD
+   ========================================================= */
+
+async function updatePassword() {
+
+  const password =
+    $('newPassword')?.value || '';
+
+  const confirmPassword =
+    $('confirmPassword')?.value || '';
+
+  if (!password) {
+
+    recoveryMessage(
+      'Please enter a new password.',
+      'error'
+    );
+
+    return;
+  }
+
+  if (password.length < 6) {
+
+    recoveryMessage(
+      'Password must be at least 6 characters.',
+      'error'
+    );
+
+    return;
+  }
+
+  if (password !== confirmPassword) {
+
+    recoveryMessage(
+      'Passwords do not match.',
+      'error'
+    );
+
+    return;
+  }
+
+  recoveryMessage(
+    'Updating password...'
+  );
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await sb.auth.updateUser({
+        password: password
+      });
+
+    console.log(
+      'Password update:',
+      data
+    );
+
+    if (error) {
+
+      console.error(
+        'PASSWORD UPDATE ERROR:',
+        error
+      );
+
+      recoveryMessage(
+        error.message,
+        'error'
+      );
+
+      return;
+    }
+
+    recoveryMessage(
+      'Password updated successfully. You can now login.',
+      'success'
+    );
+
+    setTimeout(() => {
+
+      window.location.href =
+        adminUrl();
+
+    }, 2000);
+
+  } catch (error) {
+
+    console.error(
+      'PASSWORD UPDATE EXCEPTION:',
+      error
+    );
+
+    recoveryMessage(
+      error.message ||
+      String(error),
+      'error'
+    );
+  }
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+async function logout() {
+
+  try {
+
+    await sb.auth.signOut();
+
+  } catch (error) {
+
+    console.error(
+      'Logout error:',
+      error
+    );
+
+  }
+
+  showLogin();
+}
+
 
 /* =========================================================
    AUTH STATE
    ========================================================= */
 
-sb.auth.onAuthStateChange((event, session) => {
-
-  console.log('AUTH EVENT:', event);
-  console.log('SESSION:', session);
-
-  if (event === 'PASSWORD_RECOVERY') {
-
-    console.log('PASSWORD RECOVERY MODE');
-
-    showRecoveryPage();
-
-    return;
-  }
-
-  if (session && session.user) {
+sb.auth.onAuthStateChange(
+  (event, session) => {
 
     console.log(
-      'Authenticated user:',
-      session.user.email
+      'AUTH EVENT:',
+      event
     );
 
-    if (!isRecoveryMode()) {
-      showDashboard();
-    }
+    if (
+      event === 'PASSWORD_RECOVERY'
+    ) {
 
-  } else {
-
-    if (!isRecoveryMode()) {
-      showLogin();
-    }
-  }
-});
-
-/* =========================================================
-   RECOVERY PAGE
-   ========================================================= */
-
-function showRecoveryPage() {
-
-  const loginPage = $('loginPage');
-  const dashboard = $('dashboard');
-  const recoveryPage = $('recoveryPage');
-
-  if (loginPage) {
-    loginPage.style.display = 'none';
-  }
-
-  if (dashboard) {
-    dashboard.style.display = 'none';
-  }
-
-  if (recoveryPage) {
-    recoveryPage.style.display = 'block';
-  }
-
-  const passwordInput = $('newPassword');
-
-  if (passwordInput) {
-    passwordInput.focus();
-  }
-}
-
-/* =========================================================
-   BOOT
-   ========================================================= */
-
-async function boot() {
-
-  console.log('DEVI GROUPS ADMIN BOOT');
-
-  console.log(
-    'Current URL:',
-    window.location.href
-  );
-
-  console.log(
-    'Admin redirect URL:',
-    adminUrl()
-  );
-
-  /*
-    If this is a password recovery link,
-    show recovery UI.
-  */
-
-  if (isRecoveryMode()) {
-
-    console.log(
-      'Recovery URL detected.'
-    );
-
-    showRecoveryPage();
-
-    return;
-  }
-
-  /*
-    Otherwise check current session.
-  */
-
-  try {
-
-    const { data, error } =
-      await sb.auth.getSession();
-
-    if (error) {
-
-      console.error(
-        'GET SESSION ERROR:',
-        error
-      );
-
-      showLogin();
+      showRecoveryPage();
 
       return;
     }
 
-    if (data.session) {
+    if (
+      session &&
+      session.user
+    ) {
 
-      console.log(
-        'Existing session found.'
-      );
-
-      showDashboard();
+      showAdmin();
 
     } else {
 
+      showLogin();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   PAGE LOAD
+   ========================================================= */
+
+document.addEventListener(
+  'DOMContentLoaded',
+  async () => {
+
+    console.log(
+      'DEVI GROUPS ADMIN LOADED'
+    );
+
+    console.log(
+      'Current URL:',
+      window.location.href
+    );
+
+    console.log(
+      'Admin URL:',
+      adminUrl()
+    );
+
+    /*
+      Login form
+    */
+
+    const loginForm =
+      $('loginForm');
+
+    if (loginForm) {
+
+      loginForm.addEventListener(
+        'submit',
+        async (e) => {
+
+          e.preventDefault();
+
+          const email =
+            $('email')?.value.trim();
+
+          const password =
+            $('password')?.value || '';
+
+          if (!email || !password) {
+
+            loginMessage(
+              'Please enter email and password.',
+              'error'
+            );
+
+            return;
+          }
+
+          await loginUser(
+            email,
+            password
+          );
+
+        }
+      );
+
+    }
+
+
+    /*
+      Logout
+    */
+
+    const logoutBtn =
+      $('logoutBtn');
+
+    if (logoutBtn) {
+
+      logoutBtn.addEventListener(
+        'click',
+        logout
+      );
+
+    }
+
+
+    /*
+      Check URL for recovery
+    */
+
+    const hash =
+      window.location.hash || '';
+
+    const search =
+      window.location.search || '';
+
+    if (
+      hash.includes(
+        'type=recovery'
+      ) ||
+      search.includes(
+        'type=recovery'
+      )
+    ) {
+
       console.log(
-        'No existing session.'
+        'Recovery link detected in URL'
+      );
+
+      showRecoveryPage();
+
+      return;
+    }
+
+
+    /*
+      Check existing session
+    */
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await sb.auth.getSession();
+
+      if (error) {
+
+        console.error(
+          'SESSION ERROR:',
+          error
+        );
+
+        showLogin();
+
+        return;
+      }
+
+      if (
+        data &&
+        data.session
+      ) {
+
+        console.log(
+          'Existing session found'
+        );
+
+        showAdmin();
+
+      } else {
+
+        showLogin();
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'BOOT ERROR:',
+        error
       );
 
       showLogin();
     }
 
-  } catch (error) {
-
-    console.error(
-      'BOOT ERROR:',
-      error
-    );
-
-    showLogin();
-  }
-}
-
-/* =========================================================
-   GLOBAL BUTTON FALLBACKS
-   ========================================================= */
-
-window.showResetBox = showResetBox;
-window.sendReset = sendReset;
-window.updatePassword = updatePassword;
-window.login = login;
-window.logout = logout;
-
-/* =========================================================
-   START
-   ========================================================= */
-
-document.addEventListener(
-  'DOMContentLoaded',
-  () => {
-    boot();
   }
 );
-```
+
+
+/* =========================================================
+   GLOBAL FUNCTIONS
+   ========================================================= */
+
+window.showResetBox =
+  showResetBox;
+
+window.sendReset =
+  sendReset;
+
+window.updatePassword =
+  updatePassword;
+
+window.loginUser =
+  loginUser;
+
+window.logout =
+  logout;
