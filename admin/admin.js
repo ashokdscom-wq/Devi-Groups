@@ -5318,290 +5318,590 @@ sb.auth.onAuthStateChange(
 );
 /* =========================================================
    PART 5 — DOCUMENTS / TRACKING / MEDIA
-   CLEAN VERSION
+   CLEAN & CORRECTED VERSION
    ========================================================= */
 
-/* ---------------------------------------------------------
-   DOCUMENTS — BROCHURE / TDS / MSDS
-   --------------------------------------------------------- */
+
+/* =========================================================
+   DOCUMENTS
+   Brochure / TDS / MSDS / PDF
+   ========================================================= */
 
 async function loadDocuments() {
+
   const box = $('#documentsList');
+
   if (!box) return;
 
-  box.innerHTML = '<div class="loading">Loading documents...</div>';
-
-  const { data, error } = await supabaseClient
-    .from('documents')
-    .select(`
-      *,
-      products (
-        id,
-        name
-      )
-    `)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    box.innerHTML =
-      `<div class="error">Unable to load documents: ${escapeHtml(error.message)}</div>`;
-    return;
-  }
-
-  if (!data || !data.length) {
-    box.innerHTML = '<div class="empty">No documents found.</div>';
-    return;
-  }
-
-  box.innerHTML = data.map(doc => `
-    <div class="admin-card document-card" data-id="${escapeAttr(doc.id)}">
-
-      <div class="admin-card-header">
-        <div>
-          <h3>${escapeHtml(doc.title || doc.file_name || 'Document')}</h3>
-
-          <div class="muted">
-            ${escapeHtml(doc.document_type || 'Document')}
-            ${doc.products?.name
-              ? ` · ${escapeHtml(doc.products.name)}`
-              : ''}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="danger delete-document"
-          data-id="${escapeAttr(doc.id)}"
-        >
-          Delete
-        </button>
-      </div>
-
-      <div class="form-grid">
-
-        <label>
-          Title
-          <input
-            class="document-title"
-            type="text"
-            value="${escapeAttr(doc.title || '')}"
-          >
-        </label>
-
-        <label>
-          Document Type
-          <select class="document-type">
-
-            <option value="brochure"
-              ${doc.document_type === 'brochure' ? 'selected' : ''}>
-              Brochure
-            </option>
-
-            <option value="tds"
-              ${doc.document_type === 'tds' ? 'selected' : ''}>
-              TDS
-            </option>
-
-            <option value="msds"
-              ${doc.document_type === 'msds' ? 'selected' : ''}>
-              MSDS
-            </option>
-
-            <option value="pdf"
-              ${doc.document_type === 'pdf' ? 'selected' : ''}>
-              PDF
-            </option>
-
-            <option value="other"
-              ${doc.document_type === 'other' ? 'selected' : ''}>
-              Other
-            </option>
-
-          </select>
-        </label>
-
-        <label>
-          Product
-          <select class="document-product">
-
-            <option value="">No Product</option>
-
-            ${await getProductOptions(doc.product_id)}
-
-          </select>
-        </label>
-
-        <label>
-          File
-          <input
-            class="document-file"
-            type="file"
-            accept=".pdf,.doc,.docx,.xls,.xlsx"
-          >
-        </label>
-
-      </div>
-
-      <div class="document-file-info">
-
-        ${doc.file_url ? `
-          <a
-            href="${escapeAttr(doc.file_url)}"
-            target="_blank"
-            rel="noopener"
-          >
-            View current file
-          </a>
-        ` : ''}
-
-        ${doc.file_name
-          ? `<span class="muted">${escapeHtml(doc.file_name)}</span>`
-          : ''}
-
-      </div>
-
-      <div class="admin-card-actions">
-
-        <button
-          type="button"
-          class="primary save-document"
-          data-id="${escapeAttr(doc.id)}"
-        >
-          Save
-        </button>
-
-      </div>
-
-    </div>
-  `).join('');
-
-  $$('.save-document').forEach(button => {
-    button.addEventListener('click', saveDocument);
-  });
-
-  $$('.delete-document').forEach(button => {
-    button.addEventListener('click', deleteDocument);
-  });
-}
-
-
-/* ---------------------------------------------------------
-   PRODUCT OPTIONS
-   --------------------------------------------------------- */
-
-async function getProductOptions(selectedId) {
-
-  const { data, error } = await supabaseClient
-    .from('products')
-    .select('id, name')
-    .order('name');
-
-  if (error || !data) {
-    return '';
-  }
-
-  return data.map(product => `
-    <option
-      value="${escapeAttr(product.id)}"
-      ${String(product.id) === String(selectedId) ? 'selected' : ''}
-    >
-      ${escapeHtml(product.name || '')}
-    </option>
-  `).join('');
-}
-
-
-/* ---------------------------------------------------------
-   SAVE DOCUMENT
-   --------------------------------------------------------- */
-
-async function saveDocument(event) {
-
-  const button = event.currentTarget;
-  const card = button.closest('.document-card');
-
-  if (!card) return;
-
-  const id = card.dataset.id;
-
-  const title =
-    $('.document-title', card)?.value.trim() || '';
-
-  const documentType =
-    $('.document-type', card)?.value || 'other';
-
-  const productId =
-    $('.document-product', card)?.value || null;
-
-  const fileInput =
-    $('.document-file', card);
-
-  const file =
-    fileInput?.files?.[0] || null;
-
-  button.disabled = true;
-  button.textContent = 'Saving...';
+  box.innerHTML =
+    '<div class="loading">Loading documents...</div>';
 
   try {
 
-    const payload = {
-      title,
-      document_type: documentType,
-      product_id: productId ? Number(productId) : null
-    };
+    /* ---------------------------------------------
+       Load documents
+       --------------------------------------------- */
 
-    /* Upload new file if selected */
-
-    if (file) {
-
-      if (typeof uploadToStorage !== 'function') {
-        throw new Error(
-          'Storage upload helper is missing.'
-        );
-      }
-
-      const uploaded = await uploadToStorage(
-        file,
-        'documents'
-      );
-
-      payload.file_name = file.name;
-      payload.file_url = uploaded.url;
-    }
-
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from('documents')
-      .update(payload)
-      .eq('id', id);
+      .select(`
+        *,
+        products (
+          id,
+          name
+        )
+      `)
+      .order('created_at', {
+        ascending: false
+      });
 
     if (error) {
       throw error;
     }
 
-    alert('Document saved successfully.');
 
-    await loadDocuments();
+    /* ---------------------------------------------
+       No documents
+       --------------------------------------------- */
+
+    if (!data || data.length === 0) {
+
+      box.innerHTML =
+        '<div class="empty">No documents found.</div>';
+
+      return;
+    }
+
+
+    /* ---------------------------------------------
+       Load products separately
+       --------------------------------------------- */
+
+    const {
+      data: products,
+      error: productsError
+    } = await supabaseClient
+      .from('products')
+      .select('id, name')
+      .order('name', {
+        ascending: true
+      });
+
+    if (productsError) {
+      throw productsError;
+    }
+
+
+    /* ---------------------------------------------
+       Create product options
+       --------------------------------------------- */
+
+    const productList =
+      products || [];
+
+
+    /* ---------------------------------------------
+       Render documents
+       --------------------------------------------- */
+
+    box.innerHTML = data.map(doc => {
+
+      const productOptions =
+        productList.map(product => {
+
+          const selected =
+            String(product.id) ===
+            String(doc.product_id)
+              ? 'selected'
+              : '';
+
+          return `
+            <option
+              value="${escapeAttr(product.id)}"
+              ${selected}
+            >
+              ${escapeHtml(product.name || '')}
+            </option>
+          `;
+
+        }).join('');
+
+
+      return `
+
+        <div
+          class="admin-card document-card"
+          data-id="${escapeAttr(doc.id)}"
+        >
+
+          <div class="admin-card-header">
+
+            <div>
+
+              <h3>
+                ${escapeHtml(
+                  doc.title ||
+                  doc.file_name ||
+                  'Document'
+                )}
+              </h3>
+
+              <div class="muted">
+
+                ${escapeHtml(
+                  doc.document_type ||
+                  'Document'
+                )}
+
+                ${
+                  doc.products?.name
+                    ? `
+                      ·
+                      ${escapeHtml(
+                        doc.products.name
+                      )}
+                    `
+                    : ''
+                }
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="danger delete-document"
+              data-id="${escapeAttr(doc.id)}"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <!-- TITLE -->
+
+            <label>
+
+              Title
+
+              <input
+                class="document-title"
+                type="text"
+                value="${escapeAttr(
+                  doc.title || ''
+                )}"
+              >
+
+            </label>
+
+
+            <!-- DOCUMENT TYPE -->
+
+            <label>
+
+              Document Type
+
+              <select class="document-type">
+
+                <option
+                  value="brochure"
+                  ${
+                    doc.document_type ===
+                    'brochure'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Brochure
+                </option>
+
+
+                <option
+                  value="tds"
+                  ${
+                    doc.document_type ===
+                    'tds'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  TDS
+                </option>
+
+
+                <option
+                  value="msds"
+                  ${
+                    doc.document_type ===
+                    'msds'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  MSDS
+                </option>
+
+
+                <option
+                  value="pdf"
+                  ${
+                    doc.document_type ===
+                    'pdf'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  PDF
+                </option>
+
+
+                <option
+                  value="other"
+                  ${
+                    doc.document_type ===
+                    'other'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Other
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <!-- PRODUCT -->
+
+            <label>
+
+              Product
+
+              <select class="document-product">
+
+                <option value="">
+                  No Product
+                </option>
+
+                ${productOptions}
+
+              </select>
+
+            </label>
+
+
+            <!-- FILE -->
+
+            <label>
+
+              Replace File
+
+              <input
+                class="document-file"
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+              >
+
+            </label>
+
+
+          </div>
+
+
+          <!-- CURRENT FILE -->
+
+          <div class="document-file-info">
+
+            ${
+              doc.file_url
+                ? `
+                  <a
+                    href="${escapeAttr(
+                      doc.file_url
+                    )}"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    View current file
+                  </a>
+                `
+                : `
+                  <span class="muted">
+                    No file uploaded
+                  </span>
+                `
+            }
+
+
+            ${
+              doc.file_name
+                ? `
+                  <span class="muted">
+                    ${escapeHtml(
+                      doc.file_name
+                    )}
+                  </span>
+                `
+                : ''
+            }
+
+          </div>
+
+
+          <!-- ACTION -->
+
+          <div class="admin-card-actions">
+
+            <button
+              type="button"
+              class="primary save-document"
+              data-id="${escapeAttr(doc.id)}"
+            >
+              Save
+            </button>
+
+          </div>
+
+
+        </div>
+
+      `;
+
+    }).join('');
+
+
+    /* ---------------------------------------------
+       Bind save buttons
+       --------------------------------------------- */
+
+    $$('.save-document').forEach(button => {
+
+      button.addEventListener(
+        'click',
+        saveDocument
+      );
+
+    });
+
+
+    /* ---------------------------------------------
+       Bind delete buttons
+       --------------------------------------------- */
+
+    $$('.delete-document').forEach(button => {
+
+      button.addEventListener(
+        'click',
+        deleteDocument
+      );
+
+    });
+
 
   } catch (error) {
 
-    console.error(error);
-
-    alert(
-      'Unable to save document: ' +
-      error.message
+    console.error(
+      'Documents error:',
+      error
     );
 
-  } finally {
-
-    button.disabled = false;
-    button.textContent = 'Save';
+    box.innerHTML = `
+      <div class="error">
+        Unable to load documents:
+        ${escapeHtml(
+          error.message ||
+          String(error)
+        )}
+      </div>
+    `;
   }
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
+   SAVE DOCUMENT
+   ========================================================= */
+
+async function saveDocument(event) {
+
+  const button =
+    event.currentTarget;
+
+  const card =
+    button.closest('.document-card');
+
+  if (!card) return;
+
+
+  const id =
+    card.dataset.id;
+
+
+  const title =
+    $('.document-title', card)
+      ?.value
+      .trim() || '';
+
+
+  const documentType =
+    $('.document-type', card)
+      ?.value || 'other';
+
+
+  const productValue =
+    $('.document-product', card)
+      ?.value || '';
+
+
+  const productId =
+    productValue
+      ? Number(productValue)
+      : null;
+
+
+  const fileInput =
+    $('.document-file', card);
+
+
+  const file =
+    fileInput?.files?.[0] || null;
+
+
+  if (!title) {
+
+    alert(
+      'Please enter document title.'
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
+  button.textContent =
+    'Saving...';
+
+
+  try {
+
+    const payload = {
+
+      title: title,
+
+      document_type:
+        documentType,
+
+      product_id:
+        productId
+
+    };
+
+
+    /* ---------------------------------------------
+       Upload replacement file
+       --------------------------------------------- */
+
+    if (file) {
+
+      if (
+        typeof uploadToStorage !==
+        'function'
+      ) {
+
+        throw new Error(
+          'Storage upload helper is not available.'
+        );
+      }
+
+
+      const uploaded =
+        await uploadToStorage(
+          file,
+          'documents'
+        );
+
+
+      if (!uploaded) {
+
+        throw new Error(
+          'File upload failed.'
+        );
+      }
+
+
+      payload.file_name =
+        file.name;
+
+
+      payload.file_url =
+        uploaded.url ||
+        uploaded.publicUrl ||
+        uploaded.public_url ||
+        '';
+    }
+
+
+    /* ---------------------------------------------
+       Update database
+       --------------------------------------------- */
+
+    const { error } =
+      await supabaseClient
+        .from('documents')
+        .update(payload)
+        .eq('id', id);
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    alert(
+      'Document saved successfully.'
+    );
+
+
+    await loadDocuments();
+
+
+  } catch (error) {
+
+    console.error(
+      'Save document error:',
+      error
+    );
+
+
+    alert(
+      'Unable to save document:\n' +
+      (
+        error.message ||
+        String(error)
+      )
+    );
+
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      'Save';
+  }
+}
+
+
+/* =========================================================
    DELETE DOCUMENT
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function deleteDocument(event) {
 
@@ -5610,303 +5910,484 @@ async function deleteDocument(event) {
 
   if (!id) return;
 
-  if (!confirm(
-    'Are you sure you want to delete this document?'
-  )) {
-    return;
-  }
 
-  const { data: documentRow } =
-    await supabaseClient
+  const confirmed =
+    confirm(
+      'Are you sure you want to delete this document?'
+    );
+
+
+  if (!confirmed) return;
+
+
+  try {
+
+    /* ---------------------------------------------
+       Get document first
+       --------------------------------------------- */
+
+    const {
+      data: documentRow,
+      error: fetchError
+    } = await supabaseClient
       .from('documents')
-      .select('file_name, file_url')
+      .select(
+        'id, file_name, file_url'
+      )
       .eq('id', id)
       .maybeSingle();
 
-  const { error } =
-    await supabaseClient
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+
+    /* ---------------------------------------------
+       Delete database row
+       --------------------------------------------- */
+
+    const {
+      error: deleteError
+    } = await supabaseClient
       .from('documents')
       .delete()
       .eq('id', id);
 
-  if (error) {
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+
+    /* ---------------------------------------------
+       Try deleting storage file
+       --------------------------------------------- */
+
+    if (
+      documentRow?.file_name &&
+      typeof deleteStorageFile ===
+      'function'
+    ) {
+
+      try {
+
+        await deleteStorageFile(
+          'documents',
+          documentRow.file_name
+        );
+
+      } catch (storageError) {
+
+        console.warn(
+          'Storage delete warning:',
+          storageError
+        );
+      }
+    }
+
 
     alert(
-      'Unable to delete document: ' +
-      error.message
+      'Document deleted successfully.'
     );
 
-    return;
+
+    await loadDocuments();
+
+
+  } catch (error) {
+
+    console.error(
+      'Delete document error:',
+      error
+    );
+
+
+    alert(
+      'Unable to delete document:\n' +
+      (
+        error.message ||
+        String(error)
+      )
+    );
   }
-
-  /* Try deleting storage file if helper exists */
-
-  if (
-    documentRow?.file_name &&
-    typeof deleteStorageFile === 'function'
-  ) {
-
-    try {
-
-      await deleteStorageFile(
-        'documents',
-        documentRow.file_name
-      );
-
-    } catch (storageError) {
-
-      console.warn(
-        'Storage delete warning:',
-        storageError
-      );
-    }
-  }
-
-  alert('Document deleted.');
-
-  await loadDocuments();
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    TRACKING
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function loadTracking() {
 
-  const box = $('#trackingList');
+  const box =
+    $('#trackingList');
 
   if (!box) return;
+
 
   box.innerHTML =
     '<div class="loading">Loading tracking records...</div>';
 
-  const { data, error } =
-    await supabaseClient
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
       .from('tracking')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', {
+        ascending: false
+      });
 
-  if (error) {
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data || data.length === 0) {
+
+      box.innerHTML =
+        '<div class="empty">No tracking records found.</div>';
+
+      return;
+    }
+
 
     box.innerHTML =
-      `<div class="error">
-        Unable to load tracking:
-        ${escapeHtml(error.message)}
-      </div>`;
+      data.map(row => `
 
-    return;
-  }
+        <div
+          class="admin-card tracking-card"
+          data-id="${escapeAttr(row.id)}"
+        >
 
-  if (!data || !data.length) {
+          <div class="admin-card-header">
 
-    box.innerHTML =
-      '<div class="empty">No tracking records found.</div>';
+            <div>
 
-    return;
-  }
+              <h3>
+                ${escapeHtml(
+                  row.tracking_number ||
+                  'Tracking'
+                )}
+              </h3>
 
-  box.innerHTML = data.map(row => `
+              <div class="muted">
 
-    <div
-      class="admin-card tracking-card"
-      data-id="${escapeAttr(row.id)}"
-    >
+                ${escapeHtml(
+                  row.customer_name ||
+                  ''
+                )}
 
-      <div class="admin-card-header">
+              </div>
 
-        <div>
+            </div>
 
-          <h3>
-            ${escapeHtml(
-              row.tracking_number || 'Tracking'
-            )}
-          </h3>
 
-          <div class="muted">
-            ${escapeHtml(
-              row.customer_name || ''
-            )}
+            <button
+              type="button"
+              class="danger delete-tracking"
+              data-id="${escapeAttr(row.id)}"
+            >
+              Delete
+            </button>
+
           </div>
+
+
+          <div class="form-grid">
+
+
+            <!-- TRACKING NUMBER -->
+
+            <label>
+
+              Tracking Number
+
+              <input
+                class="tracking-number"
+                type="text"
+                value="${escapeAttr(
+                  row.tracking_number ||
+                  ''
+                )}"
+              >
+
+            </label>
+
+
+            <!-- CUSTOMER -->
+
+            <label>
+
+              Customer Name
+
+              <input
+                class="tracking-customer"
+                type="text"
+                value="${escapeAttr(
+                  row.customer_name ||
+                  ''
+                )}"
+              >
+
+            </label>
+
+
+            <!-- DESTINATION -->
+
+            <label>
+
+              Destination
+
+              <input
+                class="tracking-destination"
+                type="text"
+                value="${escapeAttr(
+                  row.destination ||
+                  ''
+                )}"
+              >
+
+            </label>
+
+
+            <!-- STATUS -->
+
+            <label>
+
+              Status
+
+              <select
+                class="tracking-status"
+              >
+
+                <option
+                  value="Pending"
+                  ${
+                    row.status ===
+                    'Pending'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Pending
+                </option>
+
+
+                <option
+                  value="Processing"
+                  ${
+                    row.status ===
+                    'Processing'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Processing
+                </option>
+
+
+                <option
+                  value="Dispatched"
+                  ${
+                    row.status ===
+                    'Dispatched'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Dispatched
+                </option>
+
+
+                <option
+                  value="In Transit"
+                  ${
+                    row.status ===
+                    'In Transit'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  In Transit
+                </option>
+
+
+                <option
+                  value="Delivered"
+                  ${
+                    row.status ===
+                    'Delivered'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Delivered
+                </option>
+
+
+                <option
+                  value="Cancelled"
+                  ${
+                    row.status ===
+                    'Cancelled'
+                      ? 'selected'
+                      : ''
+                  }
+                >
+                  Cancelled
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <!-- DESCRIPTION -->
+
+            <label class="full-width">
+
+              Description
+
+              <textarea
+                class="tracking-description"
+                rows="4"
+              >${escapeHtml(
+                row.description ||
+                ''
+              )}</textarea>
+
+            </label>
+
+
+          </div>
+
+
+          <div class="admin-card-actions">
+
+            <button
+              type="button"
+              class="primary save-tracking"
+              data-id="${escapeAttr(row.id)}"
+            >
+              Save
+            </button>
+
+          </div>
+
 
         </div>
 
-        <button
-          type="button"
-          class="danger delete-tracking"
-          data-id="${escapeAttr(row.id)}"
-        >
-          Delete
-        </button>
+      `).join('');
 
-      </div>
 
-      <div class="form-grid">
+    /* ---------------------------------------------
+       Bind save
+       --------------------------------------------- */
 
-        <label>
-          Tracking Number
+    $$('.save-tracking').forEach(button => {
 
-          <input
-            class="tracking-number"
-            type="text"
-            value="${escapeAttr(
-              row.tracking_number || ''
-            )}"
-          >
-        </label>
+      button.addEventListener(
+        'click',
+        saveTracking
+      );
 
-        <label>
-          Customer Name
+    });
 
-          <input
-            class="tracking-customer"
-            type="text"
-            value="${escapeAttr(
-              row.customer_name || ''
-            )}"
-          >
-        </label>
 
-        <label>
-          Destination
+    /* ---------------------------------------------
+       Bind delete
+       --------------------------------------------- */
 
-          <input
-            class="tracking-destination"
-            type="text"
-            value="${escapeAttr(
-              row.destination || ''
-            )}"
-          >
-        </label>
+    $$('.delete-tracking').forEach(button => {
 
-        <label>
-          Status
+      button.addEventListener(
+        'click',
+        deleteTracking
+      );
 
-          <select class="tracking-status">
+    });
 
-            <option value="Pending"
-              ${row.status === 'Pending' ? 'selected' : ''}>
-              Pending
-            </option>
 
-            <option value="Processing"
-              ${row.status === 'Processing' ? 'selected' : ''}>
-              Processing
-            </option>
+  } catch (error) {
 
-            <option value="Dispatched"
-              ${row.status === 'Dispatched' ? 'selected' : ''}>
-              Dispatched
-            </option>
-
-            <option value="In Transit"
-              ${row.status === 'In Transit' ? 'selected' : ''}>
-              In Transit
-            </option>
-
-            <option value="Delivered"
-              ${row.status === 'Delivered' ? 'selected' : ''}>
-              Delivered
-            </option>
-
-            <option value="Cancelled"
-              ${row.status === 'Cancelled' ? 'selected' : ''}>
-              Cancelled
-            </option>
-
-          </select>
-
-        </label>
-
-        <label class="full-width">
-          Description
-
-          <textarea
-            class="tracking-description"
-            rows="4"
-          >${escapeHtml(
-            row.description || ''
-          )}</textarea>
-
-        </label>
-
-      </div>
-
-      <div class="admin-card-actions">
-
-        <button
-          type="button"
-          class="primary save-tracking"
-          data-id="${escapeAttr(row.id)}"
-        >
-          Save
-        </button>
-
-      </div>
-
-    </div>
-
-  `).join('');
-
-  $$('.save-tracking').forEach(button => {
-
-    button.addEventListener(
-      'click',
-      saveTracking
+    console.error(
+      'Tracking error:',
+      error
     );
 
-  });
 
-  $$('.delete-tracking').forEach(button => {
-
-    button.addEventListener(
-      'click',
-      deleteTracking
-    );
-
-  });
+    box.innerHTML = `
+      <div class="error">
+        Unable to load tracking:
+        ${escapeHtml(
+          error.message ||
+          String(error)
+        )}
+      </div>
+    `;
+  }
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    SAVE TRACKING
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function saveTracking(event) {
 
   const button =
     event.currentTarget;
 
+
   const card =
-    button.closest('.tracking-card');
+    button.closest(
+      '.tracking-card'
+    );
+
 
   if (!card) return;
+
 
   const id =
     card.dataset.id;
 
-  const payload = {
 
-    tracking_number:
-      $('.tracking-number', card)?.value.trim() || '',
+  const trackingNumber =
+    $('.tracking-number', card)
+      ?.value
+      .trim() || '';
 
-    customer_name:
-      $('.tracking-customer', card)?.value.trim() || '',
 
-    destination:
-      $('.tracking-destination', card)?.value.trim() || '',
+  const customerName =
+    $('.tracking-customer', card)
+      ?.value
+      .trim() || '';
 
-    status:
-      $('.tracking-status', card)?.value || 'Pending',
 
-    description:
-      $('.tracking-description', card)?.value.trim() || '',
+  const destination =
+    $('.tracking-destination', card)
+      ?.value
+      .trim() || '';
 
-    updated_at:
-      new Date().toISOString()
-  };
 
-  if (!payload.tracking_number) {
+  const status =
+    $('.tracking-status', card)
+      ?.value || 'Pending';
+
+
+  const description =
+    $('.tracking-description', card)
+      ?.value
+      .trim() || '';
+
+
+  if (!trackingNumber) {
 
     alert(
       'Tracking number is required.'
@@ -5915,47 +6396,91 @@ async function saveTracking(event) {
     return;
   }
 
-  button.disabled = true;
-  button.textContent = 'Saving...';
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    'Saving...';
+
 
   try {
 
-    const { error } =
-      await supabaseClient
-        .from('tracking')
-        .update(payload)
-        .eq('id', id);
+    const payload = {
+
+      tracking_number:
+        trackingNumber,
+
+      customer_name:
+        customerName,
+
+      destination:
+        destination,
+
+      status:
+        status,
+
+      description:
+        description,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const {
+      error
+    } = await supabaseClient
+      .from('tracking')
+      .update(payload)
+      .eq('id', id);
+
 
     if (error) {
       throw error;
     }
 
+
     alert(
       'Tracking record saved successfully.'
     );
 
+
     await loadTracking();
+
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      'Save tracking error:',
+      error
+    );
+
 
     alert(
-      'Unable to save tracking: ' +
-      error.message
+      'Unable to save tracking:\n' +
+      (
+        error.message ||
+        String(error)
+      )
     );
+
 
   } finally {
 
-    button.disabled = false;
-    button.textContent = 'Save';
+    button.disabled =
+      false;
+
+    button.textContent =
+      'Save';
   }
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    DELETE TRACKING
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function deleteTracking(event) {
 
@@ -5964,61 +6489,95 @@ async function deleteTracking(event) {
 
   if (!id) return;
 
-  if (!confirm(
-    'Delete this tracking record?'
-  )) {
+
+  if (
+    !confirm(
+      'Delete this tracking record?'
+    )
+  ) {
     return;
   }
 
-  const { error } =
-    await supabaseClient
+
+  try {
+
+    const {
+      error
+    } = await supabaseClient
       .from('tracking')
       .delete()
       .eq('id', id);
 
-  if (error) {
+
+    if (error) {
+      throw error;
+    }
+
 
     alert(
-      'Unable to delete tracking: ' +
-      error.message
+      'Tracking record deleted successfully.'
     );
 
-    return;
+
+    await loadTracking();
+
+
+  } catch (error) {
+
+    console.error(
+      'Delete tracking error:',
+      error
+    );
+
+
+    alert(
+      'Unable to delete tracking:\n' +
+      (
+        error.message ||
+        String(error)
+      )
+    );
   }
-
-  alert('Tracking record deleted.');
-
-  await loadTracking();
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    MEDIA LIBRARY
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function loadMediaLibrary() {
 
-  const box = $('#mediaLibrary');
+  const box =
+    $('#mediaLibrary');
 
   if (!box) return;
+
 
   box.innerHTML =
     '<div class="loading">Loading media...</div>';
 
-  if (typeof listStorageFiles !== 'function') {
-
-    box.innerHTML =
-      '<div class="error">Storage helper is missing.</div>';
-
-    return;
-  }
 
   try {
+
+    if (
+      typeof listStorageFiles !==
+      'function'
+    ) {
+
+      throw new Error(
+        'Storage list helper is not available.'
+      );
+    }
+
 
     const files =
       await listStorageFiles();
 
-    if (!files || !files.length) {
+
+    if (
+      !files ||
+      files.length === 0
+    ) {
 
       box.innerHTML =
         '<div class="empty">No media files found.</div>';
@@ -6026,97 +6585,125 @@ async function loadMediaLibrary() {
       return;
     }
 
-    box.innerHTML = files.map(file => {
 
-      const fileName =
-        file.name || '';
+    box.innerHTML =
+      files.map(file => {
 
-      let url = '';
+        const fileName =
+          file.name || '';
 
-      if (
-        typeof getStoragePublicUrl ===
-        'function'
-      ) {
 
-        try {
+        let url = '';
 
-          url =
-            getStoragePublicUrl(
-              fileName
+
+        if (
+          typeof getStoragePublicUrl ===
+          'function'
+        ) {
+
+          try {
+
+            url =
+              getStoragePublicUrl(
+                fileName
+              );
+
+          } catch (error) {
+
+            console.warn(
+              'Public URL error:',
+              error
             );
-
-        } catch (e) {
-
-          console.warn(e);
+          }
         }
-      }
 
-      const isImage =
-        /\.(jpg|jpeg|png|gif|webp|svg)$/i
-          .test(fileName);
 
-      return `
+        const isImage =
+          /\.(jpg|jpeg|png|gif|webp|svg)$/i
+            .test(fileName);
 
-        <div
-          class="media-item"
-          data-name="${escapeAttr(fileName)}"
-        >
 
-          <div class="media-preview">
+        return `
 
-            ${
-              isImage && url
-                ? `
-                  <img
-                    src="${escapeAttr(url)}"
-                    alt="${escapeAttr(fileName)}"
-                    loading="lazy"
-                  >
-                `
-                : `
-                  <div class="file-icon">
-                    FILE
-                  </div>
-                `
-            }
+          <div
+            class="media-item"
+            data-name="${escapeAttr(
+              fileName
+            )}"
+          >
 
-          </div>
+            <div class="media-preview">
 
-          <div class="media-info">
+              ${
+                isImage && url
+                  ? `
+                    <img
+                      src="${escapeAttr(
+                        url
+                      )}"
+                      alt="${escapeAttr(
+                        fileName
+                      )}"
+                      loading="lazy"
+                    >
+                  `
+                  : `
+                    <div class="file-icon">
+                      FILE
+                    </div>
+                  `
+              }
 
-            <div class="media-name">
-              ${escapeHtml(fileName)}
             </div>
 
-            ${
-              url
-                ? `
-                  <a
-                    href="${escapeAttr(url)}"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Open
-                  </a>
-                `
-                : ''
-            }
+
+            <div class="media-info">
+
+              <div class="media-name">
+
+                ${escapeHtml(
+                  fileName
+                )}
+
+              </div>
+
+
+              ${
+                url
+                  ? `
+                    <a
+                      href="${escapeAttr(
+                        url
+                      )}"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Open
+                    </a>
+                  `
+                  : ''
+              }
+
+            </div>
+
+
+            <button
+              type="button"
+              class="danger delete-media"
+              data-name="${escapeAttr(
+                fileName
+              )}"
+            >
+              Delete
+            </button>
+
 
           </div>
 
-          <button
-            type="button"
-            class="danger delete-media"
-            data-name="${escapeAttr(fileName)}"
-          >
-            Delete
-          </button>
+        `;
 
-        </div>
+      }).join('');
 
-      `;
-
-    }).join('');
 
     $$('.delete-media').forEach(button => {
 
@@ -6127,22 +6714,31 @@ async function loadMediaLibrary() {
 
     });
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      'Media library error:',
+      error
+    );
 
-    box.innerHTML =
-      `<div class="error">
+
+    box.innerHTML = `
+      <div class="error">
         Unable to load media:
-        ${escapeHtml(error.message)}
-      </div>`;
+        ${escapeHtml(
+          error.message ||
+          String(error)
+        )}
+      </div>
+    `;
   }
 }
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    DELETE MEDIA
-   --------------------------------------------------------- */
+   ========================================================= */
 
 async function deleteMediaFile(event) {
 
@@ -6151,11 +6747,15 @@ async function deleteMediaFile(event) {
 
   if (!name) return;
 
-  if (!confirm(
-    `Delete "${name}" from media library?`
-  )) {
+
+  if (
+    !confirm(
+      `Delete "${name}" from media library?`
+    )
+  ) {
     return;
   }
+
 
   if (
     typeof deleteStorageFile !==
@@ -6163,44 +6763,67 @@ async function deleteMediaFile(event) {
   ) {
 
     alert(
-      'Storage delete helper is missing.'
+      'Storage delete helper is not available.'
     );
 
     return;
   }
 
+
   try {
+
+    /*
+      Media library files may be stored
+      in the root of the bucket or in folders.
+
+      First try the helper with the file name.
+    */
 
     await deleteStorageFile(
       '',
       name
     );
 
-    alert('Media file deleted.');
+
+    alert(
+      'Media file deleted successfully.'
+    );
+
 
     await loadMediaLibrary();
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      'Delete media error:',
+      error
+    );
+
 
     alert(
-      'Unable to delete media: ' +
-      error.message
+      'Unable to delete media:\n' +
+      (
+        error.message ||
+        String(error)
+      )
     );
   }
 }
 
 
-/* ---------------------------------------------------------
-   SECTION LOADING
-   --------------------------------------------------------- */
+/* =========================================================
+   SECTION LOADERS
+   ========================================================= */
 
 async function loadDocumentsSection() {
 
   try {
+
     await loadDocuments();
+
   } catch (error) {
+
     console.error(
       'Documents section error:',
       error
@@ -6212,8 +6835,11 @@ async function loadDocumentsSection() {
 async function loadTrackingSection() {
 
   try {
+
     await loadTracking();
+
   } catch (error) {
+
     console.error(
       'Tracking section error:',
       error
@@ -6225,8 +6851,11 @@ async function loadTrackingSection() {
 async function loadMediaSection() {
 
   try {
+
     await loadMediaLibrary();
+
   } catch (error) {
+
     console.error(
       'Media section error:',
       error
@@ -6235,23 +6864,29 @@ async function loadMediaSection() {
 }
 
 
-/* ---------------------------------------------------------
-   TAB HOOKS
-   --------------------------------------------------------- */
+/* =========================================================
+   TAB CLICK HANDLER
+   ========================================================= */
 
 document.addEventListener(
   'click',
-  async event => {
+  async function(event) {
 
     const tab =
-      event.target.closest('[data-section]');
+      event.target.closest(
+        '[data-section]'
+      );
+
 
     if (!tab) return;
+
 
     const section =
       tab.dataset.section;
 
+
     if (!section) return;
+
 
     if (
       section === 'documents' ||
@@ -6260,19 +6895,28 @@ document.addEventListener(
 
       await loadDocumentsSection();
 
-    } else if (
+      return;
+    }
+
+
+    if (
       section === 'tracking'
     ) {
 
       await loadTrackingSection();
 
-    } else if (
+      return;
+    }
+
+
+    if (
       section === 'media' ||
       section === 'media-library'
     ) {
 
       await loadMediaSection();
 
+      return;
     }
 
   }
@@ -6280,5 +6924,5 @@ document.addEventListener(
 
 
 /* =========================================================
-   END OF CLEAN PART 5
+   END OF PART 5
    ========================================================= */
