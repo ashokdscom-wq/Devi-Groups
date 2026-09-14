@@ -3,20 +3,363 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEVI GROUPS - Admin Panel</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../cms-config.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>DEVI GROUPS ADMIN PANEL</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background: #f5f7fb;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #222;
     }
 
     .hidden {
       display: none !important;
+    }
+
+    /* LOGIN */
+    #login {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #111827, #374151);
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 35px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .login-box h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .login-box p.sub {
+      text-align: center;
+      color: #666;
+      margin: 0 0 25px;
+    }
+
+    .login-box label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 600;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .login-box input:focus {
+      border-color: #2563eb;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background: #000;
+    }
+
+    #loginMsg {
+      margin-top: 15px;
+      color: #dc2626;
+      text-align: center;
+      min-height: 20px;
+    }
+
+    /* APP */
+    #app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #111827;
+      color: #fff;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    #logout {
+      border: 1px solid rgba(255,255,255,.4);
+      background: transparent;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    #logout:hover {
+      background: rgba(255,255,255,.1);
+    }
+
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 65px);
+    }
+
+    .sidebar {
+      width: 230px;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      padding: 15px 10px;
+      flex-shrink: 0;
+    }
+
+    .tab {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 12px 14px;
+      margin-bottom: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .tab:hover {
+      background: #f3f4f6;
+    }
+
+    .tab.active {
+      background: #111827;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .content {
+      flex: 1;
+      padding: 25px;
+      min-width: 0;
+    }
+
+    #main {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    /* COMMON ADMIN ELEMENTS */
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .stat {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .stat h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .stat strong {
+      font-size: 28px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f9fafb;
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 7px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      background: #111827;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 7px;
+      outline: none;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: #2563eb;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+        border-right: 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .tab {
+        min-width: max-content;
+        margin: 0;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-wrap: wrap;
+      }
+
+      .admin-user {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -24,240 +367,203 @@
 <body>
 
   <!-- LOGIN PAGE -->
-  <div id="loginPage" class="min-h-screen flex items-center justify-center p-6">
+  <section id="login">
 
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
+    <div class="login-box">
 
-      <h1 class="text-2xl font-bold text-center mb-2">
-        DEVI GROUPS
-      </h1>
+      <h1>DEVI GROUPS</h1>
 
-      <p class="text-center text-gray-500 mb-6">
-        Secure Admin Panel
+      <p class="sub">
+        Admin Panel
       </p>
 
       <form id="loginForm">
 
-        <label class="block text-sm font-medium mb-2">
+        <label for="email">
           Email
         </label>
 
         <input
-          id="email"
           type="email"
-          required
-          class="w-full border rounded-lg px-4 py-3 mb-4"
+          id="email"
+          name="email"
           placeholder="Admin Email"
+          autocomplete="username"
+          required
         >
 
-        <label class="block text-sm font-medium mb-2">
+        <label for="password">
           Password
         </label>
 
         <input
-          id="password"
           type="password"
-          required
-          class="w-full border rounded-lg px-4 py-3 mb-3"
+          id="password"
+          name="password"
           placeholder="Password"
+          autocomplete="current-password"
+          required
         >
-
-        <!-- FORGOT PASSWORD -->
-        <button
-          type="button"
-          onclick="showResetBox()"
-          class="text-sm text-blue-600 hover:underline mb-4"
-        >
-          Forgot password?
-        </button>
 
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white rounded-lg py-3 font-semibold hover:bg-blue-700"
+          class="login-btn"
         >
-          Sign in
+          Login
         </button>
+
+        <p id="loginMsg"></p>
 
       </form>
 
-      <div id="loginMessage" class="text-sm mt-4 text-center"></div>
+    </div>
+
+  </section>
 
 
-      <!-- RESET BOX -->
-      <div id="resetBox" class="hidden mt-6 border-t pt-6">
+  <!-- ADMIN APP -->
+  <section id="app" class="hidden">
 
-        <h2 class="font-semibold text-lg mb-3">
-          Reset Password
-        </h2>
+    <!-- TOP BAR -->
+    <header class="topbar">
 
-        <p class="text-sm text-gray-500 mb-4">
-          Enter your admin email. We will send you a password reset link.
-        </p>
+      <div class="brand">
+        DEVI GROUPS ADMIN
+      </div>
 
-        <input
-          id="resetEmail"
-          type="email"
-          class="w-full border rounded-lg px-4 py-3 mb-3"
-          placeholder="Admin Email"
-        >
+      <div class="admin-user">
 
-        <button
-          type="button"
-          onclick="sendReset()"
-          class="w-full bg-green-600 text-white rounded-lg py-3 font-semibold hover:bg-green-700"
-        >
-          Send Reset Email
+        <span id="userEmail">
+          Admin
+        </span>
+
+        <button id="logout" type="button">
+          Logout
         </button>
-
-        <div id="resetMessage" class="text-sm mt-3 text-center"></div>
 
       </div>
 
-    </div>
-  </div>
+    </header>
 
 
-  <!-- PASSWORD RECOVERY PAGE -->
-  <div
-    id="recoveryPage"
-    class="hidden min-h-screen flex items-center justify-center p-6"
-  >
-
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
-
-      <h1 class="text-2xl font-bold text-center mb-2">
-        Set New Password
-      </h1>
-
-      <p class="text-center text-gray-500 mb-6">
-        Create a new admin password
-      </p>
-
-      <input
-        id="newPassword"
-        type="password"
-        class="w-full border rounded-lg px-4 py-3 mb-4"
-        placeholder="New Password"
-      >
-
-      <input
-        id="confirmPassword"
-        type="password"
-        class="w-full border rounded-lg px-4 py-3 mb-4"
-        placeholder="Confirm Password"
-      >
-
-      <button
-        type="button"
-        onclick="updatePassword()"
-        class="w-full bg-blue-600 text-white rounded-lg py-3 font-semibold hover:bg-blue-700"
-      >
-        Update Password
-      </button>
-
-      <div id="recoveryMessage" class="text-sm mt-4 text-center"></div>
-
-    </div>
-  </div>
-
-
-  <!-- ADMIN PANEL -->
-  <div id="adminPage" class="hidden min-h-screen">
-
-    <div class="flex min-h-screen">
+    <!-- MAIN LAYOUT -->
+    <div class="layout">
 
       <!-- SIDEBAR -->
-      <aside class="w-64 bg-gray-900 text-white p-5">
-
-        <h2 class="text-xl font-bold mb-8">
-          DEVI GROUPS
-        </h2>
-
-        <div class="space-y-2">
-
-          <button data-view="dashboard"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Dashboard
-          </button>
-
-          <button data-view="products"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Products
-          </button>
-
-          <button data-view="business"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Business Units
-          </button>
-
-          <button data-view="homepage"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Homepage
-          </button>
-
-          <button data-view="enquiries"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Enquiries
-          </button>
-
-          <button data-view="reviews"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Reviews
-          </button>
-
-          <button data-view="company"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Company / Contact
-          </button>
-
-          <button data-view="documents"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Documents
-          </button>
-
-          <button data-view="tracking"
-            class="navBtn w-full text-left px-4 py-3 rounded-lg hover:bg-gray-800">
-            Tracking
-          </button>
-
-        </div>
+      <aside class="sidebar">
 
         <button
-          id="logoutBtn"
-          class="w-full mt-10 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg"
+          class="tab active"
+          data-view="dashboard"
+          type="button"
         >
-          Logout
+          Dashboard
+        </button>
+
+        <button
+          class="tab"
+          data-view="products"
+          type="button"
+        >
+          Products
+        </button>
+
+        <button
+          class="tab"
+          data-view="units"
+          type="button"
+        >
+          Business Units
+        </button>
+
+        <button
+          class="tab"
+          data-view="homepage"
+          type="button"
+        >
+          Homepage
+        </button>
+
+        <button
+          class="tab"
+          data-view="enquiries"
+          type="button"
+        >
+          Customer Enquiries
+        </button>
+
+        <button
+          class="tab"
+          data-view="reviews"
+          type="button"
+        >
+          Reviews
+        </button>
+
+        <button
+          class="tab"
+          data-view="company"
+          type="button"
+        >
+          Company Info
+        </button>
+
+        <button
+          class="tab"
+          data-view="documents"
+          type="button"
+        >
+          Documents
+        </button>
+
+        <button
+          class="tab"
+          data-view="tracking"
+          type="button"
+        >
+          Tracking
         </button>
 
       </aside>
 
 
-      <!-- MAIN CONTENT -->
-      <main class="flex-1 p-8">
+      <!-- CONTENT -->
+      <main class="content">
 
-        <div class="flex justify-between items-center mb-8">
+        <div id="main">
 
-          <div>
-            <h1 id="pageTitle" class="text-3xl font-bold">
-              Dashboard
-            </h1>
+          <div class="card">
 
-            <p class="text-gray-500">
-              DEVI GROUPS Administration
+            <h2 class="page-title">
+              DEVI GROUPS Admin Panel
+            </h2>
+
+            <p>
+              Welcome to the administration panel.
+              Select an option from the menu.
             </p>
+
           </div>
 
         </div>
 
-        <div id="app"></div>
-
       </main>
 
     </div>
-  </div>
+
+  </section>
 
 
-  <script src="./admin.js"></script>
+  <!-- IMPORTANT:
+       cms-config.js MUST LOAD FIRST
+       admin.js MUST LOAD LAST
+  -->
+
+  <script src="cms-config.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="admin.js"></script>
 
 </body>
 </html>
