@@ -5326,32 +5326,186 @@ sb.auth.onAuthStateChange(
   }
 );
 /* =========================================================
-   PART 5 — DOCUMENTS / TRACKING / MEDIA
-   CLEAN & CORRECTED VERSION
+   DEVI GROUPS ADMIN
+   PART 5 — DOCUMENTS / TRACKING / MEDIA LIBRARY
+   FINAL CORRECTED VERSION
    ========================================================= */
 
 
 /* =========================================================
-   DOCUMENTS
-   Brochure / TDS / MSDS / PDF
+   SUPABASE CLIENT
+   ========================================================= */
+
+const deviSupabase =
+  typeof sb !== 'undefined'
+    ? sb
+    : null;
+
+
+/* =========================================================
+   COMMON HELPERS
+   ========================================================= */
+
+function part5Escape(value) {
+  if (typeof escapeHtml === 'function') {
+    return escapeHtml(value ?? '');
+  }
+
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+
+function part5Attr(value) {
+  if (typeof escapeAttr === 'function') {
+    return escapeAttr(value ?? '');
+  }
+
+  return part5Escape(value);
+}
+
+
+function part5ShowError(container, message) {
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="
+      background:#fef2f2;
+      border:1px solid #fecaca;
+      color:#991b1b;
+      border-radius:10px;
+      padding:18px;
+      line-height:1.6;
+    ">
+      ${part5Escape(message)}
+    </div>
+  `;
+}
+
+
+function part5Loading(message) {
+  return `
+    <div style="
+      padding:35px;
+      text-align:center;
+      color:#64748b;
+    ">
+      ${part5Escape(message)}
+    </div>
+  `;
+}
+
+
+function part5Empty(message) {
+  return `
+    <div style="
+      padding:35px;
+      text-align:center;
+      color:#64748b;
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+    ">
+      ${part5Escape(message)}
+    </div>
+  `;
+}
+
+
+function part5Card(content) {
+  if (typeof cardHtml === 'function') {
+    return cardHtml(content);
+  }
+
+  return `
+    <div style="
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:20px;
+      margin-bottom:18px;
+    ">
+      ${content}
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   DOCUMENTS PAGE
+   ========================================================= */
+
+async function renderDocuments() {
+
+  const main =
+    document.getElementById('admin-main');
+
+  if (!main) return;
+
+  main.innerHTML = `
+    ${
+      typeof pageHeader === 'function'
+        ? pageHeader(
+            'Documents',
+            'Manage brochures, TDS, MSDS and other documents.'
+          )
+        : `
+          <div style="margin-bottom:20px;">
+            <h2 style="margin:0 0 6px;">
+              Documents
+            </h2>
+
+            <p style="
+              margin:0;
+              color:#64748b;
+            ">
+              Manage brochures, TDS, MSDS and other documents.
+            </p>
+          </div>
+        `
+    }
+
+    <div id="documentsList">
+      ${part5Loading('Loading documents...')}
+    </div>
+  `;
+
+  await loadDocuments();
+}
+
+
+/* =========================================================
+   LOAD DOCUMENTS
    ========================================================= */
 
 async function loadDocuments() {
 
-  const box = $('#documentsList');
+  const box =
+    document.getElementById('documentsList');
 
   if (!box) return;
 
+  if (!deviSupabase) {
+    part5ShowError(
+      box,
+      'Supabase client is not available.'
+    );
+    return;
+  }
+
   box.innerHTML =
-    '<div class="loading">Loading documents...</div>';
+    part5Loading('Loading documents...');
 
   try {
 
-    /* ---------------------------------------------
-       Load documents
-       --------------------------------------------- */
-
-    const { data, error } = await supabaseClient
+    const {
+      data,
+      error
+    } = await deviSupabase
       .from('documents')
       .select(`
         *,
@@ -5369,27 +5523,14 @@ async function loadDocuments() {
     }
 
 
-    /* ---------------------------------------------
-       No documents
-       --------------------------------------------- */
-
-    if (!data || data.length === 0) {
-
-      box.innerHTML =
-        '<div class="empty">No documents found.</div>';
-
-      return;
-    }
-
-
-    /* ---------------------------------------------
-       Load products separately
-       --------------------------------------------- */
+    /* -------------------------------------------------------
+       Load products
+       ------------------------------------------------------- */
 
     const {
       data: products,
       error: productsError
-    } = await supabaseClient
+    } = await deviSupabase
       .from('products')
       .select('id, name')
       .order('name', {
@@ -5401,316 +5542,432 @@ async function loadDocuments() {
     }
 
 
-    /* ---------------------------------------------
-       Create product options
-       --------------------------------------------- */
-
     const productList =
       products || [];
 
 
-    /* ---------------------------------------------
-       Render documents
-       --------------------------------------------- */
+    if (!data || data.length === 0) {
 
-    box.innerHTML = data.map(doc => {
+      box.innerHTML = `
+        ${part5Empty(
+          'No documents found.'
+        )}
 
-      const productOptions =
-        productList.map(product => {
+        <div style="
+          margin-top:15px;
+          padding:15px;
+          background:#f8fafc;
+          border:1px dashed #cbd5e1;
+          border-radius:10px;
+          color:#64748b;
+          text-align:center;
+        ">
+          Upload your first brochure, TDS or MSDS from this section.
+        </div>
+      `;
 
-          const selected =
-            String(product.id) ===
-            String(doc.product_id)
-              ? 'selected'
-              : '';
-
-          return `
-            <option
-              value="${escapeAttr(product.id)}"
-              ${selected}
-            >
-              ${escapeHtml(product.name || '')}
-            </option>
-          `;
-
-        }).join('');
+      return;
+    }
 
 
-      return `
+    /* -------------------------------------------------------
+       Render
+       ------------------------------------------------------- */
 
-        <div
-          class="admin-card document-card"
-          data-id="${escapeAttr(doc.id)}"
-        >
+    box.innerHTML =
+      data.map(doc => {
 
-          <div class="admin-card-header">
+        const productOptions =
+          productList
+            .map(product => {
 
-            <div>
+              const selected =
+                String(product.id) ===
+                String(doc.product_id)
+                  ? 'selected'
+                  : '';
 
-              <h3>
-                ${escapeHtml(
-                  doc.title ||
-                  doc.file_name ||
-                  'Document'
-                )}
-              </h3>
+              return `
+                <option
+                  value="${part5Attr(product.id)}"
+                  ${selected}
+                >
+                  ${part5Escape(
+                    product.name || ''
+                  )}
+                </option>
+              `;
+            })
+            .join('');
 
-              <div class="muted">
 
-                ${escapeHtml(
-                  doc.document_type ||
-                  'Document'
-                )}
+        const currentFile =
+          doc.file_url
+            ? `
+              <a
+                href="${part5Attr(doc.file_url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="
+                  color:#2563eb;
+                  text-decoration:none;
+                  font-weight:600;
+                "
+              >
+                View current file
+              </a>
+            `
+            : `
+              <span style="
+                color:#94a3b8;
+              ">
+                No file uploaded
+              </span>
+            `;
 
-                ${
-                  doc.products?.name
-                    ? `
-                      ·
-                      ${escapeHtml(
-                        doc.products.name
-                      )}
-                    `
-                    : ''
-                }
+
+        return `
+          <div
+            class="admin-card document-card"
+            data-id="${part5Attr(doc.id)}"
+            style="
+              background:#fff;
+              border:1px solid #e2e8f0;
+              border-radius:12px;
+              padding:20px;
+              margin-bottom:18px;
+            "
+          >
+
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              align-items:flex-start;
+              gap:15px;
+              margin-bottom:18px;
+            ">
+
+              <div>
+
+                <h3 style="
+                  margin:0 0 5px;
+                  font-size:18px;
+                ">
+                  ${part5Escape(
+                    doc.title ||
+                    doc.file_name ||
+                    'Document'
+                  )}
+                </h3>
+
+                <div style="
+                  color:#64748b;
+                  font-size:13px;
+                ">
+                  ${part5Escape(
+                    doc.document_type ||
+                    'Document'
+                  )}
+
+                  ${
+                    doc.products?.name
+                      ? `
+                        ·
+                        ${part5Escape(
+                          doc.products.name
+                        )}
+                      `
+                      : ''
+                  }
+                </div>
 
               </div>
+
+
+              <button
+                type="button"
+                class="danger delete-document"
+                data-id="${part5Attr(doc.id)}"
+                style="
+                  border:0;
+                  background:#fee2e2;
+                  color:#b91c1c;
+                  padding:8px 12px;
+                  border-radius:8px;
+                  cursor:pointer;
+                  font-weight:600;
+                "
+              >
+                Delete
+              </button>
 
             </div>
 
 
-            <button
-              type="button"
-              class="danger delete-document"
-              data-id="${escapeAttr(doc.id)}"
-            >
-              Delete
-            </button>
+            <div style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fit,minmax(220px,1fr));
+              gap:15px;
+            ">
 
-          </div>
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Title
 
-
-          <div class="form-grid">
-
-
-            <!-- TITLE -->
-
-            <label>
-
-              Title
-
-              <input
-                class="document-title"
-                type="text"
-                value="${escapeAttr(
-                  doc.title || ''
-                )}"
-              >
-
-            </label>
-
-
-            <!-- DOCUMENT TYPE -->
-
-            <label>
-
-              Document Type
-
-              <select class="document-type">
-
-                <option
-                  value="brochure"
-                  ${
-                    doc.document_type ===
-                    'brochure'
-                      ? 'selected'
-                      : ''
-                  }
+                <input
+                  class="document-title"
+                  type="text"
+                  value="${part5Attr(
+                    doc.title || ''
+                  )}"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                  "
                 >
-                  Brochure
-                </option>
+              </label>
 
 
-                <option
-                  value="tds"
-                  ${
-                    doc.document_type ===
-                    'tds'
-                      ? 'selected'
-                      : ''
-                  }
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Document Type
+
+                <select
+                  class="document-type"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                    background:#fff;
+                  "
                 >
-                  TDS
-                </option>
 
-
-                <option
-                  value="msds"
-                  ${
-                    doc.document_type ===
-                    'msds'
-                      ? 'selected'
-                      : ''
-                  }
-                >
-                  MSDS
-                </option>
-
-
-                <option
-                  value="pdf"
-                  ${
-                    doc.document_type ===
-                    'pdf'
-                      ? 'selected'
-                      : ''
-                  }
-                >
-                  PDF
-                </option>
-
-
-                <option
-                  value="other"
-                  ${
-                    doc.document_type ===
-                    'other'
-                      ? 'selected'
-                      : ''
-                  }
-                >
-                  Other
-                </option>
-
-              </select>
-
-            </label>
-
-
-            <!-- PRODUCT -->
-
-            <label>
-
-              Product
-
-              <select class="document-product">
-
-                <option value="">
-                  No Product
-                </option>
-
-                ${productOptions}
-
-              </select>
-
-            </label>
-
-
-            <!-- FILE -->
-
-            <label>
-
-              Replace File
-
-              <input
-                class="document-file"
-                type="file"
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-              >
-
-            </label>
-
-
-          </div>
-
-
-          <!-- CURRENT FILE -->
-
-          <div class="document-file-info">
-
-            ${
-              doc.file_url
-                ? `
-                  <a
-                    href="${escapeAttr(
-                      doc.file_url
-                    )}"
-                    target="_blank"
-                    rel="noopener"
+                  <option
+                    value="brochure"
+                    ${
+                      doc.document_type ===
+                      'brochure'
+                        ? 'selected'
+                        : ''
+                    }
                   >
-                    View current file
-                  </a>
-                `
-                : `
-                  <span class="muted">
-                    No file uploaded
-                  </span>
-                `
-            }
+                    Brochure
+                  </option>
+
+                  <option
+                    value="tds"
+                    ${
+                      doc.document_type ===
+                      'tds'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    TDS
+                  </option>
+
+                  <option
+                    value="msds"
+                    ${
+                      doc.document_type ===
+                      'msds'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    MSDS
+                  </option>
+
+                  <option
+                    value="pdf"
+                    ${
+                      doc.document_type ===
+                      'pdf'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    PDF
+                  </option>
+
+                  <option
+                    value="other"
+                    ${
+                      doc.document_type ===
+                      'other'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Other
+                  </option>
+
+                </select>
+              </label>
 
 
-            ${
-              doc.file_name
-                ? `
-                  <span class="muted">
-                    ${escapeHtml(
-                      doc.file_name
-                    )}
-                  </span>
-                `
-                : ''
-            }
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Product
+
+                <select
+                  class="document-product"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                    background:#fff;
+                  "
+                >
+
+                  <option value="">
+                    No Product
+                  </option>
+
+                  ${productOptions}
+
+                </select>
+              </label>
+
+
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Replace File
+
+                <input
+                  class="document-file"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    box-sizing:border-box;
+                  "
+                >
+              </label>
+
+            </div>
+
+
+            <div style="
+              margin-top:15px;
+              padding:12px;
+              background:#f8fafc;
+              border-radius:8px;
+              font-size:13px;
+            ">
+
+              <strong>
+                Current File:
+              </strong>
+
+              ${currentFile}
+
+              ${
+                doc.file_name
+                  ? `
+                    <span style="
+                      margin-left:10px;
+                      color:#64748b;
+                    ">
+                      ${part5Escape(
+                        doc.file_name
+                      )}
+                    </span>
+                  `
+                  : ''
+              }
+
+            </div>
+
+
+            <div style="
+              margin-top:15px;
+              display:flex;
+              justify-content:flex-end;
+            ">
+
+              <button
+                type="button"
+                class="primary save-document"
+                data-id="${part5Attr(doc.id)}"
+                style="
+                  border:0;
+                  background:#2563eb;
+                  color:#fff;
+                  padding:10px 16px;
+                  border-radius:8px;
+                  cursor:pointer;
+                  font-weight:600;
+                "
+              >
+                Save
+              </button>
+
+            </div>
 
           </div>
+        `;
+      }).join('');
 
 
-          <!-- ACTION -->
+    /* -------------------------------------------------------
+       Bind actions
+       ------------------------------------------------------- */
 
-          <div class="admin-card-actions">
+    box
+      .querySelectorAll('.save-document')
+      .forEach(button => {
 
-            <button
-              type="button"
-              class="primary save-document"
-              data-id="${escapeAttr(doc.id)}"
-            >
-              Save
-            </button>
+        button.addEventListener(
+          'click',
+          saveDocument
+        );
 
-          </div>
-
-
-        </div>
-
-      `;
-
-    }).join('');
+      });
 
 
-    /* ---------------------------------------------
-       Bind save buttons
-       --------------------------------------------- */
+    box
+      .querySelectorAll('.delete-document')
+      .forEach(button => {
 
-    $$('.save-document').forEach(button => {
+        button.addEventListener(
+          'click',
+          deleteDocument
+        );
 
-      button.addEventListener(
-        'click',
-        saveDocument
-      );
-
-    });
-
-
-    /* ---------------------------------------------
-       Bind delete buttons
-       --------------------------------------------- */
-
-    $$('.delete-document').forEach(button => {
-
-      button.addEventListener(
-        'click',
-        deleteDocument
-      );
-
-    });
+      });
 
 
   } catch (error) {
@@ -5720,15 +5977,15 @@ async function loadDocuments() {
       error
     );
 
-    box.innerHTML = `
-      <div class="error">
-        Unable to load documents:
-        ${escapeHtml(
-          error.message ||
-          String(error)
-        )}
-      </div>
-    `;
+    part5ShowError(
+      box,
+      'Unable to load documents: ' +
+      (
+        error?.message ||
+        String(error)
+      )
+    );
+
   }
 }
 
@@ -5743,49 +6000,61 @@ async function saveDocument(event) {
     event.currentTarget;
 
   const card =
-    button.closest('.document-card');
+    button.closest(
+      '.document-card'
+    );
 
   if (!card) return;
-
 
   const id =
     card.dataset.id;
 
-
   const title =
-    $('.document-title', card)
-      ?.value
-      .trim() || '';
-
+    card.querySelector(
+      '.document-title'
+    )?.value
+      ?.trim() || '';
 
   const documentType =
-    $('.document-type', card)
-      ?.value || 'other';
-
+    card.querySelector(
+      '.document-type'
+    )?.value ||
+    'other';
 
   const productValue =
-    $('.document-product', card)
-      ?.value || '';
-
+    card.querySelector(
+      '.document-product'
+    )?.value || '';
 
   const productId =
     productValue
       ? Number(productValue)
       : null;
 
-
   const fileInput =
-    $('.document-file', card);
-
+    card.querySelector(
+      '.document-file'
+    );
 
   const file =
-    fileInput?.files?.[0] || null;
+    fileInput?.files?.[0] ||
+    null;
 
 
   if (!title) {
 
     alert(
       'Please enter document title.'
+    );
+
+    return;
+  }
+
+
+  if (!deviSupabase) {
+
+    alert(
+      'Supabase client is not available.'
     );
 
     return;
@@ -5800,21 +6069,17 @@ async function saveDocument(event) {
   try {
 
     const payload = {
-
       title: title,
-
       document_type:
         documentType,
-
       product_id:
         productId
-
     };
 
 
-    /* ---------------------------------------------
+    /* -------------------------------------------------------
        Upload replacement file
-       --------------------------------------------- */
+       ------------------------------------------------------- */
 
     if (file) {
 
@@ -5847,7 +6112,6 @@ async function saveDocument(event) {
       payload.file_name =
         file.name;
 
-
       payload.file_url =
         uploaded.url ||
         uploaded.publicUrl ||
@@ -5856,15 +6120,16 @@ async function saveDocument(event) {
     }
 
 
-    /* ---------------------------------------------
-       Update database
-       --------------------------------------------- */
+    /* -------------------------------------------------------
+       Update DB
+       ------------------------------------------------------- */
 
-    const { error } =
-      await supabaseClient
-        .from('documents')
-        .update(payload)
-        .eq('id', id);
+    const {
+      error
+    } = await deviSupabase
+      .from('documents')
+      .update(payload)
+      .eq('id', id);
 
 
     if (error) {
@@ -5887,11 +6152,10 @@ async function saveDocument(event) {
       error
     );
 
-
     alert(
       'Unable to save document:\n' +
       (
-        error.message ||
+        error?.message ||
         String(error)
       )
     );
@@ -5899,11 +6163,11 @@ async function saveDocument(event) {
 
   } finally {
 
-    button.disabled =
-      false;
+    button.disabled = false;
 
     button.textContent =
       'Save';
+
   }
 }
 
@@ -5920,25 +6184,35 @@ async function deleteDocument(event) {
   if (!id) return;
 
 
-  const confirmed =
-    confirm(
+  if (
+    !confirm(
       'Are you sure you want to delete this document?'
+    )
+  ) {
+    return;
+  }
+
+
+  if (!deviSupabase) {
+
+    alert(
+      'Supabase client is not available.'
     );
 
-
-  if (!confirmed) return;
+    return;
+  }
 
 
   try {
 
-    /* ---------------------------------------------
-       Get document first
-       --------------------------------------------- */
+    /* -------------------------------------------------------
+       Get document
+       ------------------------------------------------------- */
 
     const {
       data: documentRow,
       error: fetchError
-    } = await supabaseClient
+    } = await deviSupabase
       .from('documents')
       .select(
         'id, file_name, file_url'
@@ -5952,13 +6226,13 @@ async function deleteDocument(event) {
     }
 
 
-    /* ---------------------------------------------
+    /* -------------------------------------------------------
        Delete database row
-       --------------------------------------------- */
+       ------------------------------------------------------- */
 
     const {
       error: deleteError
-    } = await supabaseClient
+    } = await deviSupabase
       .from('documents')
       .delete()
       .eq('id', id);
@@ -5969,9 +6243,9 @@ async function deleteDocument(event) {
     }
 
 
-    /* ---------------------------------------------
-       Try deleting storage file
-       --------------------------------------------- */
+    /* -------------------------------------------------------
+       Delete storage file if helper exists
+       ------------------------------------------------------- */
 
     if (
       documentRow?.file_name &&
@@ -5992,6 +6266,7 @@ async function deleteDocument(event) {
           'Storage delete warning:',
           storageError
         );
+
       }
     }
 
@@ -6011,32 +6286,94 @@ async function deleteDocument(event) {
       error
     );
 
-
     alert(
       'Unable to delete document:\n' +
       (
-        error.message ||
+        error?.message ||
         String(error)
       )
     );
+
   }
 }
 
 
 /* =========================================================
-   TRACKING
+   TRACKING PAGE
+   ========================================================= */
+
+async function renderTracking() {
+
+  const main =
+    document.getElementById('admin-main');
+
+  if (!main) return;
+
+
+  main.innerHTML = `
+    ${
+      typeof pageHeader === 'function'
+        ? pageHeader(
+            'Tracking',
+            'Manage shipment and tracking information.'
+          )
+        : `
+          <div style="margin-bottom:20px;">
+            <h2 style="margin:0 0 6px;">
+              Tracking
+            </h2>
+
+            <p style="
+              margin:0;
+              color:#64748b;
+            ">
+              Manage shipment and tracking information.
+            </p>
+          </div>
+        `
+    }
+
+    <div id="trackingList">
+      ${part5Loading(
+        'Loading tracking records...'
+      )}
+    </div>
+  `;
+
+
+  await loadTracking();
+}
+
+
+/* =========================================================
+   LOAD TRACKING
    ========================================================= */
 
 async function loadTracking() {
 
   const box =
-    $('#trackingList');
+    document.getElementById(
+      'trackingList'
+    );
 
   if (!box) return;
 
 
+  if (!deviSupabase) {
+
+    part5ShowError(
+      box,
+      'Supabase client is not available.'
+    );
+
+    return;
+  }
+
+
   box.innerHTML =
-    '<div class="loading">Loading tracking records...</div>';
+    part5Loading(
+      'Loading tracking records...'
+    );
 
 
   try {
@@ -6044,7 +6381,7 @@ async function loadTracking() {
     const {
       data,
       error
-    } = await supabaseClient
+    } = await deviSupabase
       .from('tracking')
       .select('*')
       .order('created_at', {
@@ -6057,216 +6394,303 @@ async function loadTracking() {
     }
 
 
-    if (!data || data.length === 0) {
+    if (
+      !data ||
+      data.length === 0
+    ) {
 
       box.innerHTML =
-        '<div class="empty">No tracking records found.</div>';
+        part5Empty(
+          'No tracking records found.'
+        );
 
       return;
     }
 
 
     box.innerHTML =
-      data.map(row => `
+      data.map(row => {
 
-        <div
-          class="admin-card tracking-card"
-          data-id="${escapeAttr(row.id)}"
-        >
+        return `
+          <div
+            class="admin-card tracking-card"
+            data-id="${part5Attr(row.id)}"
+            style="
+              background:#fff;
+              border:1px solid #e2e8f0;
+              border-radius:12px;
+              padding:20px;
+              margin-bottom:18px;
+            "
+          >
 
-          <div class="admin-card-header">
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              align-items:flex-start;
+              gap:15px;
+              margin-bottom:18px;
+            ">
 
-            <div>
+              <div>
 
-              <h3>
-                ${escapeHtml(
-                  row.tracking_number ||
-                  'Tracking'
-                )}
-              </h3>
+                <h3 style="
+                  margin:0 0 5px;
+                  font-size:18px;
+                ">
+                  ${part5Escape(
+                    row.tracking_number ||
+                    'Tracking'
+                  )}
+                </h3>
 
-              <div class="muted">
-
-                ${escapeHtml(
-                  row.customer_name ||
-                  ''
-                )}
+                <div style="
+                  color:#64748b;
+                  font-size:13px;
+                ">
+                  ${part5Escape(
+                    row.customer_name ||
+                    ''
+                  )}
+                </div>
 
               </div>
+
+
+              <button
+                type="button"
+                class="danger delete-tracking"
+                data-id="${part5Attr(row.id)}"
+                style="
+                  border:0;
+                  background:#fee2e2;
+                  color:#b91c1c;
+                  padding:8px 12px;
+                  border-radius:8px;
+                  cursor:pointer;
+                  font-weight:600;
+                "
+              >
+                Delete
+              </button>
 
             </div>
 
 
-            <button
-              type="button"
-              class="danger delete-tracking"
-              data-id="${escapeAttr(row.id)}"
-            >
-              Delete
-            </button>
+            <div style="
+              display:grid;
+              grid-template-columns:
+                repeat(auto-fit,minmax(220px,1fr));
+              gap:15px;
+            ">
 
-          </div>
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Tracking Number
 
-
-          <div class="form-grid">
-
-
-            <!-- TRACKING NUMBER -->
-
-            <label>
-
-              Tracking Number
-
-              <input
-                class="tracking-number"
-                type="text"
-                value="${escapeAttr(
-                  row.tracking_number ||
-                  ''
-                )}"
-              >
-
-            </label>
-
-
-            <!-- CUSTOMER -->
-
-            <label>
-
-              Customer Name
-
-              <input
-                class="tracking-customer"
-                type="text"
-                value="${escapeAttr(
-                  row.customer_name ||
-                  ''
-                )}"
-              >
-
-            </label>
-
-
-            <!-- DESTINATION -->
-
-            <label>
-
-              Destination
-
-              <input
-                class="tracking-destination"
-                type="text"
-                value="${escapeAttr(
-                  row.destination ||
-                  ''
-                )}"
-              >
-
-            </label>
-
-
-            <!-- STATUS -->
-
-            <label>
-
-              Status
-
-              <select
-                class="tracking-status"
-              >
-
-                <option
-                  value="Pending"
-                  ${
-                    row.status ===
-                    'Pending'
-                      ? 'selected'
-                      : ''
-                  }
+                <input
+                  class="tracking-number"
+                  type="text"
+                  value="${part5Attr(
+                    row.tracking_number ||
+                    ''
+                  )}"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                  "
                 >
-                  Pending
-                </option>
+              </label>
 
 
-                <option
-                  value="Processing"
-                  ${
-                    row.status ===
-                    'Processing'
-                      ? 'selected'
-                      : ''
-                  }
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Customer Name
+
+                <input
+                  class="tracking-customer"
+                  type="text"
+                  value="${part5Attr(
+                    row.customer_name ||
+                    ''
+                  )}"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                  "
                 >
-                  Processing
-                </option>
+              </label>
 
 
-                <option
-                  value="Dispatched"
-                  ${
-                    row.status ===
-                    'Dispatched'
-                      ? 'selected'
-                      : ''
-                  }
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Destination
+
+                <input
+                  class="tracking-destination"
+                  type="text"
+                  value="${part5Attr(
+                    row.destination ||
+                    ''
+                  )}"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                  "
                 >
-                  Dispatched
-                </option>
+              </label>
 
 
-                <option
-                  value="In Transit"
-                  ${
-                    row.status ===
-                    'In Transit'
-                      ? 'selected'
-                      : ''
-                  }
+              <label style="
+                display:block;
+                font-size:13px;
+                font-weight:600;
+                color:#334155;
+              ">
+                Status
+
+                <select
+                  class="tracking-status"
+                  style="
+                    display:block;
+                    width:100%;
+                    margin-top:6px;
+                    padding:10px;
+                    box-sizing:border-box;
+                    border:1px solid #cbd5e1;
+                    border-radius:8px;
+                    background:#fff;
+                  "
                 >
-                  In Transit
-                </option>
+
+                  <option
+                    value="Pending"
+                    ${
+                      row.status ===
+                      'Pending'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Pending
+                  </option>
+
+                  <option
+                    value="Processing"
+                    ${
+                      row.status ===
+                      'Processing'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Processing
+                  </option>
+
+                  <option
+                    value="Dispatched"
+                    ${
+                      row.status ===
+                      'Dispatched'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Dispatched
+                  </option>
+
+                  <option
+                    value="In Transit"
+                    ${
+                      row.status ===
+                      'In Transit'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    In Transit
+                  </option>
+
+                  <option
+                    value="Delivered"
+                    ${
+                      row.status ===
+                      'Delivered'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Delivered
+                  </option>
+
+                  <option
+                    value="Cancelled"
+                    ${
+                      row.status ===
+                      'Cancelled'
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    Cancelled
+                  </option>
+
+                </select>
+              </label>
+
+            </div>
 
 
-                <option
-                  value="Delivered"
-                  ${
-                    row.status ===
-                    'Delivered'
-                      ? 'selected'
-                      : ''
-                  }
-                >
-                  Delivered
-                </option>
-
-
-                <option
-                  value="Cancelled"
-                  ${
-                    row.status ===
-                    'Cancelled'
-                      ? 'selected'
-                      : ''
-                  }
-                >
-                  Cancelled
-                </option>
-
-              </select>
-
-            </label>
-
-
-            <!-- DESCRIPTION -->
-
-            <label class="full-width">
-
+            <label style="
+              display:block;
+              margin-top:15px;
+              font-size:13px;
+              font-weight:600;
+              color:#334155;
+            ">
               Description
 
               <textarea
                 class="tracking-description"
                 rows="4"
-              >${escapeHtml(
+                style="
+                  display:block;
+                  width:100%;
+                  margin-top:6px;
+                  padding:10px;
+                  box-sizing:border-box;
+                  border:1px solid #cbd5e1;
+                  border-radius:8px;
+                  resize:vertical;
+                "
+              >${part5Escape(
                 row.description ||
                 ''
               )}</textarea>
@@ -6274,53 +6698,59 @@ async function loadTracking() {
             </label>
 
 
+            <div style="
+              margin-top:15px;
+              display:flex;
+              justify-content:flex-end;
+            ">
+
+              <button
+                type="button"
+                class="primary save-tracking"
+                data-id="${part5Attr(row.id)}"
+                style="
+                  border:0;
+                  background:#2563eb;
+                  color:#fff;
+                  padding:10px 16px;
+                  border-radius:8px;
+                  cursor:pointer;
+                  font-weight:600;
+                "
+              >
+                Save
+              </button>
+
+            </div>
+
           </div>
+        `;
+
+      }).join('');
 
 
-          <div class="admin-card-actions">
+    box
+      .querySelectorAll('.save-tracking')
+      .forEach(button => {
 
-            <button
-              type="button"
-              class="primary save-tracking"
-              data-id="${escapeAttr(row.id)}"
-            >
-              Save
-            </button>
+        button.addEventListener(
+          'click',
+          saveTracking
+        );
 
-          </div>
-
-
-        </div>
-
-      `).join('');
+      });
 
 
-    /* ---------------------------------------------
-       Bind save
-       --------------------------------------------- */
+    box
+      .querySelectorAll('.delete-tracking')
+      .forEach(button => {
 
-    $$('.save-tracking').forEach(button => {
+        button.addEventListener(
+          'click',
+          deleteTracking
+        );
 
-      button.addEventListener(
-        'click',
-        saveTracking
-      );
-
-    });
-
-
-    /* ---------------------------------------------
-       Bind delete
-       --------------------------------------------- */
-
-    $$('.delete-tracking').forEach(button => {
-
-      button.addEventListener(
-        'click',
-        deleteTracking
-      );
-
-    });
+      });
 
 
   } catch (error) {
@@ -6330,16 +6760,15 @@ async function loadTracking() {
       error
     );
 
+    part5ShowError(
+      box,
+      'Unable to load tracking: ' +
+      (
+        error?.message ||
+        String(error)
+      )
+    );
 
-    box.innerHTML = `
-      <div class="error">
-        Unable to load tracking:
-        ${escapeHtml(
-          error.message ||
-          String(error)
-        )}
-      </div>
-    `;
   }
 }
 
@@ -6353,12 +6782,10 @@ async function saveTracking(event) {
   const button =
     event.currentTarget;
 
-
   const card =
     button.closest(
       '.tracking-card'
     );
-
 
   if (!card) return;
 
@@ -6368,32 +6795,38 @@ async function saveTracking(event) {
 
 
   const trackingNumber =
-    $('.tracking-number', card)
-      ?.value
-      .trim() || '';
+    card.querySelector(
+      '.tracking-number'
+    )?.value
+      ?.trim() || '';
 
 
   const customerName =
-    $('.tracking-customer', card)
-      ?.value
-      .trim() || '';
+    card.querySelector(
+      '.tracking-customer'
+    )?.value
+      ?.trim() || '';
 
 
   const destination =
-    $('.tracking-destination', card)
-      ?.value
-      .trim() || '';
+    card.querySelector(
+      '.tracking-destination'
+    )?.value
+      ?.trim() || '';
 
 
   const status =
-    $('.tracking-status', card)
-      ?.value || 'Pending';
+    card.querySelector(
+      '.tracking-status'
+    )?.value ||
+    'Pending';
 
 
   const description =
-    $('.tracking-description', card)
-      ?.value
-      .trim() || '';
+    card.querySelector(
+      '.tracking-description'
+    )?.value
+      ?.trim() || '';
 
 
   if (!trackingNumber) {
@@ -6406,9 +6839,17 @@ async function saveTracking(event) {
   }
 
 
-  button.disabled =
-    true;
+  if (!deviSupabase) {
 
+    alert(
+      'Supabase client is not available.'
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
   button.textContent =
     'Saving...';
 
@@ -6440,7 +6881,7 @@ async function saveTracking(event) {
 
     const {
       error
-    } = await supabaseClient
+    } = await deviSupabase
       .from('tracking')
       .update(payload)
       .eq('id', id);
@@ -6466,11 +6907,10 @@ async function saveTracking(event) {
       error
     );
 
-
     alert(
       'Unable to save tracking:\n' +
       (
-        error.message ||
+        error?.message ||
         String(error)
       )
     );
@@ -6478,11 +6918,11 @@ async function saveTracking(event) {
 
   } finally {
 
-    button.disabled =
-      false;
+    button.disabled = false;
 
     button.textContent =
       'Save';
+
   }
 }
 
@@ -6508,11 +6948,21 @@ async function deleteTracking(event) {
   }
 
 
+  if (!deviSupabase) {
+
+    alert(
+      'Supabase client is not available.'
+    );
+
+    return;
+  }
+
+
   try {
 
     const {
       error
-    } = await supabaseClient
+    } = await deviSupabase
       .from('tracking')
       .delete()
       .eq('id', id);
@@ -6538,32 +6988,85 @@ async function deleteTracking(event) {
       error
     );
 
-
     alert(
       'Unable to delete tracking:\n' +
       (
-        error.message ||
+        error?.message ||
         String(error)
       )
     );
+
   }
 }
 
 
 /* =========================================================
-   MEDIA LIBRARY
+   MEDIA LIBRARY PAGE
+   ========================================================= */
+
+async function renderMediaLibrary() {
+
+  const main =
+    document.getElementById(
+      'admin-main'
+    );
+
+  if (!main) return;
+
+
+  main.innerHTML = `
+    ${
+      typeof pageHeader === 'function'
+        ? pageHeader(
+            'Media Library',
+            'Manage images and uploaded media files.'
+          )
+        : `
+          <div style="margin-bottom:20px;">
+            <h2 style="margin:0 0 6px;">
+              Media Library
+            </h2>
+
+            <p style="
+              margin:0;
+              color:#64748b;
+            ">
+              Manage images and uploaded media files.
+            </p>
+          </div>
+        `
+    }
+
+    <div id="mediaLibrary">
+      ${part5Loading(
+        'Loading media...'
+      )}
+    </div>
+  `;
+
+
+  await loadMediaLibrary();
+}
+
+
+/* =========================================================
+   LOAD MEDIA LIBRARY
    ========================================================= */
 
 async function loadMediaLibrary() {
 
   const box =
-    $('#mediaLibrary');
+    document.getElementById(
+      'mediaLibrary'
+    );
 
   if (!box) return;
 
 
   box.innerHTML =
-    '<div class="loading">Loading media...</div>';
+    part5Loading(
+      'Loading media...'
+    );
 
 
   try {
@@ -6589,139 +7092,190 @@ async function loadMediaLibrary() {
     ) {
 
       box.innerHTML =
-        '<div class="empty">No media files found.</div>';
+        part5Empty(
+          'No media files found.'
+        );
 
       return;
     }
 
 
-    box.innerHTML =
-      files.map(file => {
+    box.innerHTML = `
+      <div style="
+        display:grid;
+        grid-template-columns:
+          repeat(auto-fill,minmax(220px,1fr));
+        gap:18px;
+      ">
 
-        const fileName =
-          file.name || '';
+        ${
+          files
+            .map(file => {
+
+              const fileName =
+                file?.name || '';
+
+              let url = '';
 
 
-        let url = '';
+              if (
+                typeof getStoragePublicUrl ===
+                'function'
+              ) {
+
+                try {
+
+                  url =
+                    getStoragePublicUrl(
+                      fileName
+                    );
+
+                } catch (urlError) {
+
+                  console.warn(
+                    'Media URL error:',
+                    urlError
+                  );
+
+                }
+              }
 
 
-        if (
-          typeof getStoragePublicUrl ===
-          'function'
-        ) {
+              const isImage =
+                /\.(jpg|jpeg|png|gif|webp|svg)$/i
+                  .test(fileName);
 
-          try {
 
-            url =
-              getStoragePublicUrl(
-                fileName
-              );
+              return `
+                <div
+                  class="media-item"
+                  data-name="${part5Attr(fileName)}"
+                  style="
+                    background:#fff;
+                    border:1px solid #e2e8f0;
+                    border-radius:12px;
+                    overflow:hidden;
+                  "
+                >
 
-          } catch (error) {
+                  <div style="
+                    height:160px;
+                    background:#f8fafc;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    overflow:hidden;
+                  ">
 
-            console.warn(
-              'Public URL error:',
-              error
-            );
-          }
+                    ${
+                      isImage && url
+                        ? `
+                          <img
+                            src="${part5Attr(url)}"
+                            alt="${part5Attr(fileName)}"
+                            loading="lazy"
+                            style="
+                              width:100%;
+                              height:100%;
+                              object-fit:cover;
+                            "
+                          >
+                        `
+                        : `
+                          <div style="
+                            font-size:14px;
+                            font-weight:700;
+                            color:#94a3b8;
+                          ">
+                            FILE
+                          </div>
+                        `
+                    }
+
+                  </div>
+
+
+                  <div style="
+                    padding:14px;
+                  ">
+
+                    <div style="
+                      font-weight:600;
+                      font-size:14px;
+                      word-break:break-word;
+                      margin-bottom:10px;
+                    ">
+                      ${part5Escape(
+                        fileName
+                      )}
+                    </div>
+
+
+                    ${
+                      url
+                        ? `
+                          <a
+                            href="${part5Attr(url)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                              color:#2563eb;
+                              text-decoration:none;
+                              font-size:13px;
+                              font-weight:600;
+                              margin-right:12px;
+                            "
+                          >
+                            Open
+                          </a>
+                        `
+                        : ''
+                    }
+
+
+                    <button
+                      type="button"
+                      class="danger delete-media"
+                      data-name="${part5Attr(fileName)}"
+                      style="
+                        border:0;
+                        background:#fee2e2;
+                        color:#b91c1c;
+                        padding:7px 10px;
+                        border-radius:7px;
+                        cursor:pointer;
+                        font-size:12px;
+                        font-weight:600;
+                      "
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+              `;
+
+            })
+            .join('')
         }
 
-
-        const isImage =
-          /\.(jpg|jpeg|png|gif|webp|svg)$/i
-            .test(fileName);
+      </div>
+    `;
 
 
-        return `
+    box
+      .querySelectorAll(
+        '.delete-media'
+      )
+      .forEach(button => {
 
-          <div
-            class="media-item"
-            data-name="${escapeAttr(
-              fileName
-            )}"
-          >
+        button.addEventListener(
+          'click',
+          deleteMediaFile
+        );
 
-            <div class="media-preview">
-
-              ${
-                isImage && url
-                  ? `
-                    <img
-                      src="${escapeAttr(
-                        url
-                      )}"
-                      alt="${escapeAttr(
-                        fileName
-                      )}"
-                      loading="lazy"
-                    >
-                  `
-                  : `
-                    <div class="file-icon">
-                      FILE
-                    </div>
-                  `
-              }
-
-            </div>
-
-
-            <div class="media-info">
-
-              <div class="media-name">
-
-                ${escapeHtml(
-                  fileName
-                )}
-
-              </div>
-
-
-              ${
-                url
-                  ? `
-                    <a
-                      href="${escapeAttr(
-                        url
-                      )}"
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      Open
-                    </a>
-                  `
-                  : ''
-              }
-
-            </div>
-
-
-            <button
-              type="button"
-              class="danger delete-media"
-              data-name="${escapeAttr(
-                fileName
-              )}"
-            >
-              Delete
-            </button>
-
-
-          </div>
-
-        `;
-
-      }).join('');
-
-
-    $$('.delete-media').forEach(button => {
-
-      button.addEventListener(
-        'click',
-        deleteMediaFile
-      );
-
-    });
+      });
 
 
   } catch (error) {
@@ -6731,16 +7285,15 @@ async function loadMediaLibrary() {
       error
     );
 
+    part5ShowError(
+      box,
+      'Unable to load media: ' +
+      (
+        error?.message ||
+        String(error)
+      )
+    );
 
-    box.innerHTML = `
-      <div class="error">
-        Unable to load media:
-        ${escapeHtml(
-          error.message ||
-          String(error)
-        )}
-      </div>
-    `;
   }
 }
 
@@ -6781,13 +7334,6 @@ async function deleteMediaFile(event) {
 
   try {
 
-    /*
-      Media library files may be stored
-      in the root of the bucket or in folders.
-
-      First try the helper with the file name.
-    */
-
     await deleteStorageFile(
       '',
       name
@@ -6809,234 +7355,17 @@ async function deleteMediaFile(event) {
       error
     );
 
-
     alert(
       'Unable to delete media:\n' +
       (
-        error.message ||
+        error?.message ||
         String(error)
       )
     );
+
   }
 }
 
-
-/* =========================================================
-   SECTION LOADERS
-   ========================================================= */
-
-async function loadDocumentsSection() {
-
-  try {
-
-    await loadDocuments();
-
-  } catch (error) {
-
-    console.error(
-      'Documents section error:',
-      error
-    );
-  }
-}
-
-
-async function loadTrackingSection() {
-
-  try {
-
-    await loadTracking();
-
-  } catch (error) {
-
-    console.error(
-      'Tracking section error:',
-      error
-    );
-  }
-}
-
-
-async function loadMediaSection() {
-
-  try {
-
-    await loadMediaLibrary();
-
-  } catch (error) {
-
-    console.error(
-      'Media section error:',
-      error
-    );
-  }
-}
-
-
-/* =========================================================
-   TAB CLICK HANDLER
-   ========================================================= */
-
-document.addEventListener(
-  'click',
-  async function(event) {
-
-    const tab =
-      event.target.closest(
-        '[data-section]'
-      );
-
-
-    if (!tab) return;
-
-
-    const section =
-      tab.dataset.section;
-
-
-    if (!section) return;
-
-
-    if (
-      section === 'documents' ||
-      section === 'document'
-    ) {
-
-      await loadDocumentsSection();
-
-      return;
-    }
-
-
-    if (
-      section === 'tracking'
-    ) {
-
-      await loadTrackingSection();
-
-      return;
-    }
-
-
-    if (
-      section === 'media' ||
-      section === 'media-library'
-    ) {
-
-      await loadMediaSection();
-
-      return;
-    }
-
-  }
-);
-/* =========================================================
-   DEVI GROUPS ADMIN — STARTUP / LOGIN INITIALIZATION
-   ========================================================= */
-
-async function initDeviAdmin() {
-  try {
-    // Check Supabase library
-    if (
-      !window.supabase ||
-      typeof window.supabase.createClient !== 'function'
-    ) {
-      throw new Error(
-        'Supabase library did not load. Please check the internet connection.'
-      );
-    }
-
-    // Check existing login session
-    const session = await getSession();
-
-    // Not logged in → show login page
-    if (!session) {
-      renderLogin();
-      return;
-    }
-
-    // Logged in → verify admin
-    try {
-      const user = await requireAdmin();
-
-      if (!user) {
-        await sb.auth.signOut();
-        renderLogin();
-        return;
-      }
-
-      // Admin authorized → open admin panel
-      renderShell(user);
-
-    } catch (adminError) {
-      console.error(
-        'Admin authorization error:',
-        adminError
-      );
-
-      try {
-        await sb.auth.signOut();
-      } catch (signOutError) {
-        console.error(
-          'Sign-out error:',
-          signOutError
-        );
-      }
-
-      renderLogin();
-
-      const message =
-        document.getElementById('login-message');
-
-      if (message) {
-        message.style.color = '#dc2626';
-        message.textContent =
-          adminError?.message ||
-          'This account is not authorized as an admin.';
-      }
-    }
-
-  } catch (error) {
-    console.error(
-      'Admin startup error:',
-      error
-    );
-
-    try {
-      renderLogin();
-    } catch (renderError) {
-      console.error(
-        'Login render error:',
-        renderError
-      );
-    }
-
-    const message =
-      document.getElementById('login-message');
-
-    if (message) {
-      message.style.color = '#dc2626';
-      message.textContent =
-        error?.message ||
-        'Unable to start the admin panel.';
-    }
-  }
-}
-
-
-/* =========================================================
-   START ADMIN PANEL
-   ========================================================= */
-
-if (document.readyState === 'loading') {
-  document.addEventListener(
-    'DOMContentLoaded',
-    initDeviAdmin,
-    { once: true }
-  );
-} else {
-  initDeviAdmin();
-}
 
 /* =========================================================
    END OF PART 5
