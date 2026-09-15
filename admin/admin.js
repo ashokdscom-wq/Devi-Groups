@@ -814,8 +814,7 @@ function renderNavigation() {
     ['products', 'Products'],
     ['business-units', 'Business Units'],
     ['homepage', 'Homepage'],
-    ['enquiries', 'Customer Enquiries'],
-    ['reviews', 'Reviews'],
+        ['reviews', 'Reviews'],
     ['company-info', 'Company Info'],
     ['documents', 'Documents'],
     ['tracking', 'Tracking'],
@@ -5451,7 +5450,8 @@ async function renderDocuments() {
       typeof pageHeader === 'function'
         ? pageHeader(
             'Documents',
-            'Manage brochures, TDS, MSDS and other documents.'
+            'Manage brochures, TDS, MSDS and other documents.',
+            `<button id="add-document-btn" style="${buttonStyle('primary')}">+ Add Document</button>`
           )
         : `
           <div style="margin-bottom:20px;">
@@ -5469,12 +5469,14 @@ async function renderDocuments() {
         `
     }
 
+    <div id="document-form-container"></div>
     <div id="documentsList">
       ${part5Loading('Loading documents...')}
     </div>
   `;
 
   await loadDocuments();
+  document.getElementById('add-document-btn')?.addEventListener('click', showDocumentForm);
 }
 
 
@@ -5991,6 +5993,48 @@ async function loadDocuments() {
 
 
 /* =========================================================
+   ADD DOCUMENT
+   ========================================================= */
+async function showDocumentForm() {
+  const box = document.getElementById('document-form-container');
+  if (!box) return;
+  const { data: products, error } = await deviSupabase.from('products').select('id,name').order('name');
+  if (error) { alert(error.message); return; }
+  box.innerHTML = `<div style="background:#fff;border:1px solid #cbd5e1;border-radius:12px;padding:20px;margin-bottom:18px;">
+    <h3 style="margin:0 0 15px;">Add Document</h3>
+    <form id="add-document-form">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;">
+        <label>Title<input id="new-doc-title" required style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></label>
+        <label>Document Type<select id="new-doc-type" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"><option value="brochure">Brochure</option><option value="tds">TDS</option><option value="msds">MSDS</option><option value="pdf">PDF</option><option value="other">Other</option></select></label>
+        <label>Product<select id="new-doc-product" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"><option value="">No Product</option>${(products||[]).map(p=>`<option value="${part5Attr(p.id)}">${part5Escape(p.name||'')}</option>`).join('')}</select></label>
+        <label>File<input id="new-doc-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" required style="display:block;width:100%;margin-top:6px;"></label>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:15px;"><button type="button" id="cancel-new-document" style="border:1px solid #cbd5e1;background:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;">Cancel</button><button type="submit" style="border:0;background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Upload & Save</button></div>
+    </form>
+  </div>`;
+  document.getElementById('cancel-new-document')?.addEventListener('click',()=>box.innerHTML='');
+  document.getElementById('add-document-form')?.addEventListener('submit', saveNewDocument);
+}
+async function saveNewDocument(event) {
+  event.preventDefault();
+  const title=document.getElementById('new-doc-title')?.value.trim();
+  const type=document.getElementById('new-doc-type')?.value||'other';
+  const productValue=document.getElementById('new-doc-product')?.value||'';
+  const file=document.getElementById('new-doc-file')?.files?.[0];
+  if(!title||!file){alert('Title and file are required.');return;}
+  try {
+    showLoading('Uploading document...');
+    const uploaded=await uploadMedia(file,'documents');
+    const {error}=await deviSupabase.from('documents').insert({title,document_type:type,product_id:productValue?Number(productValue):null,file_name:file.name,file_url:uploaded});
+    if(error) throw error;
+    showToast('Document uploaded successfully.');
+    document.getElementById('document-form-container').innerHTML='';
+    await loadDocuments();
+  } catch(error) { console.error(error); showToast(error?.message||'Unable to upload document.','error'); }
+  finally { hideLoading(); }
+}
+
+/* =========================================================
    SAVE DOCUMENT
    ========================================================= */
 
@@ -6315,7 +6359,8 @@ async function renderTracking() {
       typeof pageHeader === 'function'
         ? pageHeader(
             'Tracking',
-            'Manage shipment and tracking information.'
+            'Manage shipment and tracking information.',
+            `<button id="add-tracking-btn" style="${buttonStyle('primary')}">+ Add Tracking</button>`
           )
         : `
           <div style="margin-bottom:20px;">
@@ -6333,15 +6378,15 @@ async function renderTracking() {
         `
     }
 
+    <div id="tracking-form-container"></div>
     <div id="trackingList">
-      ${part5Loading(
-        'Loading tracking records...'
-      )}
+      ${part5Loading('Loading tracking records...')}
     </div>
   `;
 
 
   await loadTracking();
+  document.getElementById('add-tracking-btn')?.addEventListener('click', showTrackingForm);
 }
 
 
@@ -6774,6 +6819,17 @@ async function loadTracking() {
 
 
 /* =========================================================
+   ADD TRACKING
+   ========================================================= */
+function showTrackingForm(){
+ const box=document.getElementById('tracking-form-container'); if(!box)return;
+ box.innerHTML=`<div style="background:#fff;border:1px solid #cbd5e1;border-radius:12px;padding:20px;margin-bottom:18px;"><h3 style="margin:0 0 15px;">Add Tracking Record</h3><form id="add-tracking-form"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;"><label>Tracking Number<input id="new-tracking-number" required style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></label><label>Customer Name<input id="new-tracking-customer" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></label><label>Destination<input id="new-tracking-destination" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></label><label>Status<select id="new-tracking-status" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"><option>Pending</option><option>Processing</option><option>Dispatched</option><option>In Transit</option><option>Delivered</option><option>Cancelled</option></select></label></div><label style="display:block;margin-top:15px;">Description<textarea id="new-tracking-description" rows="3" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;"></textarea></label><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:15px;"><button type="button" id="cancel-new-tracking" style="border:1px solid #cbd5e1;background:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;">Cancel</button><button type="submit" style="border:0;background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Save</button></div></form></div>`;
+ document.getElementById('cancel-new-tracking')?.addEventListener('click',()=>box.innerHTML='');
+ document.getElementById('add-tracking-form')?.addEventListener('submit',saveNewTracking);
+}
+async function saveNewTracking(e){e.preventDefault();const tracking_number=document.getElementById('new-tracking-number')?.value.trim();if(!tracking_number){alert('Tracking number is required.');return;}try{showLoading('Adding tracking record...');const {error}=await deviSupabase.from('tracking').insert({tracking_number,customer_name:document.getElementById('new-tracking-customer')?.value.trim()||'',destination:document.getElementById('new-tracking-destination')?.value.trim()||'',status:document.getElementById('new-tracking-status')?.value||'Pending',description:document.getElementById('new-tracking-description')?.value.trim()||''});if(error)throw error;showToast('Tracking record added successfully.');document.getElementById('tracking-form-container').innerHTML='';await loadTracking();}catch(error){showToast(error?.message||'Unable to add tracking.','error');}finally{hideLoading();}}
+
+/* =========================================================
    SAVE TRACKING
    ========================================================= */
 
@@ -7019,7 +7075,8 @@ async function renderMediaLibrary() {
       typeof pageHeader === 'function'
         ? pageHeader(
             'Media Library',
-            'Manage images and uploaded media files.'
+            'Manage images and uploaded media files.',
+            `<button id="upload-media-btn" style="${buttonStyle('primary')}">+ Upload Media</button>`
           )
         : `
           <div style="margin-bottom:20px;">
@@ -7046,258 +7103,48 @@ async function renderMediaLibrary() {
 
 
   await loadMediaLibrary();
+  document.getElementById('upload-media-btn')?.addEventListener('click', showMediaUploadForm);
 }
 
+
+/* =========================================================
+   ADD MEDIA UPLOAD
+   ========================================================= */
+function showMediaUploadForm(){const box=document.getElementById('mediaLibrary');if(!box)return;const old=box.innerHTML;box.insertAdjacentHTML('afterbegin',`<div id="media-upload-form" style="background:#fff;border:1px solid #cbd5e1;border-radius:12px;padding:18px;margin-bottom:18px;"><form id="media-upload-inner"><label style="font-weight:600;font-size:13px;">Choose image/media file<input id="media-upload-file" type="file" required style="display:block;margin-top:8px;"></label><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:15px;"><button type="button" id="cancel-media-upload" style="border:1px solid #cbd5e1;background:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;">Cancel</button><button type="submit" style="border:0;background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600;">Upload</button></div></form></div>`);document.getElementById('cancel-media-upload')?.addEventListener('click',()=>document.getElementById('media-upload-form')?.remove());document.getElementById('media-upload-inner')?.addEventListener('submit',async e=>{e.preventDefault();const file=document.getElementById('media-upload-file')?.files?.[0];if(!file)return;try{showLoading('Uploading media...');await uploadMedia(file,'media');showToast('Media uploaded successfully.');await loadMediaLibrary();}catch(error){showToast(error?.message||'Unable to upload media.','error');}finally{hideLoading();}});}
 
 /* =========================================================
    LOAD MEDIA LIBRARY
    ========================================================= */
 
 async function loadMediaLibrary() {
-
-  const box =
-    document.getElementById(
-      'mediaLibrary'
-    );
-
+  const box = document.getElementById('mediaLibrary');
   if (!box) return;
-
-
-  box.innerHTML =
-    part5Loading(
-      'Loading media...'
-    );
-
-
+  box.innerHTML = part5Loading('Loading media...');
   try {
-
-    if (
-      typeof listStorageFiles !==
-      'function'
-    ) {
-
-      throw new Error(
-        'Storage list helper is not available.'
-      );
-    }
-
-    const files =
-      await listStorageFiles();
-
-
-    if (
-      !files ||
-      files.length === 0
-    ) {
-
-      box.innerHTML =
-        part5Empty(
-          'No media files found.'
-        );
-
+    const files = await listStorageFiles();
+    const rows = (files || []).filter(f => f && f.name);
+    if (!rows.length) {
+      box.innerHTML = part5Empty('No media files found.') + `<div style="margin-top:15px;padding:15px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b;text-align:center;">Use the Upload Media button to add website images or media.</div>`;
       return;
     }
-
-
-    box.innerHTML = `
-      <div style="
-        display:grid;
-        grid-template-columns:
-          repeat(auto-fill,minmax(220px,1fr));
-        gap:18px;
-      ">
-
-        ${
-          files
-            .map(file => {
-
-              const fileName =
-                file?.name || '';
-
-              let url = '';
-
-
-              if (
-                typeof getStoragePublicUrl ===
-                'function'
-              ) {
-
-                try {
-
-                  url =
-                    getStoragePublicUrl(
-                      fileName
-                    );
-
-                } catch (urlError) {
-
-                  console.warn(
-                    'Media URL error:',
-                    urlError
-                  );
-
-                }
-
-              }
-
-
-              const isImage =
-                /\.(jpg|jpeg|png|gif|webp|svg)$/i
-                  .test(fileName);
-
-
-              return `
-                <div
-                  class="media-item"
-                  data-name="${part5Attr(fileName)}"
-                  style="
-                    background:#fff;
-                    border:1px solid #e2e8f0;
-                    border-radius:12px;
-                    overflow:hidden;
-                  "
-                >
-
-                  <div style="
-                    height:160px;
-                    background:#f8fafc;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    overflow:hidden;
-                  ">
-
-                    ${
-                      isImage && url
-                        ? `
-                          <img
-                            src="${part5Attr(url)}"
-                            alt="${part5Attr(fileName)}"
-                            loading="lazy"
-                            style="
-                              width:100%;
-                              height:100%;
-                              object-fit:cover;
-                            "
-                          >
-                        `
-                        : `
-                          <div style="
-                            font-size:14px;
-                            font-weight:700;
-                            color:#94a3b8;
-                          ">
-                            FILE
-                          </div>
-                        `
-                    }
-
-                  </div>
-
-
-                  <div style="
-                    padding:14px;
-                  ">
-
-                    <div style="
-                      font-weight:600;
-                      font-size:14px;
-                      word-break:break-word;
-                      margin-bottom:10px;
-                    ">
-                      ${part5Escape(
-                        fileName
-                      )}
-                    </div>
-
-
-                    ${
-                      url
-                        ? `
-                          <a
-                            href="${part5Attr(url)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style="
-                              color:#2563eb;
-                              text-decoration:none;
-                              font-size:13px;
-                              font-weight:600;
-                              margin-right:12px;
-                            "
-                          >
-                            Open
-                          </a>
-                        `
-                        : ''
-                    }
-
-
-                    <button
-                      type="button"
-                      class="danger delete-media"
-                      data-name="${part5Attr(fileName)}"
-                      style="
-                        border:0;
-                        background:#fee2e2;
-                        color:#b91c1c;
-                        padding:7px 10px;
-                        border-radius:7px;
-                        cursor:pointer;
-                        font-size:12px;
-                        font-weight:600;
-                      "
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-
-                </div>
-              `;
-
-            })
-            .join('')
-        }
-
-      </div>
-    `;
-
-
-    box
-      .querySelectorAll(
-        '.delete-media'
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          'click',
-          deleteMediaFile
-        );
-
-      });
-
-
+    box.innerHTML = rows.map(file => {
+      const path = file.name;
+      const url = publicStorageUrl(path);
+      return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:15px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;"><div style="display:flex;align-items:center;gap:12px;min-width:0;"><img src="${part5Attr(url)}" onerror="this.style.display='none'" style="width:58px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;"><div style="min-width:0;"><strong style="display:block;word-break:break-all;">${part5Escape(path)}</strong><a href="${part5Attr(url)}" target="_blank" rel="noopener" style="font-size:12px;color:#2563eb;">Open</a></div></div><button type="button" class="danger delete-media" data-name="${part5Attr(path)}" style="border:0;background:#fee2e2;color:#b91c1c;padding:9px 12px;border-radius:8px;cursor:pointer;font-weight:600;">Delete</button></div>`;
+    }).join('');
+    box.querySelectorAll('.delete-media').forEach(btn => btn.addEventListener('click', deleteMediaFile));
   } catch (error) {
-
-    console.error(
-      'Media library error:',
-      error
-    );
-
-    part5ShowError(
-      box,
-      'Unable to load media: ' +
-      (
-        error?.message ||
-        String(error)
-      )
-    );
-
+    console.error('Media library error:', error);
+    part5ShowError(box, 'Unable to load media: ' + (error?.message || String(error)));
   }
 }
-  
-   
+
+async function deleteStorageFile(folder, name) {
+  const path = folder ? `${folder}/${name}` : name;
+  const { error } = await sb.storage.from(BUCKET).remove([path]);
+  if (error) throw error;
+}
+
 /* =========================================================
    DELETE MEDIA
    ========================================================= */
