@@ -7084,6 +7084,161 @@ async function loadMediaLibrary() {
 
     const files =
       await listStorageFiles();
+    /* =========================================================
+   DEVI GROUPS ADMIN — STARTUP / LOGIN INITIALIZATION
+   ========================================================= */
+
+async function initDeviAdmin() {
+
+  try {
+
+    console.log(
+      'DEVI ADMIN: Initializing...'
+    );
+
+
+    /* -------------------------------------------------------
+       Check Supabase client
+       ------------------------------------------------------- */
+
+    if (
+      typeof sb === 'undefined' ||
+      !sb
+    ) {
+
+      console.error(
+        'DEVI ADMIN: Supabase client is missing.'
+      );
+
+      return;
+
+    }
+
+
+    /* -------------------------------------------------------
+       Get current session
+       ------------------------------------------------------- */
+
+    const session =
+      await getSession();
+
+
+    /* -------------------------------------------------------
+       No login session
+       ------------------------------------------------------- */
+
+    if (!session) {
+
+      console.log(
+        'DEVI ADMIN: No active session.'
+      );
+
+      renderLogin();
+
+      return;
+
+    }
+
+
+    /* -------------------------------------------------------
+       Check admin authorization
+       ------------------------------------------------------- */
+
+    const user =
+      await requireAdmin();
+
+
+    /* -------------------------------------------------------
+       User is not authorized
+       ------------------------------------------------------- */
+
+    if (!user) {
+
+      console.warn(
+        'DEVI ADMIN: Unauthorized user.'
+      );
+
+      await sb.auth.signOut();
+
+      renderLogin();
+
+      return;
+
+    }
+
+
+    /* -------------------------------------------------------
+       Render Admin Panel
+       ------------------------------------------------------- */
+
+    console.log(
+      'DEVI ADMIN: Authorized admin logged in:',
+      user.email
+    );
+
+
+    renderShell(user);
+
+
+  } catch (error) {
+
+    console.error(
+      'DEVI ADMIN initialization error:',
+      error
+    );
+
+
+    /* -------------------------------------------------------
+       Fallback to login page
+       ------------------------------------------------------- */
+
+    try {
+
+      await sb.auth.signOut();
+
+    } catch (signOutError) {
+
+      console.warn(
+        'Sign out error:',
+        signOutError
+      );
+
+    }
+
+
+    renderLogin();
+
+  }
+
+}
+
+
+/* =========================================================
+   START ADMIN APPLICATION
+   ========================================================= */
+
+if (
+  document.readyState === 'loading'
+) {
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    initDeviAdmin,
+    {
+      once: true
+    }
+  );
+
+} else {
+
+  initDeviAdmin();
+
+}
+
+
+/* =========================================================
+   END OF ADMIN STARTUP
+   ========================================================= */
 
 
     if (
