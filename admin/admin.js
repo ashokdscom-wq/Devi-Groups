@@ -1,3 +1,12 @@
+console.log("DEVI CONFIG CHECK:", window.DEVI_CMS_CONFIG);
+
+console.log(
+  "SUPABASE SDK:",
+  window.supabase
+    ? "LOADED"
+    : "NOT LOADED"
+);
+
 const cfg = window.DEVI_CMS_CONFIG;
 
 if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey) {
