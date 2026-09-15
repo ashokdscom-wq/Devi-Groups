@@ -1,534 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <title>DEVI GROUPS — Admin</title>
 
-  <meta
-    name="description"
-    content="DEVI GROUPS Admin Panel"
-  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <title>DEVI GROUPS – Admin Panel</title>
+  <!-- Supabase configuration -->
+  <script src="../cms-config.js?v=20260915"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
     body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-      background: #f5f7fb;
-      color: #111827;
+      font-family: Inter, system-ui, sans-serif;
     }
 
-    body {
-      min-height: 100vh;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    #app {
-      min-height: 100vh;
-    }
-
-    /* =========================
-       LOGIN FALLBACK
-       ========================= */
-
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background:
-        radial-gradient(
-          circle at top left,
-          rgba(37, 99, 235, 0.12),
-          transparent 38%
-        ),
-        radial-gradient(
-          circle at bottom right,
-          rgba(15, 118, 110, 0.12),
-          transparent 38%
-        ),
-        #f5f7fb;
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 430px;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 32px;
-      box-shadow:
-        0 20px 50px rgba(15, 23, 42, 0.08),
-        0 4px 12px rgba(15, 23, 42, 0.04);
-    }
-
-    .login-logo {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      margin: 0 auto 18px;
-      border-radius: 12px;
-    }
-
-    .login-title {
-      margin: 0;
-      text-align: center;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .login-subtitle {
-      margin: 7px 0 26px;
-      text-align: center;
-      color: #6b7280;
-      font-size: 14px;
-    }
-
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .form-group label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #374151;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 11px 13px;
-      outline: none;
-      background: #fff;
-      color: #111827;
-      transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: #2563eb;
-      box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.12);
-    }
-
-    .login-button {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      background: #111827;
-      color: #ffffff;
-      font-weight: 700;
-      transition:
-        transform 0.15s ease,
-        opacity 0.15s ease;
-    }
-
-    .login-button:hover {
-      opacity: 0.92;
-    }
-
-    .login-button:active {
-      transform: translateY(1px);
-    }
-
-    .login-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .login-message {
-      min-height: 20px;
-      margin: 2px 0 0;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .login-forgot {
-      margin-top: 14px;
-      text-align: center;
-    }
-
-    .login-forgot button {
-      border: 0;
-      padding: 0;
-      background: transparent;
-      color: #2563eb;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .login-forgot button:hover {
-      text-decoration: underline;
-    }
-
-    /* =========================
-       ADMIN SHELL FALLBACK
-       ========================= */
-
-    .admin-shell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: #f5f7fb;
-    }
-
-    .admin-header {
-      min-height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 12px 22px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .admin-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-    }
-
-    .admin-brand img {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-
-    .admin-brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .admin-brand-title {
-      font-size: 15px;
-      line-height: 1.2;
-    }
-
-    .admin-brand-subtitle {
-      color: #6b7280;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .admin-user {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .admin-user-email {
-      color: #4b5563;
-      font-size: 13px;
-    }
-
-    .admin-logout {
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background: #ffffff;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .admin-layout {
-      flex: 1;
-      display: flex;
-      min-height: 0;
-    }
-
-    .admin-sidebar {
-      width: 245px;
-      flex: 0 0 245px;
-      background: #111827;
-      color: #ffffff;
-      padding: 18px 12px;
-    }
-
-    .admin-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .admin-nav button {
-      width: 100%;
-      border: 0;
-      border-radius: 8px;
-      padding: 10px 12px;
-      background: transparent;
-      color: #d1d5db;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .admin-nav button:hover,
-    .admin-nav button.active {
-      background: #1f2937;
-      color: #ffffff;
-    }
-
-    .admin-main {
-      flex: 1;
-      min-width: 0;
-      padding: 24px;
-      overflow: auto;
-    }
-
-    .admin-container {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .admin-page-title {
-      margin: 0 0 6px;
-      font-size: 25px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .admin-page-subtitle {
-      margin: 0 0 24px;
-      color: #6b7280;
-      font-size: 14px;
-    }
-
-    .admin-card {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.03);
-    }
-
-    .admin-card + .admin-card {
-      margin-top: 18px;
-    }
-
-    .admin-table-wrap {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .admin-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 700px;
-    }
-
-    .admin-table th,
-    .admin-table td {
-      padding: 11px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      font-size: 13px;
-      vertical-align: middle;
-    }
-
-    .admin-table th {
-      background: #f9fafb;
-      color: #374151;
-      font-weight: 800;
-    }
-
-    .admin-table td {
-      color: #4b5563;
-    }
-
-    .admin-primary {
-      border: 0;
-      border-radius: 8px;
-      background: #111827;
-      color: #ffffff;
-      padding: 9px 13px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .admin-secondary {
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      background: #ffffff;
-      color: #374151;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .admin-danger {
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      background: #fff1f2;
-      color: #b91c1c;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .admin-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .empty-state {
-      padding: 40px 20px;
-      text-align: center;
-      color: #6b7280;
-    }
-
-    /* =========================
-       MOBILE
-       ========================= */
-
-    @media (max-width: 800px) {
-      .admin-layout {
-        flex-direction: column;
-      }
-
-      .admin-sidebar {
-        width: 100%;
-        flex-basis: auto;
-        padding: 10px;
-      }
-
-      .admin-nav {
-        flex-direction: row;
-        overflow-x: auto;
-      }
-
-      .admin-nav button {
-        white-space: nowrap;
-        width: auto;
-      }
-
-      .admin-main {
-        padding: 16px;
-      }
-
-      .admin-user-email {
-        display: none;
-      }
-
-      .admin-header {
-        padding: 10px 14px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 24px 20px;
-        border-radius: 14px;
-      }
-
-      .login-title {
-        font-size: 23px;
-      }
+    .tab.active {
+      background: #092c4c;
+      color: #fff;
     }
   </style>
 </head>
 
-<body>
+<body class="bg-slate-100 min-h-screen text-slate-900">
 
-  <!--
-    Main application container.
+  <!-- LOGIN -->
+  <div id="login" class="min-h-screen grid place-items-center p-5">
 
-    IMPORTANT:
-    admin.js will render the actual Login screen and Admin Panel
-    inside this element.
-  -->
-  <div id="app">
+    <form id="loginForm"
+      class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
 
-    <!-- Fallback loading screen -->
-    <div
-      style="
-        min-height:100vh;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:24px;
-        color:#6b7280;
-        font-size:14px;
-      "
+      <h1 class="text-3xl font-black text-slate-900">
+        DEVI GROUPS
+      </h1>
+
+      <p class="text-slate-500 mb-6">
+        Secure Admin Panel
+      </p>
+
+      <input
+        id="email"
+        type="email"
+        required
+        placeholder="Admin email"
+        class="w-full border rounded-xl p-3 mb-3"
+      >
+
+      <input
+        id="password"
+        type="password"
+        required
+        placeholder="Password"
+        class="w-full border rounded-xl p-3 mb-4"
+      >
+
+      <button
+        class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold"
+      >
+        Sign in
+      </button>
+
+      <p
+        id="loginMsg"
+        class="text-sm mt-3 text-rose-600"
+      ></p>
+
+    </form>
+  </div>
+
+
+  <!-- ADMIN APP -->
+  <div id="app" class="hidden min-h-screen">
+
+    <header
+      class="bg-slate-950 text-white px-5 py-4 flex justify-between items-center"
     >
-      Loading DEVI GROUPS Admin Panel...
+
+      <div>
+        <b class="text-xl">
+          DEVI GROUPS ADMIN
+        </b>
+
+        <span
+          id="userEmail"
+          class="text-xs text-slate-400 ml-3"
+        ></span>
+      </div>
+
+      <button
+        id="logout"
+        class="bg-white/10 px-4 py-2 rounded-lg"
+      >
+        Logout
+      </button>
+
+    </header>
+
+
+    <div class="max-w-7xl mx-auto p-5">
+
+      <div class="grid lg:grid-cols-[220px_1fr] gap-5">
+
+        <!-- SIDEBAR -->
+        <aside
+          class="bg-white rounded-2xl p-3 h-fit space-y-1"
+        >
+
+          <button
+            class="tab active w-full text-left p-3 rounded-xl"
+            data-view="dashboard"
+          >
+            Dashboard
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="products"
+          >
+            Products
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="units"
+          >
+            Business Units
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="homepage"
+          >
+            Homepage
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="enquiries"
+          >
+            Enquiries
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="reviews"
+          >
+            Reviews
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="company"
+          >
+            Company / Contact
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="documents"
+          >
+            Documents
+          </button>
+
+          <button
+            class="tab w-full text-left p-3 rounded-xl"
+            data-view="tracking"
+          >
+            Tracking
+          </button>
+
+        </aside>
+
+
+        <!-- MAIN -->
+        <main
+          id="main"
+          class="bg-white rounded-2xl p-5 min-h-[600px]"
+        ></main>
+
+      </div>
+
     </div>
 
   </div>
 
- <script src="cms-config.js?v=20260914"></script>
 
-<!-- Supabase JavaScript SDK -->
-<script
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
-
-<!-- Main Admin Panel JavaScript -->
-<script src="admin.js?v=20260914"></script>
+  <!-- ADMIN JAVASCRIPT -->
+  <script src="admin.js?v=20260915"></script>
 
 </body>
 </html>
