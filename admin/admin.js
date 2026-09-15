@@ -7081,9 +7081,222 @@ async function loadMediaLibrary() {
       );
     }
 
-
     const files =
       await listStorageFiles();
+
+
+    if (
+      !files ||
+      files.length === 0
+    ) {
+
+      box.innerHTML =
+        part5Empty(
+          'No media files found.'
+        );
+
+      return;
+    }
+
+
+    box.innerHTML = `
+      <div style="
+        display:grid;
+        grid-template-columns:
+          repeat(auto-fill,minmax(220px,1fr));
+        gap:18px;
+      ">
+
+        ${
+          files
+            .map(file => {
+
+              const fileName =
+                file?.name || '';
+
+              let url = '';
+
+
+              if (
+                typeof getStoragePublicUrl ===
+                'function'
+              ) {
+
+                try {
+
+                  url =
+                    getStoragePublicUrl(
+                      fileName
+                    );
+
+                } catch (urlError) {
+
+                  console.warn(
+                    'Media URL error:',
+                    urlError
+                  );
+
+                }
+
+              }
+
+
+              const isImage =
+                /\.(jpg|jpeg|png|gif|webp|svg)$/i
+                  .test(fileName);
+
+
+              return `
+                <div
+                  class="media-item"
+                  data-name="${part5Attr(fileName)}"
+                  style="
+                    background:#fff;
+                    border:1px solid #e2e8f0;
+                    border-radius:12px;
+                    overflow:hidden;
+                  "
+                >
+
+                  <div style="
+                    height:160px;
+                    background:#f8fafc;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    overflow:hidden;
+                  ">
+
+                    ${
+                      isImage && url
+                        ? `
+                          <img
+                            src="${part5Attr(url)}"
+                            alt="${part5Attr(fileName)}"
+                            loading="lazy"
+                            style="
+                              width:100%;
+                              height:100%;
+                              object-fit:cover;
+                            "
+                          >
+                        `
+                        : `
+                          <div style="
+                            font-size:14px;
+                            font-weight:700;
+                            color:#94a3b8;
+                          ">
+                            FILE
+                          </div>
+                        `
+                    }
+
+                  </div>
+
+
+                  <div style="
+                    padding:14px;
+                  ">
+
+                    <div style="
+                      font-weight:600;
+                      font-size:14px;
+                      word-break:break-word;
+                      margin-bottom:10px;
+                    ">
+                      ${part5Escape(
+                        fileName
+                      )}
+                    </div>
+
+
+                    ${
+                      url
+                        ? `
+                          <a
+                            href="${part5Attr(url)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style="
+                              color:#2563eb;
+                              text-decoration:none;
+                              font-size:13px;
+                              font-weight:600;
+                              margin-right:12px;
+                            "
+                          >
+                            Open
+                          </a>
+                        `
+                        : ''
+                    }
+
+
+                    <button
+                      type="button"
+                      class="danger delete-media"
+                      data-name="${part5Attr(fileName)}"
+                      style="
+                        border:0;
+                        background:#fee2e2;
+                        color:#b91c1c;
+                        padding:7px 10px;
+                        border-radius:7px;
+                        cursor:pointer;
+                        font-size:12px;
+                        font-weight:600;
+                      "
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+              `;
+
+            })
+            .join('')
+        }
+
+      </div>
+    `;
+
+
+    box
+      .querySelectorAll(
+        '.delete-media'
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          'click',
+          deleteMediaFile
+        );
+
+      });
+
+
+  } catch (error) {
+
+    console.error(
+      'Media library error:',
+      error
+    );
+
+    part5ShowError(
+      box,
+      'Unable to load media: ' +
+      (
+        error?.message ||
+        String(error)
+      )
+    );
+
+  }
+}
+  
    
 /* =========================================================
    DELETE MEDIA
