@@ -17,6 +17,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -1395,7 +1396,7 @@
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
-                                <div>
+                                                                <div>
                                     <div class="flex items-center justify-between gap-2 mb-1">
                                         <h4 class="product-title font-black text-xl sm:text-2xl text-primary dark:text-white tracking-wide">PLASTIC BUBBLE ENVELOPE</h4>
                                         <span class="bg-cyan-50 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Waterproof</span>
@@ -2094,7 +2095,7 @@
                 <i class="fa-solid fa-xmark"></i> <span class="text-xs">Close</span>
             </button>
             <div class="w-full max-h-[85vh] bg-white/5 rounded-2xl p-2 border border-white/20 shadow-2xl flex items-center justify-center overflow-hidden">
-                <img id="lightbox-image" src="" class="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl" alt="Brochure Preview">
+                                <img id="lightbox-image" src="" class="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl" alt="Brochure Preview">
             </div>
         </div>
     </div>
@@ -2115,6 +2116,16 @@
 
     <!-- JavaScript Engine -->
     <script>
+        // ==================== SUPABASE CONNECTION ====================
+        // Public/publishable key is intended for browser-side use.
+        const SUPABASE_URL = 'https://bgkymxdbmvbplnlehakd.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
+
+        const supabaseClient =
+            window.supabase && typeof window.supabase.createClient === 'function'
+                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+                : null;
+
         // ==================== 1. VERIFIED SHIPMENT DATABASE & LIVE TRACKER ====================
         const shipmentDB = {
             'DEVI-8924': {
@@ -2220,36 +2231,133 @@
             }
         ];
 
-        function handleReviewSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('rev-name').value.trim();
-            const country = document.getElementById('rev-country').value.trim();
-            const stars = parseInt(document.getElementById('rev-rating').value);
-            const msg = document.getElementById('rev-msg').value.trim();
-
-            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "DG";
-
-            const newReview = {
-                name,
-                country,
-                stars,
-                msg,
-                initials,
-                color: "bg-emerald-700"
-            };
-
-            let savedReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
-            savedReviews.unshift(newReview);
-            localStorage.setItem('devi_groups_client_reviews', JSON.stringify(savedReviews));
-
-            loadReviews();
-            document.getElementById('review-form').reset();
-            alert('🎉 Thank you! Your review and rating have been published successfully.');
+        // ==================== 2. REVIEW & LIVE RATING CALCULATION ====================
+        function getReviewInitials(name) {
+            return String(name || '')
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(n => n[0])
+                .join('')
+                .substring(0, 2)
+                .toUpperCase() || 'DG';
         }
 
-        function loadReviews() {
-            let userReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
-            const allReviews = [...userReviews, ...defaultReviews];
+        function normalizeReview(r) {
+            const stars = Number(r?.stars ?? r?.rating ?? 5);
+            return {
+                name: r?.name || r?.customer_name || r?.author_name || 'Customer',
+                country: r?.country || r?.company || r?.company_name || '',
+                stars: Math.max(1, Math.min(5, Number.isFinite(stars) ? stars : 5)),
+                msg: r?.message || r?.review || r?.content || '',
+                initials: getReviewInitials(r?.name || r?.customer_name || r?.author_name),
+                color: r?.color || 'bg-emerald-700'
+            };
+        }
+
+        function getLocalReviews() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
+                return Array.isArray(saved) ? saved.map(normalizeReview) : [];
+            } catch (err) {
+                console.warn('Local review data could not be read:', err);
+                return [];
+            }
+        }
+
+        async function handleReviewSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('rev-name')?.value.trim() || '';
+            const country = document.getElementById('rev-country')?.value.trim() || '';
+            const stars = Number(document.getElementById('rev-rating')?.value || 0);
+            const msg = document.getElementById('rev-msg')?.value.trim() || '';
+
+            if (!name || !stars || !msg) {
+                alert('Please complete your review.');
+                return;
+            }
+
+            if (!supabaseClient) {
+                console.error('Supabase client is not available.');
+                alert('Review service is temporarily unavailable. Please try again.');
+                return;
+            }
+
+            const submitButton = document.querySelector('#review-form button[type="submit"]');
+            const oldButtonText = submitButton ? submitButton.innerHTML : '';
+
+            try {
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = 'Submitting...';
+                }
+
+                // Both "review" and "message" are filled because the current
+                // Supabase table requires "review" and the Admin Panel supports both.
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .insert({
+                        name: name,
+                        country: country,
+                        stars: stars,
+                        review: msg,
+                        message: msg,
+                        status: 'pending',
+                        active: false
+                    });
+
+                if (error) {
+                    console.error('Review submit error:', error);
+                    throw error;
+                }
+
+                document.getElementById('review-form')?.reset();
+
+                alert('Thank you! Your review has been submitted for approval.');
+            } catch (err) {
+                console.error('Review submit error:', err);
+                alert('Review submit error: ' + (err?.message || 'Unable to submit review.'));
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = oldButtonText;
+                }
+            }
+        }
+
+        async function loadReviews() {
+            let reviews = [];
+            let usedSupabase = false;
+
+            // Approved reviews are loaded from Supabase.
+            // If Supabase is temporarily unavailable, the old localStorage
+            // reviews are used as a safe fallback so the website still works.
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('reviews')
+                        .select('*')
+                        .eq('active', true)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    reviews = (data || [])
+                        .map(normalizeReview)
+                        .filter(r => r.msg);
+
+                    usedSupabase = true;
+                } catch (err) {
+                    console.warn('Supabase reviews could not be loaded; using local fallback.', err);
+                }
+            }
+
+            if (!usedSupabase) {
+                reviews = getLocalReviews();
+            }
+
+            const allReviews = [...reviews, ...defaultReviews];
 
             const modalGrid = document.getElementById('modal-reviews-grid');
             if (modalGrid) {
@@ -2260,7 +2368,7 @@
                             <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 italic mb-4">"${r.msg}"</p>
                         </div>
                         <div class="flex items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                            <div class="w-9 h-9 rounded-full ${r.color || 'bg-primary'} text-white font-black flex items-center justify-center text-xs shadow-sm">${r.initials}</div>
+                            <div class="w-9 h-9 rounded-full ${r.color || 'bg-primary'} text-white font-black flex items-center justify-center text-xs shadow-sm">${r.initials || getReviewInitials(r.name)}</div>
                             <div>
                                 <strong class="text-xs font-bold text-slate-800 dark:text-white block">${r.name}</strong>
                                 <span class="text-[10px] text-slate-500 dark:text-slate-400">${r.country}</span>
@@ -2270,11 +2378,16 @@
                 `).join('');
             }
 
-            const totalScore = allReviews.reduce((sum, r) => sum + r.stars, 0);
-            const avgScore = (totalScore / allReviews.length).toFixed(1);
-            document.getElementById('avg-rating-score').innerText = avgScore;
-            document.getElementById('total-reviews-count').innerText = allReviews.length;
-            document.getElementById('avg-rating-stars').innerText = '⭐'.repeat(Math.round(avgScore));
+            const totalScore = allReviews.reduce((sum, r) => sum + Number(r.stars || 0), 0);
+            const avgScore = allReviews.length ? (totalScore / allReviews.length).toFixed(1) : '0.0';
+
+            const avgScoreEl = document.getElementById('avg-rating-score');
+            const totalReviewsEl = document.getElementById('total-reviews-count');
+            const starsEl = document.getElementById('avg-rating-stars');
+
+            if (avgScoreEl) avgScoreEl.innerText = avgScore;
+            if (totalReviewsEl) totalReviewsEl.innerText = allReviews.length;
+            if (starsEl) starsEl.innerText = '⭐'.repeat(Math.round(Number(avgScore)));
         }
 
         function openReviewsModal() {
@@ -2677,4 +2790,3 @@
     </script>
 </body>
 </html>
-
