@@ -7084,375 +7084,7 @@ async function loadMediaLibrary() {
 
     const files =
       await listStorageFiles();
-    /* =========================================================
-   DEVI GROUPS ADMIN — STARTUP / LOGIN INITIALIZATION
-   ========================================================= */
-
-async function initDeviAdmin() {
-
-  try {
-
-    console.log(
-      'DEVI ADMIN: Initializing...'
-    );
-
-
-    /* -------------------------------------------------------
-       Check Supabase client
-       ------------------------------------------------------- */
-
-    if (
-      typeof sb === 'undefined' ||
-      !sb
-    ) {
-
-      console.error(
-        'DEVI ADMIN: Supabase client is missing.'
-      );
-
-      return;
-
-    }
-
-
-    /* -------------------------------------------------------
-       Get current session
-       ------------------------------------------------------- */
-
-    const session =
-      await getSession();
-
-
-    /* -------------------------------------------------------
-       No login session
-       ------------------------------------------------------- */
-
-    if (!session) {
-
-      console.log(
-        'DEVI ADMIN: No active session.'
-      );
-
-      renderLogin();
-
-      return;
-
-    }
-
-
-    /* -------------------------------------------------------
-       Check admin authorization
-       ------------------------------------------------------- */
-
-    const user =
-      await requireAdmin();
-
-
-    /* -------------------------------------------------------
-       User is not authorized
-       ------------------------------------------------------- */
-
-    if (!user) {
-
-      console.warn(
-        'DEVI ADMIN: Unauthorized user.'
-      );
-
-      await sb.auth.signOut();
-
-      renderLogin();
-
-      return;
-
-    }
-
-
-    /* -------------------------------------------------------
-       Render Admin Panel
-       ------------------------------------------------------- */
-
-    console.log(
-      'DEVI ADMIN: Authorized admin logged in:',
-      user.email
-    );
-
-
-    renderShell(user);
-
-
-  } catch (error) {
-
-    console.error(
-      'DEVI ADMIN initialization error:',
-      error
-    );
-
-
-    /* -------------------------------------------------------
-       Fallback to login page
-       ------------------------------------------------------- */
-
-    try {
-
-      await sb.auth.signOut();
-
-    } catch (signOutError) {
-
-      console.warn(
-        'Sign out error:',
-        signOutError
-      );
-
-    }
-
-
-    renderLogin();
-
-  }
-
-}
-
-
-/* =========================================================
-   START ADMIN APPLICATION
-   ========================================================= */
-
-if (
-  document.readyState === 'loading'
-) {
-
-  document.addEventListener(
-    'DOMContentLoaded',
-    initDeviAdmin,
-    {
-      once: true
-    }
-  );
-
-} else {
-
-  initDeviAdmin();
-
-}
-
-
-/* =========================================================
-   END OF ADMIN STARTUP
-   ========================================================= */
-
-
-    if (
-      !files ||
-      files.length === 0
-    ) {
-
-      box.innerHTML =
-        part5Empty(
-          'No media files found.'
-        );
-
-      return;
-    }
-
-
-    box.innerHTML = `
-      <div style="
-        display:grid;
-        grid-template-columns:
-          repeat(auto-fill,minmax(220px,1fr));
-        gap:18px;
-      ">
-
-        ${
-          files
-            .map(file => {
-
-              const fileName =
-                file?.name || '';
-
-              let url = '';
-
-
-              if (
-                typeof getStoragePublicUrl ===
-                'function'
-              ) {
-
-                try {
-
-                  url =
-                    getStoragePublicUrl(
-                      fileName
-                    );
-
-                } catch (urlError) {
-
-                  console.warn(
-                    'Media URL error:',
-                    urlError
-                  );
-
-                }
-              }
-
-
-              const isImage =
-                /\.(jpg|jpeg|png|gif|webp|svg)$/i
-                  .test(fileName);
-
-
-              return `
-                <div
-                  class="media-item"
-                  data-name="${part5Attr(fileName)}"
-                  style="
-                    background:#fff;
-                    border:1px solid #e2e8f0;
-                    border-radius:12px;
-                    overflow:hidden;
-                  "
-                >
-
-                  <div style="
-                    height:160px;
-                    background:#f8fafc;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    overflow:hidden;
-                  ">
-
-                    ${
-                      isImage && url
-                        ? `
-                          <img
-                            src="${part5Attr(url)}"
-                            alt="${part5Attr(fileName)}"
-                            loading="lazy"
-                            style="
-                              width:100%;
-                              height:100%;
-                              object-fit:cover;
-                            "
-                          >
-                        `
-                        : `
-                          <div style="
-                            font-size:14px;
-                            font-weight:700;
-                            color:#94a3b8;
-                          ">
-                            FILE
-                          </div>
-                        `
-                    }
-
-                  </div>
-
-
-                  <div style="
-                    padding:14px;
-                  ">
-
-                    <div style="
-                      font-weight:600;
-                      font-size:14px;
-                      word-break:break-word;
-                      margin-bottom:10px;
-                    ">
-                      ${part5Escape(
-                        fileName
-                      )}
-                    </div>
-
-
-                    ${
-                      url
-                        ? `
-                          <a
-                            href="${part5Attr(url)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style="
-                              color:#2563eb;
-                              text-decoration:none;
-                              font-size:13px;
-                              font-weight:600;
-                              margin-right:12px;
-                            "
-                          >
-                            Open
-                          </a>
-                        `
-                        : ''
-                    }
-
-
-                    <button
-                      type="button"
-                      class="danger delete-media"
-                      data-name="${part5Attr(fileName)}"
-                      style="
-                        border:0;
-                        background:#fee2e2;
-                        color:#b91c1c;
-                        padding:7px 10px;
-                        border-radius:7px;
-                        cursor:pointer;
-                        font-size:12px;
-                        font-weight:600;
-                      "
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-
-                </div>
-              `;
-
-            })
-            .join('')
-        }
-
-      </div>
-    `;
-
-
-    box
-      .querySelectorAll(
-        '.delete-media'
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          'click',
-          deleteMediaFile
-        );
-
-      });
-
-
-  } catch (error) {
-
-    console.error(
-      'Media library error:',
-      error
-    );
-
-    part5ShowError(
-      box,
-      'Unable to load media: ' +
-      (
-        error?.message ||
-        String(error)
-      )
-    );
-
-  }
-}
-
-
+   
 /* =========================================================
    DELETE MEDIA
    ========================================================= */
@@ -7524,4 +7156,279 @@ async function deleteMediaFile(event) {
 
 /* =========================================================
    END OF PART 5
+   ========================================================= */
+/* =========================================================
+   DEVI GROUPS ADMIN — STARTUP / LOGIN INITIALIZATION
+   ========================================================= */
+
+async function initDeviAdmin() {
+
+  console.log(
+    'DEVI ADMIN: STARTING...'
+  );
+
+  try {
+
+    /* -------------------------------------------------------
+       STEP 1 — Check Supabase SDK
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 1: Checking Supabase SDK...'
+    );
+
+    if (
+      typeof supabase === 'undefined' ||
+      !supabase
+    ) {
+
+      console.error(
+        'STEP 1 ERROR: Supabase SDK is NOT loaded.'
+      );
+
+      return;
+    }
+
+    console.log(
+      'STEP 1: Supabase SDK OK'
+    );
+
+
+    /* -------------------------------------------------------
+       STEP 2 — Check Supabase client
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 2: Checking Supabase client...'
+    );
+
+    if (
+      typeof sb === 'undefined' ||
+      !sb
+    ) {
+
+      console.error(
+        'STEP 2 ERROR: Supabase client is missing.'
+      );
+
+      return;
+    }
+
+    console.log(
+      'STEP 2: Supabase client OK'
+    );
+
+
+    /* -------------------------------------------------------
+       STEP 3 — Get current session
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 3: Getting current session...'
+    );
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } =
+      await sb.auth.getSession();
+
+
+    if (sessionError) {
+
+      console.error(
+        'STEP 3 ERROR: Session error:',
+        sessionError
+      );
+
+      renderLogin();
+
+      return;
+    }
+
+
+    const session =
+      sessionData?.session || null;
+
+
+    console.log(
+      'STEP 3: Session received:',
+      session
+        ? 'YES'
+        : 'NO'
+    );
+
+
+    /* -------------------------------------------------------
+       STEP 4 — Check login
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 4: Checking login...'
+    );
+
+
+    if (!session) {
+
+      console.log(
+        'STEP 4: No active login session.'
+      );
+
+      renderLogin();
+
+      return;
+    }
+
+
+    console.log(
+      'STEP 4: User is logged in.'
+    );
+
+
+    /* -------------------------------------------------------
+       STEP 5 — Check admin authorization
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 5: Checking admin authorization...'
+    );
+
+
+    const user =
+      await requireAdmin();
+
+
+    /* -------------------------------------------------------
+       Unauthorized user
+       ------------------------------------------------------- */
+
+    if (!user) {
+
+      console.warn(
+        'STEP 5: User is NOT authorized as admin.'
+      );
+
+      try {
+
+        await sb.auth.signOut();
+
+      } catch (signOutError) {
+
+        console.warn(
+          'Sign out error:',
+          signOutError
+        );
+
+      }
+
+
+      renderLogin();
+
+      return;
+    }
+
+
+    console.log(
+      'STEP 5: Admin authorization OK.'
+    );
+
+    console.log(
+      'Admin user:',
+      user.email
+    );
+
+
+    /* -------------------------------------------------------
+       STEP 6 — Open Admin Panel
+       ------------------------------------------------------- */
+
+    console.log(
+      'STEP 6: Opening admin panel...'
+    );
+
+
+    renderShell(user);
+
+
+    console.log(
+      'DEVI ADMIN: PANEL OPENED SUCCESSFULLY.'
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      'DEVI ADMIN STARTUP ERROR:',
+      error
+    );
+
+
+    /* -------------------------------------------------------
+       Fallback
+       ------------------------------------------------------- */
+
+    try {
+
+      if (
+        typeof sb !== 'undefined' &&
+        sb
+      ) {
+
+        await sb.auth.signOut();
+
+      }
+
+    } catch (signOutError) {
+
+      console.warn(
+        'Fallback sign out error:',
+        signOutError
+      );
+
+    }
+
+
+    try {
+
+      renderLogin();
+
+    } catch (loginError) {
+
+      console.error(
+        'Unable to render login:',
+        loginError
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   START ADMIN APPLICATION
+   ========================================================= */
+
+if (
+  document.readyState === 'loading'
+) {
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    initDeviAdmin,
+    {
+      once: true
+    }
+  );
+
+} else {
+
+  initDeviAdmin();
+
+}
+
+
+/* =========================================================
+   END OF ADMIN STARTUP
    ========================================================= */
