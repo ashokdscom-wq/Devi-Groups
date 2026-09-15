@@ -2220,6 +2220,28 @@
             }
         ];
 
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('rev-name').value.trim();
+            const country = document.getElementById('rev-country').value.trim();
+            const stars = parseInt(document.getElementById('rev-rating').value);
+            const msg = document.getElementById('rev-msg').value.trim();
+
+            const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "DG";
+
+            const newReview = {
+                name,
+                country,
+                stars,
+                msg,
+                initials,
+                color: "bg-emerald-700"
+            };
+
+            let savedReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
+            savedReviews.unshift(newReview);
+            localStorage.setItem('devi_groups_client_reviews', JSON.stringify(savedReviews));
+
             loadReviews();
             document.getElementById('review-form').reset();
             alert('🎉 Thank you! Your review and rating have been published successfully.');
@@ -2653,19 +2675,6 @@
             }
         }
     </script>
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = 'https://bgkymxdbmvbplnlehakd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-</script>
 </body>
 </html>
 
