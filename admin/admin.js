@@ -6921,7 +6921,113 @@ document.addEventListener(
 
   }
 );
+/* =========================================================
+   DEVI GROUPS ADMIN — STARTUP / LOGIN INITIALIZATION
+   ========================================================= */
 
+async function initDeviAdmin() {
+  try {
+    // Check Supabase library
+    if (
+      !window.supabase ||
+      typeof window.supabase.createClient !== 'function'
+    ) {
+      throw new Error(
+        'Supabase library did not load. Please check the internet connection.'
+      );
+    }
+
+    // Check existing login session
+    const session = await getSession();
+
+    // Not logged in → show login page
+    if (!session) {
+      renderLogin();
+      return;
+    }
+
+    // Logged in → verify admin
+    try {
+      const user = await requireAdmin();
+
+      if (!user) {
+        await sb.auth.signOut();
+        renderLogin();
+        return;
+      }
+
+      // Admin authorized → open admin panel
+      renderShell(user);
+
+    } catch (adminError) {
+      console.error(
+        'Admin authorization error:',
+        adminError
+      );
+
+      try {
+        await sb.auth.signOut();
+      } catch (signOutError) {
+        console.error(
+          'Sign-out error:',
+          signOutError
+        );
+      }
+
+      renderLogin();
+
+      const message =
+        document.getElementById('login-message');
+
+      if (message) {
+        message.style.color = '#dc2626';
+        message.textContent =
+          adminError?.message ||
+          'This account is not authorized as an admin.';
+      }
+    }
+
+  } catch (error) {
+    console.error(
+      'Admin startup error:',
+      error
+    );
+
+    try {
+      renderLogin();
+    } catch (renderError) {
+      console.error(
+        'Login render error:',
+        renderError
+      );
+    }
+
+    const message =
+      document.getElementById('login-message');
+
+    if (message) {
+      message.style.color = '#dc2626';
+      message.textContent =
+        error?.message ||
+        'Unable to start the admin panel.';
+    }
+  }
+}
+
+
+/* =========================================================
+   START ADMIN PANEL
+   ========================================================= */
+
+if (document.readyState === 'loading') {
+  document.addEventListener(
+    'DOMContentLoaded',
+    initDeviAdmin,
+    { once: true }
+  );
+} else {
+  initDeviAdmin();
+}
 
 /* =========================================================
    END OF PART 5
