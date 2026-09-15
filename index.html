@@ -2665,43 +2665,6 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
 
-// Review Submit
-window.handleReviewSubmit = async function(event) {
-  event.preventDefault();
-
-  const name = document.getElementById('rev-name')?.value.trim() || '';
-  const country = document.getElementById('rev-country')?.value.trim() || '';
-  const stars = Number(document.getElementById('rev-rating')?.value || 0);
-  const message = document.getElementById('rev-msg')?.value.trim() || '';
-
-  if (!name || !stars || !message) {
-    alert('Please complete your review.');
-    return;
-  }
-
-  const { data, error } = await supabaseClient
-    .from('reviews')
-    .insert({
-      name: name,
-      country: country,
-      stars: stars,
-      review: message,
-      message: message,
-      status: 'pending',
-      active: false
-    })
-    .select();
-
-  if (error) {
-    console.error('Review submit error:', error);
-    alert('Review submit error: ' + error.message);
-    return;
-  }
-
-  document.getElementById('review-form')?.reset();
-
-  alert('Thank you! Your review has been submitted for approval.');
-};
 </script>
 </body>
 </html>
