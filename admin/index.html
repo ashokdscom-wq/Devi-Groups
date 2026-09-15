@@ -1,355 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEVI GROUPS ADMIN PANEL</title>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="description"
+    content="DEVI GROUPS Admin Panel"
+  />
+
+  <title>DEVI GROUPS – Admin Panel</title>
 
   <style>
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#f4f6f8;
-      color:#222
+    * {
+      box-sizing: border-box;
     }
 
-    .hidden{display:none!important}
-
-    #login{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      background:linear-gradient(135deg,#111827,#374151)
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: #f5f7fb;
+      color: #111827;
     }
 
-    .login-box{
-      width:100%;
-      max-width:420px;
-      background:#fff;
-      border-radius:14px;
-      padding:35px;
-      box-shadow:0 20px 60px rgba(0,0,0,.25)
+    body {
+      min-height: 100vh;
     }
 
-    .login-box h1{
-      margin:0 0 8px;
-      text-align:center;
-      font-size:28px
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
     }
 
-    .login-box p.sub{
-      text-align:center;
-      color:#666;
-      margin:0 0 25px
+    button {
+      cursor: pointer;
     }
 
-    .login-box label{
-      display:block;
-      margin:14px 0 6px;
-      font-weight:600
+    img {
+      max-width: 100%;
+      display: block;
     }
 
-    .login-box input{
-      width:100%;
-      padding:12px 14px;
-      border:1px solid #d1d5db;
-      border-radius:8px;
-      font-size:15px;
-      outline:none
+    a {
+      color: inherit;
     }
 
-    .login-box input:focus{border-color:#2563eb}
-
-    .login-btn{
-      width:100%;
-      margin-top:20px;
-      padding:13px;
-      border:0;
-      border-radius:8px;
-      background:#111827;
-      color:#fff;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer
+    #app {
+      min-height: 100vh;
     }
 
-    .login-btn:hover{background:#000}
+    /* =========================
+       LOGIN FALLBACK
+       ========================= */
 
-    #loginMsg{
-      margin-top:15px;
-      color:#dc2626;
-      text-align:center;
-      min-height:20px
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(37, 99, 235, 0.12),
+          transparent 38%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          rgba(15, 118, 110, 0.12),
+          transparent 38%
+        ),
+        #f5f7fb;
     }
 
-    .forgot{
-      display:block;
-      text-align:center;
-      margin-top:14px;
-      color:#2563eb;
-      text-decoration:none;
-      cursor:pointer;
-      font-size:14px
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08),
+        0 4px 12px rgba(15, 23, 42, 0.04);
     }
 
-    .forgot:hover{text-decoration:underline}
-
-    #resetBox{margin-top:10px}
-
-    #resetMsg{
-      text-align:center;
-      margin-top:12px;
-      min-height:20px;
-      color:#166534
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin: 0 auto 18px;
+      border-radius: 12px;
     }
 
-    .back-login{
-      display:block;
-      text-align:center;
-      margin-top:12px;
-      color:#2563eb;
-      cursor:pointer;
-      font-size:14px
+    .login-title {
+      margin: 0;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
 
-    #app{min-height:100vh}
-
-    .topbar{
-      background:#111827;
-      color:#fff;
-      padding:14px 22px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:15px;
-      position:sticky;
-      top:0;
-      z-index:20
+    .login-subtitle {
+      margin: 7px 0 26px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
     }
 
-    .brand{
-      font-size:20px;
-      font-weight:800
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .admin-user{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-size:14px
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
 
-    #logout{
-      border:1px solid rgba(255,255,255,.4);
-      background:transparent;
-      color:#fff;
-      padding:8px 14px;
-      border-radius:7px;
-      cursor:pointer
-    }
-
-    #logout:hover{background:rgba(255,255,255,.1)}
-
-    .layout{
-      display:flex;
-      min-height:calc(100vh - 65px)
-    }
-
-    .sidebar{
-      width:230px;
-      background:#fff;
-      border-right:1px solid #e5e7eb;
-      padding:15px 10px;
-      flex-shrink:0
-    }
-
-    .tab{
-      width:100%;
-      text-align:left;
-      border:0;
-      background:transparent;
-      padding:12px 14px;
-      margin-bottom:5px;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:14px;
-      color:#374151
-    }
-
-    .tab:hover{background:#f3f4f6}
-
-    .tab.active{
-      background:#111827;
-      color:#fff;
-      font-weight:700
-    }
-
-    .content{
-      flex:1;
-      padding:25px;
-      min-width:0
-    }
-
-    #main{
-      max-width:1400px;
-      margin:auto
-    }
-
-    .page-title{
-      font-size:28px;
-      font-weight:800;
-      margin:0 0 20px
-    }
-
-    .card{
-      background:#fff;
-      border-radius:12px;
-      padding:20px;
-      border:1px solid #e5e7eb;
-      margin-bottom:20px
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px
-    }
-
-    .stat{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      padding:20px
-    }
-
-    .stat h3{
-      margin:0 0 8px;
-      font-size:14px;
-      color:#6b7280
-    }
-
-    .stat strong{font-size:28px}
-
-    button{font-family:inherit}
-
-    input,textarea,select{font-family:inherit}
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:#fff
-    }
-
-    th,td{
-      padding:11px 10px;
-      border-bottom:1px solid #e5e7eb;
-      text-align:left;
-      vertical-align:top
-    }
-
-    th{
-      background:#f9fafb;
-      font-size:13px
-    }
-
-    .table-wrap{
-      width:100%;
-      overflow-x:auto
-    }
-
-    .btn{
-      border:0;
-      border-radius:7px;
-      padding:8px 12px;
-      cursor:pointer;
-      font-size:13px
-    }
-
-    .btn-primary{
-      background:#111827;
-      color:#fff
-    }
-
-    .btn-danger{
-      background:#dc2626;
-      color:#fff
-    }
-
-    .btn-secondary{
-      background:#e5e7eb;
-      color:#111827
-    }
-
-    .form-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:15px
-    }
-
-    .form-group{margin-bottom:14px}
-
-    .form-group.full{
-      grid-column:1/-1
-    }
-
-    .form-group label{
-      display:block;
-      margin-bottom:6px;
-      font-size:14px;
-      font-weight:700
+    .form-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
     }
 
     .form-group input,
     .form-group textarea,
-    .form-group select{
-      width:100%;
-      padding:10px 12px;
-      border:1px solid #d1d5db;
-      border-radius:7px;
-      outline:none
-    }
-
-    .form-group textarea{
-      min-height:100px;
-      resize:vertical
+    .form-group select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 11px 13px;
+      outline: none;
+      background: #fff;
+      color: #111827;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
     .form-group input:focus,
     .form-group textarea:focus,
-    .form-group select:focus{
-      border-color:#2563eb
+    .form-group select:focus {
+      border-color: #2563eb;
+      box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
-    @media(max-width:800px){
-      .layout{display:block}
+    .login-button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      background: #111827;
+      color: #ffffff;
+      font-weight: 700;
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
 
-      .sidebar{
-        width:100%;
-        display:flex;
-        overflow-x:auto;
-        gap:5px;
-        border-right:0;
-        border-bottom:1px solid #e5e7eb
+    .login-button:hover {
+      opacity: 0.92;
+    }
+
+    .login-button:active {
+      transform: translateY(1px);
+    }
+
+    .login-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .login-message {
+      min-height: 20px;
+      margin: 2px 0 0;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .login-forgot {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .login-forgot button {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .login-forgot button:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================
+       ADMIN SHELL FALLBACK
+       ========================= */
+
+    .admin-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f5f7fb;
+    }
+
+    .admin-header {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px 22px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+    }
+
+    .admin-brand img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .admin-brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .admin-brand-title {
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .admin-brand-subtitle {
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-user-email {
+      color: #4b5563;
+      font-size: 13px;
+    }
+
+    .admin-logout {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .admin-layout {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .admin-sidebar {
+      width: 245px;
+      flex: 0 0 245px;
+      background: #111827;
+      color: #ffffff;
+      padding: 18px 12px;
+    }
+
+    .admin-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .admin-nav button {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: transparent;
+      color: #d1d5db;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .admin-nav button:hover,
+    .admin-nav button.active {
+      background: #1f2937;
+      color: #ffffff;
+    }
+
+    .admin-main {
+      flex: 1;
+      min-width: 0;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .admin-container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .admin-page-title {
+      margin: 0 0 6px;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .admin-page-subtitle {
+      margin: 0 0 24px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .admin-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.03);
+    }
+
+    .admin-card + .admin-card {
+      margin-top: 18px;
+    }
+
+    .admin-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .admin-table th {
+      background: #f9fafb;
+      color: #374151;
+      font-weight: 800;
+    }
+
+    .admin-table td {
+      color: #4b5563;
+    }
+
+    .admin-primary {
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #ffffff;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .admin-secondary {
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #374151;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .admin-danger {
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      background: #fff1f2;
+      color: #b91c1c;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 800px) {
+      .admin-layout {
+        flex-direction: column;
       }
 
-      .tab{
-        min-width:max-content;
-        margin:0
+      .admin-sidebar {
+        width: 100%;
+        flex-basis: auto;
+        padding: 10px;
       }
 
-      .content{padding:15px}
+      .admin-nav {
+        flex-direction: row;
+        overflow-x: auto;
+      }
 
-      .form-grid{grid-template-columns:1fr}
+      .admin-nav button {
+        white-space: nowrap;
+        width: auto;
+      }
 
-      .topbar{flex-wrap:wrap}
+      .admin-main {
+        padding: 16px;
+      }
 
-      .admin-user{
-        width:100%;
-        justify-content:space-between
+      .admin-user-email {
+        display: none;
+      }
+
+      .admin-header {
+        padding: 10px 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 24px 20px;
+        border-radius: 14px;
+      }
+
+      .login-title {
+        font-size: 23px;
       }
     }
   </style>
@@ -357,177 +494,46 @@
 
 <body>
 
-<section id="login">
+  <!--
+    Main application container.
 
-  <div class="login-box">
+    IMPORTANT:
+    admin.js will render the actual Login screen and Admin Panel
+    inside this element.
+  -->
+  <div id="app">
 
-    <h1>DEVI GROUPS</h1>
-
-    <p class="sub">Admin Panel</p>
-
-    <form id="loginForm">
-
-      <label for="email">Email</label>
-
-      <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Admin Email"
-        autocomplete="username"
-        required
-      >
-
-      <label for="password">Password</label>
-
-      <input
-        type="password"
-        id="password"
-        name="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        required
-      >
-
-      <button type="submit" class="login-btn">
-        Login
-      </button>
-
-      <p id="loginMsg"></p>
-
-    </form>
-
-    <a href="#" id="forgotPassword" class="forgot">
-      Forgot password?
-    </a>
-
-    <div id="resetBox" class="hidden">
-
-      <form id="resetForm">
-
-        <label for="resetEmail">Admin Email</label>
-
-        <input
-          type="email"
-          id="resetEmail"
-          placeholder="Enter your admin email"
-          required
-        >
-
-        <button type="submit" class="login-btn">
-          Send Reset Email
-        </button>
-
-      </form>
-
-      <p id="resetMsg"></p>
-
-      <span id="backToLogin" class="back-login">
-        ← Back to Login
-      </span>
-
+    <!-- Fallback loading screen -->
+    <div
+      style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:24px;
+        color:#6b7280;
+        font-size:14px;
+      "
+    >
+      Loading DEVI GROUPS Admin Panel...
     </div>
 
   </div>
 
-</section>
+  <!--
+    ============================================================
+    DEVI GROUPS SUPABASE CONFIG
+    ============================================================
+  -->
+  <script src="cms-config.js"></script>
 
+  <!-- Supabase JavaScript SDK -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
-<section id="app" class="hidden">
-
-  <header class="topbar">
-
-    <div class="brand">
-      DEVI GROUPS ADMIN
-    </div>
-
-    <div class="admin-user">
-
-      <span id="userEmail">Admin</span>
-
-      <button id="logout" type="button">
-        Logout
-      </button>
-
-    </div>
-
-  </header>
-
-
-  <div class="layout">
-
-    <aside class="sidebar">
-
-      <button class="tab active" data-view="dashboard" type="button">
-        Dashboard
-      </button>
-
-      <button class="tab" data-view="products" type="button">
-        Products
-      </button>
-
-      <button class="tab" data-view="units" type="button">
-        Business Units
-      </button>
-
-      <button class="tab" data-view="homepage" type="button">
-        Homepage
-      </button>
-
-      <button class="tab" data-view="enquiries" type="button">
-        Customer Enquiries
-      </button>
-
-      <button class="tab" data-view="reviews" type="button">
-        Reviews
-      </button>
-
-      <button class="tab" data-view="company" type="button">
-        Company Info
-      </button>
-
-      <button class="tab" data-view="documents" type="button">
-        Documents
-      </button>
-
-      <button class="tab" data-view="tracking" type="button">
-        Tracking
-      </button>
-
-    </aside>
-
-
-    <main class="content">
-
-      <div id="main">
-
-        <div class="card">
-
-          <h2 class="page-title">
-            DEVI GROUPS Admin Panel
-          </h2>
-
-          <p>
-            Welcome to the administration panel.
-            Select an option from the menu.
-          </p>
-
-        </div>
-
-      </div>
-
-    </main>
-
-  </div>
-
-</section>
-
-
-<script src="cms-config.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="admin.js"></script>
+  <!-- Main Admin Panel JavaScript -->
+  <script src="admin.js"></script>
 
 </body>
 </html>
