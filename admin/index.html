@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,8 +10,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Supabase configuration -->
-  <script src="../cms-config.js?v=20260915"></script>
+  <!-- Supabase configuration: admin/cms-config.js -->
+  <script src="./cms-config.js?v=20260917"></script>
 
   <style>
     body {
@@ -44,6 +45,7 @@
         id="email"
         type="email"
         required
+        autocomplete="username"
         placeholder="Admin email"
         class="w-full border rounded-xl p-3 mb-3"
       >
@@ -52,11 +54,13 @@
         id="password"
         type="password"
         required
+        autocomplete="current-password"
         placeholder="Password"
         class="w-full border rounded-xl p-3 mb-4"
       >
 
       <button
+        type="submit"
         class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold"
       >
         Sign in
@@ -64,6 +68,8 @@
 
       <p
         id="loginMsg"
+        role="status"
+        aria-live="polite"
         class="text-sm mt-3 text-rose-600"
       ></p>
 
@@ -91,6 +97,7 @@
 
       <button
         id="logout"
+        type="button"
         class="bg-white/10 px-4 py-2 rounded-lg"
       >
         Logout
@@ -106,9 +113,11 @@
         <!-- SIDEBAR -->
         <aside
           class="bg-white rounded-2xl p-3 h-fit space-y-1"
+          aria-label="Admin navigation"
         >
 
           <button
+            type="button"
             class="tab active w-full text-left p-3 rounded-xl"
             data-view="dashboard"
           >
@@ -116,6 +125,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="products"
           >
@@ -123,6 +133,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="units"
           >
@@ -130,6 +141,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="homepage"
           >
@@ -137,6 +149,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="enquiries"
           >
@@ -144,6 +157,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="reviews"
           >
@@ -151,6 +165,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="company"
           >
@@ -158,6 +173,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="documents"
           >
@@ -165,6 +181,7 @@
           </button>
 
           <button
+            type="button"
             class="tab w-full text-left p-3 rounded-xl"
             data-view="tracking"
           >
@@ -178,6 +195,7 @@
         <main
           id="main"
           class="bg-white rounded-2xl p-5 min-h-[600px]"
+          tabindex="-1"
         ></main>
 
       </div>
@@ -188,7 +206,7 @@
 
 
   <!-- ADMIN JAVASCRIPT -->
-  <script src="admin.js?v=20260915"></script>
+  <script src="./admin.js?v=20260917"></script>
 
 </body>
 </html>
