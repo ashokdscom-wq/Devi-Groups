@@ -3504,79 +3504,43 @@ function setupHomepageActions() {
 async function saveHomepageItem(id) {
   if (!id) return;
 
-  const card =
-    $(
-      `.homepage-content-card[data-id="${CSS.escape(String(id))}"]`
-    );
+  const card = $(
+    `.homepage-content-card[data-id="${CSS.escape(String(id))}"]`
+  );
 
   if (!card) {
-    showToast(
-      'Homepage content row not found.',
-      'error'
-    );
+    showToast('Homepage content row not found.', 'error');
     return;
   }
 
-  const title =
-    $('.site-title', card)?.value || '';
+  const saveButton = $('.save-homepage-btn', card);
 
-  const subtitle =
-    $('.site-subtitle', card)?.value || '';
+  if (saveButton) {
+    saveButton.disabled = true;
+    saveButton.textContent = 'Saving...';
+  }
 
-  const content =
-    $('.site-content', card)?.value || '';
+  const title = $('.site-title', card)?.value || '';
+  const subtitle = $('.site-subtitle', card)?.value || '';
+  const content = $('.site-content', card)?.value || '';
+  const imageInput = $('.site-image-file', card);
+  const imageFile = imageInput?.files?.[0] || null;
 
-  const imageInput =
-    $('.site-image-file', card);
+  let imageUrl = $('.site-image-url', card)?.value.trim() || '';
+  const videoUrl = $('.site-video-url', card)?.value.trim() || '';
+  const buttonText = $('.site-button-text', card)?.value.trim() || '';
+  const buttonUrl = $('.site-button-url', card)?.value.trim() || '';
+  const active = $('.site-active', card)?.checked !== false;
 
-  const imageFile =
-    imageInput?.files?.[0] || null;
-
-  let imageUrl =
-    $('.site-image-url', card)?.value
-      .trim() || '';
-
-  const videoUrl =
-    $('.site-video-url', card)?.value
-      .trim() || '';
-
-  const buttonText =
-    $('.site-button-text', card)?.value
-      .trim() || '';
-
-  const buttonUrl =
-    $('.site-button-url', card)?.value
-      .trim() || '';
-
-  const active =
-    $('.site-active', card)?.checked !== false;
-
-  showLoading(
-    'Saving homepage content...'
-  );
+  showLoading('Saving homepage content...');
 
   try {
     if (imageFile) {
-      imageUrl =
-        await uploadMedia(
-          imageFile,
-          'homepage'
-        );
+      imageUrl = await uploadMedia(imageFile, 'homepage');
 
-      const imageField =
-        $('.site-image-url', card);
-
-      if (imageField) {
-        imageField.value =
-          imageUrl;
-      }
+      const imageField = $('.site-image-url', card);
+      if (imageField) imageField.value = imageUrl;
     }
-
-    /*
-     * IMPORTANT:
-     * Database column is "content",
-     * not "value".
-     */
 
     const payload = {
       title,
@@ -3587,41 +3551,42 @@ async function saveHomepageItem(id) {
       button_text: buttonText,
       button_url: buttonUrl,
       active,
-      updated_at:
-        new Date().toISOString()
+      updated_at: new Date().toISOString()
     };
 
-    const { error } =
-      await sb
-        .from('site_content')
-        .update(payload)
-        .eq('id', id);
+    const { data, error } = await sb
+      .from('site_content')
+      .update(payload)
+      .eq('id', id)
+      .select('id')
+      .maybeSingle();
 
-    if (error) {
-      throw error;
+    if (error) throw error;
+
+    if (!data) {
+      throw new Error(
+        'No row was updated. Check the record ID and Supabase permissions.'
+      );
     }
 
-    showToast(
-      'Homepage content saved successfully.'
-    );
+    showToast('Homepage content saved successfully.');
 
   } catch (error) {
-    console.error(
-      'Homepage save error:',
-      error
-    );
-
+    console.error('Homepage save error:', error);
     showToast(
-      error.message ||
-      'Unable to save homepage content.',
+      error.message || 'Unable to save homepage content.',
       'error'
     );
 
   } finally {
     hideLoading();
+
+    if (saveButton) {
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save Changes';
+    }
   }
 }
-
 
 /* =========================================================
    HOMEPAGE IMAGE UPLOAD
@@ -5176,17 +5141,20 @@ async function saveCompanyInfo(
 
     if (existingCompany?.id) {
 
-      const result =
-        await sb
-          .from('company_info')
-          .update(payload)
-          .eq(
-            'id',
-            existingCompany.id
-          );
+      
+const result = await sb
+  .from('company_info')
+  .update(payload)
+  .eq('id', existingCompany.id)
+  .select('id');
 
-      error = result.error;
+error = result.error;
 
+if (!error && (!result.data || result.data.length === 0)) {
+  throw new Error(
+    'No company information was updated. Check admin permissions.'
+  );
+}
     } else {
 
       const result =
@@ -6015,25 +5983,95 @@ async function showDocumentForm() {
   document.getElementById('cancel-new-document')?.addEventListener('click',()=>box.innerHTML='');
   document.getElementById('add-document-form')?.addEventListener('submit', saveNewDocument);
 }
-async function saveNewDocument(event) {
-  event.preventDefault();
-  const title=document.getElementById('new-doc-title')?.value.trim();
-  const type=document.getElementById('new-doc-type')?.value||'other';
-  const productValue=document.getElementById('new-doc-product')?.value||'';
-  const file=document.getElementById('new-doc-file')?.files?.[0];
-  if(!title||!file){alert('Title and file are required.');return;}
-  try {
-    showLoading('Uploading document...');
-    const uploaded=await uploadMedia(file,'documents');
-    const {error}=await deviSupabase.from('documents').insert({title,document_type:type,product_id:productValue?Number(productValue):null,file_name:file.name,file_url:uploaded});
-    if(error) throw error;
-    showToast('Document uploaded successfully.');
-    document.getElementById('document-form-container').innerHTML='';
-    await loadDocuments();
-  } catch(error) { console.error(error); showToast(error?.message||'Unable to upload document.','error'); }
-  finally { hideLoading(); }
-}
 
+async function saveDocument(event) {
+  const button = event.currentTarget;
+
+  const card = button.closest('.document-card');
+  if (!card) return;
+
+  const id = card.dataset.id;
+
+  const title =
+    card.querySelector('.document-title')?.value.trim() || '';
+
+  const documentType =
+    card.querySelector('.document-type')?.value || 'other';
+
+  const productValue =
+    card.querySelector('.document-product')?.value || '';
+
+  const file =
+    card.querySelector('.document-file')?.files?.[0] || null;
+
+  if (!title) {
+    alert('Please enter document title.');
+    return;
+  }
+
+  if (!deviSupabase) {
+    alert('Supabase client is not available.');
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = 'Saving...';
+
+  try {
+    const payload = {
+      title: title,
+      document_type: documentType,
+      product_id: productValue
+        ? Number(productValue)
+        : null
+    };
+
+    // If a replacement file is selected, upload it first.
+    if (file) {
+      const uploadedUrl =
+        await uploadMedia(file, 'documents');
+
+      if (!uploadedUrl) {
+        throw new Error('File upload failed.');
+      }
+
+      payload.file_name = file.name;
+      payload.file_url = uploadedUrl;
+    }
+
+    const { data, error } = await deviSupabase
+      .from('documents')
+      .update(payload)
+      .eq('id', id)
+      .select('id');
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'No document was updated. Check admin permissions.'
+      );
+    }
+
+    showToast('Document saved successfully.');
+
+    await loadDocuments();
+
+  } catch (error) {
+    console.error('Save document error:', error);
+
+    showToast(
+      error?.message || 'Unable to save document.',
+      'error'
+    );
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Save';
+  }
+}
 /* =========================================================
    SAVE DOCUMENT
    ========================================================= */
@@ -6935,17 +6973,22 @@ async function saveTracking(event) {
     };
 
 
-    const {
-      error
-    } = await deviSupabase
-      .from('tracking')
-      .update(payload)
-      .eq('id', id);
+  
+const { data, error } = await deviSupabase
+  .from('tracking')
+  .update(payload)
+  .eq('id', id)
+  .select('id');
 
+if (error) {
+  throw error;
+}
 
-    if (error) {
-      throw error;
-    }
+if (!data || data.length === 0) {
+  throw new Error(
+    'No tracking record was updated. Check admin permissions.'
+  );
+}
 
 
     alert(
