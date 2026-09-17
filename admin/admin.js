@@ -813,7 +813,7 @@ function renderNavigation() {
     ['dashboard', 'Dashboard'],
     ['products', 'Products'],
     ['business-units', 'Business Units'],
-    ['homepage', 'Homepage'],
+    ['enquiries', 'Enquiries'],
         ['reviews', 'Reviews'],
     ['company-info', 'Company Info'],
     ['documents', 'Documents'],
