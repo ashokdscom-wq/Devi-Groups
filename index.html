@@ -17,7 +17,6 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -230,7 +229,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-16 border-b border-slate-700/60">
             <!-- Logo & Brand Name -->
             <div onclick="showPage('home')" class="flex items-center space-x-3 cursor-pointer group">
-                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-11 w-auto object-contain bg-white rounded p-1 shadow-sm block group-hover:scale-105 transition" onerror="this.onerror=null; this.src='logo.png';">
+                <img src="logo.png" alt="DEVI GROUPS Logo" class="h-10 sm:h-11 w-auto object-contain bg-white rounded p-1 shadow-sm block group-hover:scale-105 transition" onerror="this.onerror=null; this.src='logo.jpg';">
                 <span class="text-lg sm:text-2xl font-black tracking-wider uppercase group-hover:text-amber-400 transition">DEVI GROUPS</span>
             </div>
 
@@ -356,14 +355,14 @@
                 
                 <!-- Text & Overview Section -->
                 <div class="text-center max-w-2xl mx-auto">
-                    <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 px-3.5 py-1.5 rounded-full border border-orange-200 dark:border-orange-900/50 inline-block" id="cms-home-badge">Global Industrial & Export Powerhouse</span>
-                    <h1 class="text-2xl sm:text-4xl font-black text-primary dark:text-white mt-3 mb-3 tracking-tight" id="cms-home-title">Pioneering Excellence Across Global Markets</h1>
-                    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto" id="cms-home-subtitle">
+                    <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 px-3.5 py-1.5 rounded-full border border-orange-200 dark:border-orange-900/50 inline-block">Global Industrial & Export Powerhouse</span>
+                    <h1 class="text-2xl sm:text-4xl font-black text-primary dark:text-white mt-3 mb-3 tracking-tight">Pioneering Excellence Across Global Markets</h1>
+                    <p class="text-xs sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto">
                         Supplying premium Chemical Intermediates, Heavy Industrial Packaging, FMCG Essentials, and Sustainable Solar Backup Solutions worldwide.
                     </p>
                     <div class="flex justify-center gap-3 mt-5">
-                        <button onclick="showPage('products')" id="cms-home-btn1" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Explore Products <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                        <button onclick="showPage('contact')" id="cms-home-btn2" class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Quick Inquiry</button>
+                        <button onclick="showPage('products')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Explore Products <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                        <button onclick="showPage('contact')" class="bg-accent hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition">Quick Inquiry</button>
                     </div>
                 </div>
 
@@ -679,7 +678,7 @@
             <div class="max-w-5xl mx-auto space-y-8">
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Corporate Background</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-1" id="cms-about-title">About DEVI GROUPS</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-1">About DEVI GROUPS</h2>
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md text-center">
@@ -762,7 +761,7 @@
                                 <h3 class="text-lg font-bold text-primary dark:text-white">1. Devi Chemical</h3>
                             </div>
                             <div onclick="openLightbox('company-chemical.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                                <img src="company-chemical.png" alt="Devi Chemical Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-chemical.png';}">
+                                <img src="company-chemical.png" alt="Devi Chemical Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-chemical.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
@@ -787,7 +786,7 @@
                                 <h3 class="text-lg font-bold text-primary dark:text-white">2. Devi Packaging</h3>
                             </div>
                             <div onclick="openLightbox('company-packaging.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                                <img src="company-packaging.png" alt="Devi Packaging Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.png';}">
+                                <img src="company-packaging.png" alt="Devi Packaging Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
@@ -818,7 +817,7 @@
                             </div>
 
                             <div onclick="openLightbox('company-coffee.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                                <img src="company-coffee.png" alt="Devi Coffee Day Outlet" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-coffee.png';}">
+                                <img src="company-coffee.png" alt="Devi Coffee Day Outlet" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-coffee.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
 
@@ -853,7 +852,7 @@
                                 <h3 class="text-lg font-bold text-primary dark:text-white">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
                             <div onclick="openLightbox('company-solar.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                                <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.png';}">
+                                <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
                             <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
@@ -880,7 +879,7 @@
                 
                 <div class="text-center max-w-2xl mx-auto">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 px-3.5 py-1.5 rounded-full border border-orange-200 dark:border-orange-900/50 inline-block">Direct Global Supply</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-2" id="cms-products-title">Export Product Catalog</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-2">Export Product Catalog</h2>
                     <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">High-definition product showcases with technical specs, PDF brochures & instant quote generator.</p>
                 </div>
 
@@ -958,7 +957,7 @@
                         <!-- 3. FOOD COLOURS -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-food-colour.png')">
-                                <img src="devi-food-colour.png" alt="Food Colours" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-food-colour.png';}else{this.src='https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="devi-food-colour.png" alt="Food Colours" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-food-colour.jpg';}else{this.src='https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -985,7 +984,7 @@
                         <!-- 4. MASTER BATCHES -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-masterbatches.png')">
-                                <img src="devi-masterbatches.png" alt="Master Batches" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-masterbatches.png';}else{this.src='https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="devi-masterbatches.png" alt="Master Batches" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-masterbatches.jpg';}else{this.src='https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1039,7 +1038,7 @@
                         <!-- 6. TOYS (POPUP BROCHURE WITH DRIVE INTEGRATION) -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
-                                <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.png';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1194,7 +1193,7 @@
                         <!-- FULL SIZE BIG HD PACKAGING PHOTO INSIDE THE CONTAINER -->
                         <div class="w-full bg-white dark:bg-slate-900 rounded-2xl p-2 sm:p-3 border border-white/30 shadow-inner overflow-hidden">
                             <div onclick="openLightbox('devi-packaging-division.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center">
-                                <img src="devi-packaging-division.png" alt="Devi Packaging Banner" class="w-full h-auto max-h-[500px] object-contain mx-auto block group-hover:scale-[1.02] transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-packaging-division.png';}else{this.src='company-packaging.png';}">
+                                <img src="devi-packaging-division.png" alt="Devi Packaging Banner" class="w-full h-auto max-h-[500px] object-contain mx-auto block group-hover:scale-[1.02] transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-packaging-division.jpg';}else{this.src='company-packaging.png';}">
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition duration-300">
                                     <span class="bg-black/70 text-amber-300 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg border border-amber-400/40"><i class="fa-solid fa-magnifying-glass-plus text-lg text-amber-400"></i> View Large Full Size Photo</span>
                                 </div>
@@ -1208,7 +1207,7 @@
                         <!-- 1. CORRUGATED BOX -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-box.png')">
-                                <img src="packaging-box.png" alt="Corrugated Box" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-box.png';}else{this.src='https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-box.png" alt="Corrugated Box" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-box.jpg';}else{this.src='https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1231,7 +1230,7 @@
                         <!-- 2. PAPER CUP -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-paper-cup.png')">
-                                <img src="packaging-paper-cup.png" alt="Paper Cup" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-cup.png';}else{this.src='https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-paper-cup.png" alt="Paper Cup" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-cup.jpg';}else{this.src='https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1254,7 +1253,7 @@
                         <!-- 3. PAPER BAG -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-paper-bag.png')">
-                                <img src="packaging-paper-bag.png" alt="Paper Bag" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-bag.png';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-paper-bag.png" alt="Paper Bag" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-paper-bag.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1277,7 +1276,7 @@
                         <!-- 4. ALUMINUM FOIL -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-aluminum-foil.png')">
-                                <img src="packaging-aluminum-foil.png" alt="Aluminum Foil" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-aluminum-foil.png';}else{this.src='https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-aluminum-foil.png" alt="Aluminum Foil" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-aluminum-foil.jpg';}else{this.src='https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1300,7 +1299,7 @@
                         <!-- 5. HINJ BOX -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-hinj-box.png')">
-                                <img src="packaging-hinj-box.png" alt="Hinj Box" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hinj-box.png';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-hinj-box.png" alt="Hinj Box" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hinj-box.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1323,7 +1322,7 @@
                         <!-- 6. BUBBLE ENVELOPE -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-plastic-bubble-envelope.png')">
-                                <img src="packaging-plastic-bubble-envelope.png" alt="Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-plastic-bubble-envelope.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-plastic-bubble-envelope.png" alt="Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-envelope.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1346,7 +1345,7 @@
                         <!-- 7. HARD BOARD ENVELOPE -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-hard-board-envelope.png')">
-                                <img src="packaging-hard-board-envelope.png" alt="Hard Board Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hard-board-envelope.png';}else{this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-hard-board-envelope.png" alt="Hard Board Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hard-board-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1369,7 +1368,7 @@
                         <!-- 8. PAPER BUBBLE ENVELOPE -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-bubble-roll.png')">
-                                <img src="packaging-bubble-roll.png" alt="Paper Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-roll.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-bubble-roll.png" alt="Paper Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-roll.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1392,7 +1391,7 @@
                         <!-- 9. PLASTIC BUBBLE ENVELOPE -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-plastic-bubble-envelope.png')">
-                                <img src="packaging-plastic-bubble-envelope.png" alt="Plastic Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-plastic-bubble-envelope.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-plastic-bubble-envelope.png" alt="Plastic Bubble Envelope" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-plastic-bubble-envelope.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1415,7 +1414,7 @@
                         <!-- 10. BUBBLE ROLL AND SHEET -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-bubble-roll.png')">
-                                <img src="packaging-bubble-roll.png" alt="Bubble Roll and Sheet" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-roll.png';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-bubble-roll.png" alt="Bubble Roll and Sheet" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-bubble-roll.jpg';}else{this.src='https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1438,7 +1437,7 @@
                         <!-- 11. BIODEGREE BAGS -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-biodegree-bags.png')">
-                                <img src="packaging-biodegree-bags.png" alt="Biodegree Bags" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-biodegree-bags.png';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-biodegree-bags.png" alt="Biodegree Bags" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-biodegree-bags.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1461,7 +1460,7 @@
                         <!-- 12. PLASTIC CONTAINER -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('packaging-hinj-box.png')">
-                                <img src="packaging-hinj-box.png" alt="Plastic Container" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hinj-box.png';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
+                                <img src="packaging-hinj-box.png" alt="Plastic Container" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='packaging-hinj-box.jpg';}else{this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-xl"></i></div>
                             </div>
                             <div class="flex-grow flex flex-col justify-between">
@@ -1551,7 +1550,7 @@
                         </div>
 
                         <div onclick="openLightbox('company-solar.png')" class="cursor-pointer group relative w-full rounded-2xl overflow-hidden mb-5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                            <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-72 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.png';}">
+                            <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-72 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}">
                             <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                         </div>
 
@@ -1611,7 +1610,7 @@
                 
                 <div class="text-center">
                     <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs">Direct Inquiry</span>
-                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-1" id="cms-contact-title">Connect With DEVI GROUPS</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black text-primary dark:text-white mt-1">Connect With DEVI GROUPS</h2>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1982,7 +1981,7 @@
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 flex items-center justify-between shadow-md">
             <div class="flex items-center gap-3">
                 <div class="relative">
-                    <img src="logo.png" alt="Devi Groups" class="w-9 h-9 rounded-full bg-white p-1 object-contain shadow" onerror="this.src='logo.png'">
+                    <img src="logo.png" alt="Devi Groups" class="w-9 h-9 rounded-full bg-white p-1 object-contain shadow" onerror="this.src='logo.jpg'">
                     <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-300 rounded-full border-2 border-white"></span>
                 </div>
                 <div>
@@ -2676,40 +2675,6 @@
             }
         }
     </script>
-<script>
-// ==================== DEVI GROUPS NON-DESTRUCTIVE LIVE CMS ====================
-// This version intentionally preserves the original website layout and static content.
-(function(){
-  const URL='https://bgkymxdbmvbplnlehakd.supabase.co';
-  const KEY='sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7';
-  const client=window.supabase?.createClient ? window.supabase.createClient(URL,KEY) : null;
-  const setText=(id,v)=>{const e=document.getElementById(id); if(e && v!==null && v!==undefined && String(v)!=='') e.textContent=String(v)};
-  async function load(){
-    if(!client) return;
-    try{
-      const {data,error}=await client.from('site_content').select('*').eq('active',true);
-      if(error) throw error;
-      const c={}; (data||[]).forEach(x=>c[x.key]=x.content);
-      setText('cms-home-badge',c['home.badge']);
-      setText('cms-home-title',c['home.title']);
-      setText('cms-home-subtitle',c['home.subtitle']);
-      setText('cms-home-btn1',c['home.btn1']);
-      setText('cms-home-btn2',c['home.btn2']);
-      setText('cms-about-title',c['about.title']);
-      setText('cms-products-title',c['products.title']);
-      setText('cms-contact-title',c['contact.title']);
-      if(c['home.btn1_url']) document.getElementById('cms-home-btn1')?.setAttribute('onclick',c['home.btn1_url'].startsWith('#')?`showPage('${c['home.btn1_url'].slice(1)}')`:c['home.btn1_url']);
-      if(c['home.btn2_url']) document.getElementById('cms-home-btn2')?.setAttribute('onclick',c['home.btn2_url'].startsWith('#')?`showPage('${c['home.btn2_url'].slice(1)}')`:c['home.btn2_url']);
-    }catch(e){console.warn('DEVI CMS skipped:',e.message)}
-    try{
-      const {data}=await client.from('tracking').select('*');
-      if(data) window.__deviTrackingDB=data;
-    }catch(e){}
-  }
-  window.addEventListener('load',load);
-})();
-</script>
-<script src="./cms-visual-bridge.js?v=1"></script>
 </body>
 </html>
 
