@@ -329,34 +329,18 @@ async function requireAdmin() {
     return null;
   }
 
-  /*
-   * Primary admin account.
-   * This UID is the authorized DEVI GROUPS admin.
-   */
-  if (
-    user.id ===
-    'c588a994-3fcb-46ed-9991-63ab20d65ac0'
-  ) {
-    return user;
+  // Only the explicitly authorized DEVI GROUPS admin UID.
+  const ADMIN_UID =
+    'c588a994-3fcb-46ed-9991-63ab20d65ac0';
+
+  if (user.id !== ADMIN_UID) {
+    throw new Error(
+      'This account is not authorized as an admin.'
+    );
   }
 
-  /*
-   * Also allow an explicit admin role if later
-   * added to user metadata.
-   */
-  const role =
-    user.user_metadata?.role ||
-    user.app_metadata?.role;
-
-  if (role === 'admin') {
-    return user;
-  }
-
-  throw new Error(
-    'This account is not authorized as an admin.'
-  );
+  return user;
 }
-
 async function signOut() {
   await sb.auth.signOut();
   window.location.reload();
