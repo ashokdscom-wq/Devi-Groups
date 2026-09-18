@@ -3526,18 +3526,16 @@ async function saveHomepageItem(id) {
       if (imageField) imageField.value = imageUrl;
     }
 
-    const payload = {
-      title,
-      subtitle,
-      content,
-      image_url: imageUrl,
-      video_url: videoUrl,
-      button_text: buttonText,
-      button_url: buttonUrl,
-      active,
-      updated_at: new Date().toISOString()
-    };
-
+  const payload = {
+  title,
+  subtitle,
+  content,
+  image_url: imageUrl,
+  video_url: videoUrl,
+  button_text: buttonText,
+  button_url: buttonUrl,
+  active
+};
     const { data, error } = await sb
       .from('site_content')
       .update(payload)
