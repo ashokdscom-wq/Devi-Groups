@@ -43,10 +43,7 @@ document.getElementById('saveElement').onclick=async()=>{try{
  const ab=document.getElementById('actionBox');
  const q=v=>String(v??'').replaceAll('\\','\\\\').replaceAll("'","\\'");
  if(!ab.classList.contains('hidden')){
-   const a1 = document.getElementById('action1').value;
-let a2 = document.getElementById('action2').value;
-const a3 = document.getElementById('action3').value;
-const a4 = document.getElementById('action4').value;
+   const a1=document.getElementById('action1').value,a2=document.getElementById('action2').value,a3=document.getElementById('action3').value,a4=document.getElementById('action4').value;
    if(ab.dataset.type==='tds') r.onclick=`openTechSpecs('${q(a1)}','${q(a2)}','${q(a3)}','${q(a4)}')`;
    if(ab.dataset.type==='brochure'){
      const bf=document.getElementById('brochureFile').files[0];
