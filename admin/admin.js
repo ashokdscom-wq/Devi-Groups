@@ -6149,23 +6149,11 @@ async function saveDocument(event) {
 
     if (file) {
 
-      if (
-        typeof uploadToStorage !==
-        'function'
-      ) {
-
-        throw new Error(
-          'Storage upload helper is not available.'
-        );
-      }
-
-
       const uploaded =
-        await uploadToStorage(
-          file,
-          'documents'
-        );
-
+  await uploadMedia(
+    file,
+    'documents'
+  );
 
       if (!uploaded) {
 
