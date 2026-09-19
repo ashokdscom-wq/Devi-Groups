@@ -2936,13 +2936,14 @@ async function saveBusinessUnit(existingUnit) {
         );
     }
 
-    const payload = {
-      name,
-      description,
-      image_url: imageUrl,
-      website
-    };
-
+  const payload = {
+    name,
+    description,
+    image_url: imageUrl,
+    website,
+    address: document.getElementById('unit-address').value.trim(),
+    location_url: document.getElementById('unit-location').value.trim()
+};
     if (id) {
       const { error } =
         await sb
