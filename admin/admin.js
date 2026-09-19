@@ -1984,14 +1984,13 @@ async function saveProduct(existingProduct) {
     }
 
     const payload = {
-      name,
-      description,
-      packing,
-      category,
-      product_code: productCode,
-      image_url: imageUrl,
-      brochure_url: brochureUrl
-    };
+    name,
+    description,
+    image_url: imageUrl,
+    website,
+    address: document.getElementById('unit-address').value.trim(),
+    location_url: document.getElementById('unit-location').value.trim()
+};
 
     /*
      * IMPORTANT:
