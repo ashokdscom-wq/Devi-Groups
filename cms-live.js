@@ -39,8 +39,35 @@
         const els = document.querySelectorAll(`[data-cms="${key}"]`);
 
         els.forEach((el) => {
-          if (r.content !== null && r.content !== undefined) {
-            el.innerHTML = r.content;
+          const raw = r.content;
+          let visual = null;
+
+          // Visual Admin stores a serialized element patch in content.
+          if (typeof raw === 'string' && raw.trim().startsWith('{')) {
+            try { visual = JSON.parse(raw); } catch (_) { visual = null; }
+          }
+
+          if (visual && typeof visual === 'object') {
+            const target = visual.key ? document.getElementById(String(visual.key)) : el;
+            if (!target) return;
+            const tag = target.tagName.toLowerCase();
+            if (Object.prototype.hasOwnProperty.call(visual, 'text') && !['img','video','source'].includes(tag)) {
+              target.textContent = String(visual.text ?? '');
+            }
+            if (Object.prototype.hasOwnProperty.call(visual, 'src') && ['img','video','source'].includes(tag)) {
+              if (visual.src) target.setAttribute('src', String(visual.src));
+              else target.removeAttribute('src');
+            }
+            if (Object.prototype.hasOwnProperty.call(visual, 'href') && (tag === 'a' || tag === 'area')) {
+              if (visual.href) target.setAttribute('href', String(visual.href));
+              else target.removeAttribute('href');
+            }
+            if (Object.prototype.hasOwnProperty.call(visual, 'alt') && tag === 'img') target.setAttribute('alt', String(visual.alt ?? ''));
+            if (Object.prototype.hasOwnProperty.call(visual, 'title')) target.setAttribute('title', String(visual.title ?? ''));
+            if (Object.prototype.hasOwnProperty.call(visual, 'hidden')) target.hidden = Boolean(visual.hidden);
+          } else if (raw !== null && raw !== undefined) {
+            // Treat database content as text, not executable HTML.
+            el.textContent = String(raw);
           } else if (r.title) {
             el.textContent = r.title;
           }
