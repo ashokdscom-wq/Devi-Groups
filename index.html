@@ -2776,3 +2776,700 @@
     }
 
 </script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DEVI GROUPS | Admin Panel</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        #loginPage {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+        }
+
+        .login-box h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-box button:hover {
+            opacity: 0.9;
+        }
+
+        #loginMessage {
+            margin-top: 15px;
+            text-align: center;
+            color: #d00;
+        }
+
+
+        /* =========================
+           ADMIN PANEL
+        ========================= */
+
+        #adminPage {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: #111;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h2 {
+            font-size: 22px;
+        }
+
+        .logout-btn {
+            border: none;
+            background: #fff;
+            color: #111;
+            padding: 9px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #777;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card p {
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #111;
+            color: white;
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width:600px) {
+
+            .admin-header {
+                padding: 15px;
+            }
+
+            .admin-header h2 {
+                font-size: 17px;
+            }
+
+            .admin-container {
+                padding: 20px 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =================================================
+     LOGIN PAGE
+================================================= -->
+
+<div id="loginPage">
+
+    <div class="login-box">
+
+        <h1>DEVI GROUPS</h1>
+
+        <p>Admin Panel Login</p>
+
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Admin Email"
+            autocomplete="email"
+        >
+
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+
+        <button
+            onclick="adminLogin()"
+        >
+            Login
+        </button>
+
+
+        <div id="loginMessage"></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =================================================
+     ADMIN PAGE
+================================================= -->
+
+<div id="adminPage">
+
+
+    <header class="admin-header">
+
+        <h2>
+            DEVI GROUPS Admin
+        </h2>
+
+        <button
+            class="logout-btn"
+            onclick="adminLogout()"
+        >
+            Logout
+        </button>
+
+    </header>
+
+
+
+    <main class="admin-container">
+
+
+        <section class="welcome">
+
+            <h1>
+                Dashboard
+            </h1>
+
+            <p>
+                Manage your DEVI GROUPS website
+                from here.
+            </p>
+
+        </section>
+
+
+
+        <section class="dashboard-grid">
+
+
+            <!-- WEBSITE CONTENT -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Website Content
+                </h3>
+
+                <p>
+                    Edit homepage text,
+                    headings and other content.
+                </p>
+
+                <button
+                    onclick="openSection('content')"
+                >
+                    Manage Content
+                </button>
+
+            </div>
+
+
+
+            <!-- PRODUCTS -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Products
+                </h3>
+
+                <p>
+                    Add, edit or remove products.
+                </p>
+
+                <button
+                    onclick="openSection('products')"
+                >
+                    Manage Products
+                </button>
+
+            </div>
+
+
+
+            <!-- DIVISIONS -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Divisions
+                </h3>
+
+                <p>
+                    Manage DEVI GROUPS divisions.
+                </p>
+
+                <button
+                    onclick="openSection('divisions')"
+                >
+                    Manage Divisions
+                </button>
+
+            </div>
+
+
+
+            <!-- IMAGES -->
+
+            <div class="dashboard-card">
+
+                <h3>
+                    Images
+                </h3>
+
+                <p>
+                    Manage website images.
+                </p>
+
+                <button
+                    onclick="openSection('images')"
+                >
+                    Manage Images
+                </button>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- Future management area -->
+
+        <div
+            id="managementArea"
+            style="margin-top:30px;"
+        ></div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =================================================
+     SUPABASE
+================================================= -->
+
+<script type="module">
+
+    import {
+        createClient
+    }
+    from
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+    /* =========================================
+       YOUR SUPABASE DETAILS
+    ========================================= */
+
+    const SUPABASE_URL =
+        "YOUR_SUPABASE_URL";
+
+
+    const SUPABASE_ANON_KEY =
+        "YOUR_SUPABASE_ANON_KEY";
+
+
+    const supabase =
+        createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    window.DEVI_SUPABASE =
+        supabase;
+
+
+
+    /* =========================================
+       LOGIN
+    ========================================= */
+
+    window.adminLogin =
+    async function() {
+
+        const email =
+            document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById("password")
+            .value;
+
+
+        const message =
+            document
+            .getElementById("loginMessage");
+
+
+        message.textContent = "";
+
+
+        if (!email || !password) {
+
+            message.textContent =
+                "Please enter email and password.";
+
+            return;
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+        await supabase.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+        if (error) {
+
+            console.error(error);
+
+            message.textContent =
+                error.message;
+
+            return;
+
+        }
+
+
+        console.log(
+            "Admin Login Successful",
+            data
+        );
+
+
+        showAdminPage();
+
+    };
+
+
+
+    /* =========================================
+       SHOW ADMIN
+    ========================================= */
+
+    function showAdminPage() {
+
+        document
+        .getElementById("loginPage")
+        .style.display = "none";
+
+
+        document
+        .getElementById("adminPage")
+        .style.display = "block";
+
+    }
+
+
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+
+    window.adminLogout =
+    async function() {
+
+        await supabase.auth.signOut();
+
+        document
+        .getElementById("adminPage")
+        .style.display = "none";
+
+
+        document
+        .getElementById("loginPage")
+        .style.display = "flex";
+
+
+        document
+        .getElementById("email")
+        .value = "";
+
+
+        document
+        .getElementById("password")
+        .value = "";
+
+    };
+
+
+
+    /* =========================================
+       CHECK EXISTING SESSION
+    ========================================= */
+
+    async function checkSession() {
+
+        const {
+            data
+        } =
+        await supabase.auth.getSession();
+
+
+        if (
+            data &&
+            data.session
+        ) {
+
+            showAdminPage();
+
+        }
+
+    }
+
+
+
+    /* =========================================
+       MANAGEMENT SECTIONS
+    ========================================= */
+
+    window.openSection =
+    function(section) {
+
+        const area =
+            document
+            .getElementById(
+                "managementArea"
+            );
+
+
+        if (section === "content") {
+
+            area.innerHTML = `
+
+                <div class="dashboard-card">
+
+                    <h2>Website Content</h2>
+
+                    <p>
+                        Content management will
+                        be added in the next part.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        else if (section === "products") {
+
+            area.innerHTML = `
+
+                <div class="dashboard-card">
+
+                    <h2>Products</h2>
+
+                    <p>
+                        Product management will
+                        be added in the next part.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        else if (section === "divisions") {
+
+            area.innerHTML = `
+
+                <div class="dashboard-card">
+
+                    <h2>Divisions</h2>
+
+                    <p>
+                        Division management will
+                        be added in the next part.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        else if (section === "images") {
+
+            area.innerHTML = `
+
+                <div class="dashboard-card">
+
+                    <h2>Images</h2>
+
+                    <p>
+                        Image management will
+                        be added in the next part.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    };
+
+
+    /* =========================================
+       START
+    ========================================= */
+
+    checkSession();
+
+</script>
+
+
+</body>
+
+</html>
