@@ -22,6 +22,9 @@
     <script src="cms-config.js"></script>
 
     <!-- Tailwind CSS CDN -->
+   <!-- Supabase Integration -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cms-config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -231,6 +234,139 @@
             outline: 2px solid #2563eb !important;
             background-color: rgba(59, 130, 246, 0.08) !important;
         }
+    // ==================== SUPABASE CMS & LIVE VISUAL EDITOR BRIDGE ====================
+let supabaseClient = null;
+if (window.DEVI_CMS_CONFIG && window.supabase) {
+    supabaseClient = window.supabase.createClient(
+        window.DEVI_CMS_CONFIG.supabaseUrl,
+        window.DEVI_CMS_CONFIG.supabaseKey
+    );
+}
+
+const isAdminMode = new URLSearchParams(window.location.search).get('admin') === '1';
+
+async function loadCMSContent() {
+    if (!supabaseClient) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('site_content')
+            .select('*')
+            .eq('active', true);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                try {
+                    const parsed = typeof item.content === 'string' ? JSON.parse(item.content) : item.content;
+                    if (!parsed || !parsed.id) return;
+                    const el = document.getElementById(parsed.id);
+                    if (!el) return;
+
+                    if (parsed.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) {
+                        el.innerText = parsed.text;
+                    }
+                    if (parsed.src !== undefined && (el.src !== undefined || el.tagName === 'IMG' || el.tagName === 'VIDEO')) {
+                        el.src = parsed.src;
+                    }
+                    if (parsed.href !== undefined && el.tagName === 'A') {
+                        el.href = parsed.href;
+                    }
+                    if (parsed.alt !== undefined && el.tagName === 'IMG') {
+                        el.alt = parsed.alt;
+                    }
+                    if (parsed.onclick !== undefined && parsed.onclick) {
+                        el.setAttribute('onclick', parsed.onclick);
+                    }
+                    if (parsed.hidden !== undefined) {
+                        if (parsed.hidden) el.classList.add('hidden');
+                        else el.classList.remove('hidden');
+                    }
+                } catch(e) {}
+            });
+        }
+    } catch (err) {
+        console.error("Error loading CMS content:", err);
+    }
+}
+
+function initVisualAdminMode() {
+    if (!isAdminMode) return;
+
+    const editableElements = document.querySelectorAll(
+        'h1, h2, h3, h4, h5, p, span, a, button, img'
+    );
+
+    editableElements.forEach((el, index) => {
+        if (!el.id) {
+            el.id = 'cms_node_' + index;
+        }
+
+        el.classList.add('admin-editable');
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const activePage = document.querySelector('.page-content.active-page')?.id?.replace('page-', '') || 'home';
+            const payload = {
+                id: el.id,
+                tag: el.tagName.toLowerCase(),
+                page: activePage,
+                text: el.innerText || el.textContent || '',
+                src: el.getAttribute('src') || el.src || '',
+                href: el.getAttribute('href') || el.href || '',
+                alt: el.getAttribute('alt') || '',
+                title: el.getAttribute('title') || '',
+                onclick: el.getAttribute('onclick') || ''
+            };
+
+            window.parent.postMessage({
+                source: 'devi-visual-cms',
+                type: 'SELECT',
+                element: payload
+            }, '*');
+        }, true);
+    });
+}
+
+window.addEventListener('message', (event) => {
+    if (event.data?.source !== 'devi-visual-cms') return;
+
+    if (event.data.type === 'NAVIGATE') {
+        if (typeof showPage === 'function') showPage(event.data.page);
+    } else if (event.data.type === 'APPLY') {
+        const d = event.data.element;
+        if (!d || !d.id) return;
+        const el = document.getElementById(d.id);
+        if (!el) return;
+        if (d.text) el.innerText = d.text;
+        if (d.src) el.src = d.src;
+        if (d.href) el.href = d.href;
+    } else if (event.data.type === 'LIST_BROCHURES') {
+        const brochureButtons = Array.from(document.querySelectorAll('button[onclick*="openBrochureViewer"]')).map((b, i) => {
+            const match = (b.getAttribute('onclick') || '').match(/openBrochureViewer\('([^']*)',\s*'([^']*)'\)/);
+            return {
+                id: b.id || ('brochure_btn_' + i),
+                title: match ? match[1] : b.innerText,
+                file: match ? match[2] : '',
+                page: document.querySelector('.page-content.active-page')?.id?.replace('page-', '') || 'products',
+                tag: 'button',
+                onclick: b.getAttribute('onclick') || ''
+            };
+        });
+        window.parent.postMessage({
+            source: 'devi-visual-cms',
+            type: 'BROCHURES',
+            items: brochureButtons
+        }, '*');
+    }
+});
+
+// સાઇટ લોડ થતાં જ CMS ડેટા ફેચ કરવો
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadCMSContent();
+    initVisualAdminMode();
+});
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white transition-colors duration-300">
