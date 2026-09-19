@@ -2756,7 +2756,15 @@ async function showBusinessUnitForm(id = null) {
               style="${inputStyle()}"
               placeholder="https://example.com"
             />
+<label>Address</label>
+<textarea id="unit-address" placeholder="Enter business address"></textarea>
 
+<label>Location / Google Maps URL</label>
+<input
+  id="unit-location"
+  type="url"
+  placeholder="Paste Google Maps link"
+/>
           </div>
 
         </div>
