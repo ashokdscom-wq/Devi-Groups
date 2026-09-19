@@ -2756,13 +2756,25 @@ async function showBusinessUnitForm(id = null) {
               style="${inputStyle()}"
               placeholder="https://example.com"
             />
-<label>Address</label>
-<textarea id="unit-address" placeholder="Enter business address"></textarea>
+<label style="display:block; margin-bottom:6px; font-size:13px; font-weight:700;">
+  Address
+</label>
 
-<label>Location / Google Maps URL</label>
+<textarea
+  id="unit-address"
+  style="${inputStyle()}"
+  placeholder="Enter business address"
+>${esc(unit?.address || '')}</textarea>
+
+<label style="display:block; margin-bottom:6px; font-size:13px; font-weight:700;">
+  Location / Google Maps URL
+</label>
+
 <input
   id="unit-location"
   type="url"
+  value="${esc(unit?.location_url || '')}"
+  style="${inputStyle()}"
   placeholder="Paste Google Maps link"
 />
           </div>
