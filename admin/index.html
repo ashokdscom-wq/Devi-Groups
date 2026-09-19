@@ -44,9 +44,9 @@ document.getElementById('saveElement').onclick=async()=>{try{
  const q=v=>String(v??'').replaceAll('\\','\\\\').replaceAll("'","\\'");
  if(!ab.classList.contains('hidden')){
    const a1 = document.getElementById('action1').value;
-let a2 = document.getElementById('action2').value;
-const a3 = document.getElementById('action3').value;
-const a4 = document.getElementById('action4').value;
+   let a2 = document.getElementById('action2').value;
+   const a3 = document.getElementById('action3').value;
+   const a4 = document.getElementById('action4').value;
    if(ab.dataset.type==='tds') r.onclick=`openTechSpecs('${q(a1)}','${q(a2)}','${q(a3)}','${q(a4)}')`;
    if(ab.dataset.type==='brochure'){
      const bf=document.getElementById('brochureFile').files[0];
@@ -59,52 +59,50 @@ const a4 = document.getElementById('action4').value;
  const f=document.getElementById('fileValue').files[0];
  if(f) r.src=await upload(f,'visual');
  const key = String(r.id || '').trim();
-if (!key) throw new Error('Selected element is missing its key/id.');
+ if (!key) throw new Error('Selected element is missing its key/id.');
 
-const content = JSON.stringify(r);
+ const content = JSON.stringify(r);
 
-const sectionMap = {
-  home: 'home',
-  about: 'about',
-  company: 'company',
-  products: 'products',
-  'sister-brand': 'sister-brand',
-  contact: 'contact'
-};
+ const sectionMap = {
+   home: 'home',
+   about: 'about',
+   company: 'company',
+   products: 'products',
+   'sister-brand': 'sister-brand',
+   contact: 'contact'
+ };
 
-const section_key = sectionMap[String(r.page || '').toLowerCase()];
-if (!section_key) {
-  throw new Error('Unknown page section: ' + String(r.page || '(empty)'));
-}
+ const rawPage = String(r.page || 'home').toLowerCase().trim();
+ const section_key = sectionMap[rawPage] || 'home';
 
-const { data: old, error: lookupError } = await sb
-  .from('site_content')
-  .select('id')
-  .eq('key', key)
-  .maybeSingle();
+ const { data: old, error: lookupError } = await sb
+   .from('site_content')
+   .select('id')
+   .eq('key', key)
+   .maybeSingle();
 
-if (lookupError) throw lookupError;
+ if (lookupError) throw lookupError;
 
-let result;
+ let result;
 
-if (old?.id) {
-  result = await sb
-    .from('site_content')
-    .update({ section_key, content, active: true })
-    .eq('id', old.id);
-} else {
-  result = await sb
-    .from('site_content')
-    .insert({
-      section_key,
-      key,
-      content,
-      active: true,
-      title: String(r.page || '')
-    });
-}
+ if (old?.id) {
+   result = await sb
+     .from('site_content')
+     .update({ section_key, content, active: true })
+     .eq('id', old.id);
+ } else {
+   result = await sb
+     .from('site_content')
+     .insert({
+       section_key,
+       key,
+       content,
+       active: true,
+       title: String(r.page || 'home')
+     });
+ }
 
-if (result.error) throw result.error;
+ if (result.error) throw result.error;
  frame.contentWindow.postMessage({source:'devi-visual-cms',type:'APPLY',element:r},'*');
  document.getElementById('saveMsg').textContent='Saved to live website ✓';
  document.getElementById('saveMsg').className='text-sm text-emerald-600';
