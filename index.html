@@ -290,11 +290,11 @@
                     </div>
                 </div>
 
-                <!-- Top Navbar WhatsApp Chatbot Trigger -->
-                <button onclick="openChatBot('Hello! How can I assist you with DEVI GROUPS products?')" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
+                <!-- Top Navbar Direct WhatsApp Chat Link (Updated to direct chat) -->
+                <a href="https://wa.me/919727726216?text=Hello%20DEVI%20GROUPS,%20I%20would%20like%20to%20get%20assistance." target="_blank" class="bg-whatsapp hover:bg-emerald-600 text-white px-3 sm:px-3.5 py-1.5 rounded-full font-bold shadow transition flex items-center gap-1.5 text-xs sm:text-sm">
                     <i class="fa-brands fa-whatsapp text-sm sm:text-base"></i>
                     <span class="hidden sm:inline">WhatsApp Help</span>
-                </button>
+                </a>
             </div>
         </div>
 
@@ -778,7 +778,7 @@
                         </div>
                     </div>
 
-                    <!-- 2. Devi Packaging Card -->
+                    <!-- 2. Devi Packaging Card (Updated with Address & Live Map) -->
                     <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 border-t-4 border-secondary shadow-md card-lift flex flex-col justify-between border border-slate-200 dark:border-slate-800">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
@@ -789,9 +789,17 @@
                                 <img src="company-packaging.png" alt="Devi Packaging Facility" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-packaging.jpg';}">
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition"><i class="fa-solid fa-magnifying-glass-plus text-2xl"></i></div>
                             </div>
-                            <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
+                            <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
                                 Corrugated Boxes, Bubble Envelopes, Biodegradable Bags, Aluminum Foils & Heavy Duty Plastic Containers.
                             </p>
+                            <!-- Address & Live Map Link Button Added Here -->
+                            <div class="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                                <p class="font-bold text-primary dark:text-amber-400"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Address:</p>
+                                <p class="text-slate-600 dark:text-slate-300">Godown no.18,<br>Pushkar Ind estate -2<br>Opp.National Raifale<br>Phase - I , GIDC, VATVA<br>AHMEDABAD GUJARAT<br>382445</p>
+                                <a href="https://maps.app.goo.gl/WA6YYFwZkXdRgaS78?g_st=ac" target="_blank" class="mt-2 inline-flex items-center gap-1.5 bg-accent hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-[11px] transition shadow">
+                                    <i class="fa-solid fa-map-location-dot"></i> Open Live Map
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -1027,7 +1035,7 @@
                             </div>
                         </div>
 
-                        <!-- 6. TOYS (POPUP BROCHURE WITH DRIVE INTEGRATION) -->
+                        <!-- 6. TOYS -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex-shrink-0 cursor-pointer relative group flex items-center justify-center border border-slate-200 dark:border-slate-700" onclick="openLightbox('devi-product-toys.png')">
                                 <img src="devi-product-toys.png" alt="Toys" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-500" onerror="if(!this.src.endsWith('.jpg')){this.src='devi-product-toys.jpg';}else{this.src='https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&auto=format&fit=crop&q=80';}">
@@ -1048,12 +1056,9 @@
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                                     <button onclick="openTechSpecs('Toys', 'Non-Toxic Toy Grade Safe Colors', 'EN 71-3 / ASTM F963 Compliant', '25Kg Bag / 10Kg / 25Kg Box')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition border border-slate-300 dark:border-slate-700">TDS</button>
-                                    
-                                    <!-- Opens Clean Popup Modal with Google Drive PDF -->
                                     <button onclick="openBrochureViewer('Toys Certified Product Brochure', 'https://drive.google.com/file/d/1b2-kEVaWl7qCT2dGGiG90ihiYY0GTQCV/view?usp=sharing')" class="bg-primary hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow">
                                         <i class="fa-solid fa-book-open"></i> Brochure
                                     </button>
-                                    
                                     <button onclick="toggleProductInQuote(this, 'Toys (Devi Chemical)')" class="quote-btn bg-accent hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow">+ Quote</button>
                                 </div>
                             </div>
@@ -1079,7 +1084,7 @@
                     </div>
 
                     <div class="space-y-4 product-group">
-                        <!-- SPICES (PHOTO BROCHURE) -->
+                        <!-- SPICES -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 flex-shrink-0 cursor-pointer relative group" onclick="openLightbox('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80')">
                                 <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&auto=format&fit=crop&q=80" alt="Spices" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -1105,7 +1110,7 @@
                             </div>
                         </div>
 
-                        <!-- SEASONING (PHOTO BROCHURE) -->
+                        <!-- SEASONING -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 flex-shrink-0 cursor-pointer relative group" onclick="openLightbox('https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=800&auto=format&fit=crop&q=80')">
                                 <img src="https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=800&auto=format&fit=crop&q=80" alt="Seasoning" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -1131,7 +1136,7 @@
                             </div>
                         </div>
 
-                        <!-- FARFAR (PHOTO BROCHURE) -->
+                        <!-- FARFAR -->
                         <div class="product-item bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col md:flex-row gap-4 p-4 sm:p-5 card-lift">
                             <div class="w-full md:w-56 h-48 md:h-auto rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 flex-shrink-0 cursor-pointer relative group" onclick="openLightbox('https://images.unsplash.com/photo-1621996346565-e3d5d6281691?w=800&auto=format&fit=crop&q=80')">
                                 <img src="https://images.unsplash.com/photo-1621996346565-e3d5d6281691?w=800&auto=format&fit=crop&q=80" alt="Farfar" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -1193,7 +1198,7 @@
                         </div>
                     </div>
 
-                    <!-- 12 PACKAGING PRODUCT CARDS (ALL 12 OPEN ONLY SINGLE IMAGES IN LIGHTBOX) -->
+                    <!-- 12 PACKAGING PRODUCT CARDS -->
                     <div class="space-y-4 product-group">
                         
                         <!-- 1. CORRUGATED BOX -->
@@ -1809,7 +1814,7 @@
 
                 </div>
 
-                <!-- Interactive Multi-Location Map Hub with User's Provided Accurate Addresses -->
+                <!-- Interactive Multi-Location Map Hub -->
                 <div class="bg-white dark:bg-slate-900 p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
                     <div class="text-center mb-6">
                         <span class="text-accent font-bold uppercase tracking-widest text-[10px] sm:text-xs bg-orange-100 dark:bg-orange-950/60 dark:text-orange-300 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-900/50">Interactive Location Navigator</span>
@@ -1899,7 +1904,7 @@
         </a>
     </div>
 
-    <!-- ==================== REVIEWS READ MODAL (WALL OF REVIEWS) ==================== -->
+    <!-- ==================== REVIEWS READ MODAL ==================== -->
     <div id="reviews-modal" class="fixed inset-0 bg-black/85 z-[140] hidden flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
@@ -2450,7 +2455,6 @@
             let viewUrl = filePath;
             let downloadUrl = filePath;
 
-            // Handle Google Drive Links Automatically
             if (filePath.includes('drive.google.com')) {
                 const match = filePath.match(/\/d\/([a-zA-Z0-9_-]+)/);
                 if (match && match[1]) {
@@ -2625,19 +2629,18 @@
             status.classList.remove('hidden');
         }
 
-        // Updated Map Location Embed URLs with exact user addresses
         const locationData = {
             'chemical': { 
                 name: 'DEVI CHEMICALS (C/3, Shiv Tenament, Ghodasar, Ahmedabad - 380050)', 
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.645512702758!2d72.6012!3d22.9912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU5JzI4LjQiTiA3MsKwMzYnMDQuMyJF!5e0!3m2!1sen!2sin!4v1700000000000' 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.645512702758!2d72.6012!3d22.9912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU5JzI4LjQiTiA3MsKwMzAnMDQuMyJF!5e0!3m2!1sen!2sin!4v1700000000000' 
             },
             'devigroup': {
                 name: 'DEVI GROUPS (Godown no.18, Pushkar Ind estate -2, Vatva, Ahmedabad 382445)',
                 url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.5!2d72.64!3d22.95!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU3JzAwLjAiTiA3MsKwMzgnMzAuMCJF!5e0!3m2!1sen!2sin!4v1700000000002'
             },
             'packaging': { 
-                name: 'DEVI PACKAGING MANUFACTURING UNIT (Gujarat, India)', 
-                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235014.29927163015!2d72.41493014164506!3d23.02015808453472!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000001' 
+                name: 'DEVI PACKAGING (Godown no.18, Pushkar Ind estate -2, Opp.National Raifale, Phase - I , GIDC, VATVA, AHMEDABAD 382445)', 
+                url: 'https://maps.google.com/maps?q=Pushkar+Ind+estate+2+Vatva+Ahmedabad&t=&z=15&ie=UTF8&iwloc=&output=embed' 
             },
             'coffee': { 
                 name: 'DEVI COFFEE DAY (Rivera Arcade, Prahlad Nagar, Ahmedabad, Gujarat)', 
