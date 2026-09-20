@@ -16,6 +16,21 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="logo.png">
+    <!-- ========================================== -->
+    <!-- ADDED: SUPABASE CMS CONNECTION & CONFIG    -->
+    <!-- ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.DEVI_CMS_CONFIG = {
+            supabaseUrl: "https://bgkymxdbmvbplnlehakd.supabase.co",
+            supabaseKey: "sb_publishable_J3m0j2EknLIDDQW9ZRLJ-Q_FxOlUFN7"
+        };
+    </script>
+    <style>
+        /* Admin Editor Highlight */
+        .admin-editable:hover { outline: 2px dashed #fbbf24 !important; outline-offset: 2px; cursor: pointer; }
+    </style>
+    <!-- ========================================== -->
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -2780,6 +2795,66 @@
             }
         }
     </script>
+    <!-- ========================================== -->
+    <!-- MASTER SCRIPT WITH SUPABASE CMS LOGIC      -->
+    <!-- ========================================== -->
+    <script>
+        let sb = null;
+        if (window.DEVI_CMS_CONFIG && window.DEVI_CMS_CONFIG.supabaseUrl) {
+            sb = supabase.createClient(window.DEVI_CMS_CONFIG.supabaseUrl, window.DEVI_CMS_CONFIG.supabaseKey);
+        }
+
+        async function loadLiveContent() {
+            if (!sb) return;
+            try {
+                const { data: contentData } = await sb.from('site_content').select('*').eq('active', true);
+                if (contentData) {
+                    contentData.forEach(item => {
+                        const el = document.getElementById(item.key);
+                        if (el) {
+                            try {
+                                const parsed = JSON.parse(item.content);
+                                if (parsed.text !== undefined && !['IMG','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = parsed.text;
+                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = parsed.src;
+                                if (parsed.href && el.tagName === 'A') el.href = parsed.href;
+                                if (parsed.onclick !== undefined) {
+                                    if(parsed.onclick === '') el.removeAttribute('onclick');
+                                    else el.setAttribute('onclick', parsed.onclick);
+                                }
+                                if (parsed.hidden) el.style.display = 'none'; else el.style.display = '';
+                            } catch(e) {}
+                        }
+                    });
+                }
+            } catch (err) { console.error("CMS Sync Error: ", err); }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Auto-generate IDs for CMS targeting
+            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
+                if (!el.id) el.id = 'cms_auto_' + index;
+            });
+
+            loadLiveContent();
+
+            // Enable Admin Element Clicking
+            if (window.location.search.includes('admin=1')) {
+                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
+                    el.classList.add('admin-editable');
+                    el.onclick = (e) => {
+                        e.stopPropagation(); e.preventDefault();
+                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
+                        window.parent.postMessage({
+                            source: 'devi-visual-cms',
+                            type: 'SELECT',
+                            element: { id: el.id, page: page, tag: el.tagName.toLowerCase(), text: el.innerHTML || el.textContent, src: el.src || '', href: el.href || '', onclick: el.getAttribute('onclick') || '' }
+                        }, '*');
+                    };
+                });
+            }
+        });
+    </script>
+    <!-- ========================================== -->
 </body>
 </html>
 
