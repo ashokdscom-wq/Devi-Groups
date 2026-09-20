@@ -256,12 +256,14 @@ document.getElementById('saveElement').onclick = async () => {
 // 3. BROCHURES MANAGER (With ADD NEW)
 // ==========================================
 document.getElementById('brochuresBtn').onclick = () => {
+    // This will ask index.html to collect brochure buttons and trigger the modal below
     frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
 };
 
 function openBrochureManager(items) {
     document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-file-pdf text-rose-500"></i> BROCHURE MANAGER';
     
+    // NEW UPLOAD BOX
     const uploadHtml = `
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5 shadow-sm">
         <h4 class="font-black text-slate-800 text-sm mb-2"><i class="fa-solid fa-cloud-arrow-up text-accent"></i> Upload New Brochure (PDF)</h4>
