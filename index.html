@@ -730,7 +730,6 @@
                 </div>
             </div>
         </section>
-
         <!-- ==================== PAGE 3: COMPANY UNITS ==================== -->
         <section id="page-company" class="page-content py-8 px-4">
             <div class="max-w-5xl mx-auto space-y-8">
@@ -778,7 +777,7 @@
                         </div>
                     </div>
 
-                    <!-- 2. Devi Packaging Card (Updated with Address & Open Live Map Button) -->
+                    <!-- 2. Devi Packaging Card -->
                     <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 border-t-4 border-secondary shadow-md card-lift flex flex-col justify-between border border-slate-200 dark:border-slate-800">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
@@ -844,12 +843,12 @@
                         </div>
                     </div>
 
-                    <!-- 4. Solar Power Backup Services Card -->
+                    <!-- 4. Solar Power Backup Services Card (અહીં id="solar-title" ઉમેરવામાં આવ્યું છે) -->
                     <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-5 border-t-4 border-amber-500 shadow-md card-lift flex flex-col justify-between border border-slate-200 dark:border-slate-800">
                         <div>
                             <div class="flex items-center gap-2.5 mb-3">
                                 <i class="fa-solid fa-solar-panel text-2xl text-amber-500"></i>
-                                <h3 class="text-lg font-bold text-primary dark:text-white">4. SOLAR POWER BACKUP SERVICES</h3>
+                                <h3 id="solar-title" class="text-lg font-bold text-primary dark:text-white">4. SOLAR POWER BACKUP SERVICES</h3>
                             </div>
                             <div onclick="openLightbox('company-solar.png')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden mb-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
                                 <img src="company-solar.png" alt="Solar Power Backup Solutions" class="w-full h-auto max-h-64 object-contain block mx-auto group-hover:scale-105 transition duration-300" onerror="if(!this.src.endsWith('.jpg')){this.src='company-solar.jpg';}">
@@ -1540,7 +1539,7 @@
                 <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-md flex flex-col justify-between">
                     <div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b dark:border-slate-800 pb-3 mb-4">
-                            <h3 class="text-xl sm:text-2xl font-black text-primary dark:text-white flex items-center gap-2">
+                            <h3 id="solar-title-sister" class="text-xl sm:text-2xl font-black text-primary dark:text-white flex items-center gap-2">
                                 <i class="fa-solid fa-solar-panel text-amber-500"></i> SOLAR POWER BACKUP SERVICES
                             </h3>
                             <span class="bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-xs font-bold px-3 py-1 rounded-full w-fit">Kenya Operations</span>
@@ -2381,10 +2380,77 @@
             }, 500);
         }
 
-        // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS ====================
-                window.addEventListener('DOMContentLoaded', () => {
+        // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS & CMS SYNC ====================
+        
+        let isAdmin = window.location.search.includes('admin=1');
+        let cmsData = {};
+
+        async function loadLiveContent() {
+            if (!window.DEVI_CMS_CONFIG) return; // જો config ફાઈલ ન હોય તો ડીફોલ્ટ ચાલશે
+            
+            try {
+                // Supabase API માંથી લાઈવ ડેટા મેળવવો
+                const response = await fetch(`${window.DEVI_CMS_CONFIG.supabaseUrl}/rest/v1/site_content?select=*&active=eq.true`, {
+                    headers: {
+                        'apikey': window.DEVI_CMS_CONFIG.supabaseKey,
+                        'Authorization': `Bearer ${window.DEVI_CMS_CONFIG.supabaseKey}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    data.forEach(item => {
+                        const el = document.getElementById(item.key);
+                        if (el) {
+                            try {
+                                const parsed = JSON.parse(item.content);
+                                
+                                // Text અપડેટ
+                                if (parsed.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) {
+                                    el.innerHTML = parsed.text;
+                                }
+                                
+                                // Image / Video અપડેટ
+                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
+                                    el.src = parsed.src;
+                                }
+                                
+                                // Link અપડેટ
+                                if (parsed.href && el.tagName === 'A') {
+                                    el.href = parsed.href;
+                                }
+                                
+                                // Onclick Action અપડેટ
+                                if (parsed.onclick !== undefined) {
+                                    if (parsed.onclick === '') {
+                                        el.removeAttribute('onclick');
+                                    } else {
+                                        el.setAttribute('onclick', parsed.onclick);
+                                    }
+                                }
+                                
+                                // છુપાવવું (Hide)
+                                if (parsed.hidden) {
+                                    el.style.display = 'none';
+                                } else {
+                                    el.style.display = '';
+                                }
+                                
+                            } catch(e) {
+                                console.log('Error parsing CMS data for', item.key);
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.log("CMS Sync Error:", err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
             // ૧. સૌથી પહેલાં વેબસાઈટના તમામ લખાણ અને ફોટાને ID આપો (જેથી ડેટાબેઝ તેને ઓળખી શકે)
-            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button').forEach((el, index) => {
+            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
                 if (!el.id) el.id = 'cms_auto_' + index;
             });
 
@@ -2395,12 +2461,24 @@
 
             // ૩. જો એડમિન પેનલ હોય તો જ એડિટ કરવા માટેનું સિલેક્શન ચાલુ કરો
             if (isAdmin) {
-                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button').forEach((el) => {
-                    el.classList.add('admin-editable');
+                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
+                    // Hover effect for admin
+                    el.addEventListener('mouseover', function(e) {
+                        e.stopPropagation();
+                        this.style.outline = '2px dashed #fbbf24';
+                        this.style.outlineOffset = '2px';
+                        this.style.cursor = 'pointer';
+                    });
+                    el.addEventListener('mouseout', function(e) {
+                        e.stopPropagation();
+                        this.style.outline = 'none';
+                    });
+
+                    // Click event to send data to parent Admin Panel
                     el.onclick = (e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        const page = el.closest('section')?.id.replace('page-', '') || 'home';
+                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
                         window.parent.postMessage({
                             source: 'devi-visual-cms',
                             type: 'SELECT',
@@ -2408,7 +2486,7 @@
                                 id: el.id,
                                 page: page,
                                 tag: el.tagName.toLowerCase(),
-                                text: el.textContent,
+                                text: el.innerHTML || el.textContent,
                                 src: el.src || '',
                                 href: el.href || '',
                                 onclick: el.getAttribute('onclick') || ''
@@ -2418,7 +2496,6 @@
                 });
             }
         });
-
 
         // Dark / Light Mode Toggle
         function toggleDarkMode() {
@@ -2472,9 +2549,9 @@
 
             const homeBanner = document.getElementById('home-video-banner');
             if (pageId === 'home') {
-                homeBanner.style.display = 'block';
+                if(homeBanner) homeBanner.style.display = 'block';
             } else {
-                homeBanner.style.display = 'none';
+                if(homeBanner) homeBanner.style.display = 'none';
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
