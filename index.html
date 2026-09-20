@@ -2382,10 +2382,43 @@
         }
 
         // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS ====================
-        window.addEventListener('DOMContentLoaded', () => {
+                window.addEventListener('DOMContentLoaded', () => {
+            // ૧. સૌથી પહેલાં વેબસાઈટના તમામ લખાણ અને ફોટાને ID આપો (જેથી ડેટાબેઝ તેને ઓળખી શકે)
+            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button').forEach((el, index) => {
+                if (!el.id) el.id = 'cms_auto_' + index;
+            });
+
+            // ૨. હવે ડેટાબેઝમાંથી લાઇવ ડેટા લોડ કરો 
+            loadLiveContent();
             loadReviews();
             updateClocks();
+
+            // ૩. જો એડમિન પેનલ હોય તો જ એડિટ કરવા માટેનું સિલેક્શન ચાલુ કરો
+            if (isAdmin) {
+                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button').forEach((el) => {
+                    el.classList.add('admin-editable');
+                    el.onclick = (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const page = el.closest('section')?.id.replace('page-', '') || 'home';
+                        window.parent.postMessage({
+                            source: 'devi-visual-cms',
+                            type: 'SELECT',
+                            element: {
+                                id: el.id,
+                                page: page,
+                                tag: el.tagName.toLowerCase(),
+                                text: el.textContent,
+                                src: el.src || '',
+                                href: el.href || '',
+                                onclick: el.getAttribute('onclick') || ''
+                            }
+                        }, '*');
+                    };
+                });
+            }
         });
+
 
         // Dark / Light Mode Toggle
         function toggleDarkMode() {
