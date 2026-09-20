@@ -264,10 +264,9 @@ function openBrochureManager(items) {
     
     const uploadHtml = `
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5 shadow-sm">
-        <h4 class="font-black text-slate-800 text-sm mb-2"><i class="fa-solid fa-cloud-arrow-up text-accent"></i> Upload New Brochure (PDF)</h4>
-        <p class="text-xs text-slate-500 mb-3">Upload a new PDF to get a live link. You can paste this link into any button via the visual editor.</p>
+        <h4 class="font-black text-slate-800 text-sm mb-2">Upload New Brochure (PDF)</h4>
         <input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border border-slate-300 rounded-xl p-2 mb-3 bg-white text-sm">
-        <button onclick="uploadNewBrochure()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold w-full transition shadow-md"><i class="fa-solid fa-upload mr-2"></i> Upload to Cloud Storage</button>
+        <button onclick="uploadNewBrochure()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold w-full transition shadow-md">Upload to Cloud Storage</button>
         <div id="newBrochureStatus" class="hidden mt-3 p-3 rounded-xl border text-xs break-all"></div>
     </div>`;
 
@@ -275,7 +274,7 @@ function openBrochureManager(items) {
         <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 shadow-sm hover:border-blue-300 transition">
             <div class="font-black text-slate-800">${i+1}. ${esc(x.title||x.name||'Brochure')}</div>
             <div class="text-xs text-slate-500 mb-3">${esc(x.page||'')} • ${esc(x.file||'')}</div>
-            <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm shadow transition" data-bid="${i}"><i class="fa-solid fa-pen mr-1"></i> Open / Edit Brochure</button>
+            <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm shadow transition" data-bid="${i}">Open / Edit Brochure</button>
         </div>`).join('') || '<p class="text-slate-500 text-center py-5">No brochure buttons found on this page.</p>';
     
     document.getElementById('drawerBody').innerHTML = uploadHtml + '<h4 class="font-black text-slate-800 text-sm mb-3">Existing Website Brochures</h4>' + rows;
@@ -299,24 +298,24 @@ window.uploadNewBrochure = async () => {
     if(!file) {
         status.classList.remove('hidden');
         status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
-        status.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please select a PDF file first!';
+        status.innerText = 'Please select a PDF file first!';
         return;
     }
     
     status.classList.remove('hidden');
     status.className = 'mt-3 p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-600 text-xs font-bold';
-    status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading... Please wait.';
+    status.innerText = 'Uploading... Please wait.';
     
     try {
         const url = await upload(file, 'brochures');
         status.className = 'mt-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs shadow-sm';
-        status.innerHTML = `<span class="font-black text-emerald-600 text-sm block mb-1"><i class="fa-solid fa-circle-check"></i> Upload Successful!</span>
+        status.innerHTML = `<span class="font-black text-emerald-600 text-sm block mb-1">Upload Successful!</span>
                             <span class="text-slate-600">Your Live Link:</span><br>
                             <a href="${url}" target="_blank" class="text-blue-600 underline font-normal mt-1 inline-block break-all bg-white border p-2 rounded w-full">${url}</a>`;
         fileInput.value = '';
     } catch(e) {
         status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
-        status.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error: ' + e.message;
+        status.innerText = 'Error: ' + e.message;
     }
 };
 
@@ -368,11 +367,11 @@ async function openProducts() {
     const rows = (data||[]).map((r,i) => `
         <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 cursor-pointer hover:border-emerald-400 hover:shadow-md transition" onclick='editProduct(${JSON.stringify(r)})'>
             <div class="font-black text-slate-800">${i+1}. ${esc(r.name || 'Untitled Product')}</div>
-            <div class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-pen-to-square"></i> Click to view and edit details</div>
+            <div class="text-xs text-slate-500 mt-1">Click to view and edit details</div>
         </div>`).join('');
     
     document.getElementById('drawerBody').innerHTML = `
-        <button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition"><i class="fa-solid fa-plus mr-2"></i> ADD NEW PRODUCT</button>
+        <button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD NEW PRODUCT</button>
         ${rows || '<p class="text-slate-500 text-center py-10">No products found in database.</p>'}`;
     
     document.getElementById('drawer').classList.remove('hidden');
@@ -384,7 +383,7 @@ window.newProduct = () => {
 };
 
 window.editProduct = (r, isNew=false) => {
-    document.getElementById('drawerTitle').innerHTML = isNew ? '<i class="fa-solid fa-plus text-blue-500"></i> ADD NEW PRODUCT' : '<i class="fa-solid fa-pen text-blue-500"></i> EDIT PRODUCT';
+    document.getElementById('drawerTitle').innerHTML = isNew ? 'ADD NEW PRODUCT' : 'EDIT PRODUCT';
     
     let html = Object.keys(r).filter(k => !['id','created_at','updated_at'].includes(k)).map(k => `
         <label class="block mb-3">
@@ -395,7 +394,7 @@ window.editProduct = (r, isNew=false) => {
     html += `
         <div class="flex gap-2 mt-6">
             <button onclick="saveProduct('${r.id||''}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-black shadow-md transition">SAVE PRODUCT</button>
-            ${!isNew ? `<button onclick="deleteProduct('${r.id}')" class="bg-rose-100 hover:bg-rose-600 text-rose-600 hover:text-white px-5 py-3 rounded-xl font-bold shadow-md transition"><i class="fa-solid fa-trash"></i></button>` : ''}
+            ${!isNew ? `<button onclick="deleteProduct('${r.id}')" class="bg-rose-100 hover:bg-rose-600 text-rose-600 hover:text-white px-5 py-3 rounded-xl font-bold shadow-md transition">Delete</button>` : ''}
             <button onclick="openProducts()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-3 rounded-xl font-bold transition">Cancel</button>
         </div>`;
     
