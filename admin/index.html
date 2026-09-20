@@ -55,7 +55,6 @@
         <main class="flex-1 min-w-0 relative bg-slate-200">
             <iframe id="siteFrame" src="../index.html?admin=1"></iframe>
             
-            <!-- Live Visual Editor Panel -->
             <div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[92%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
                 <div class="p-5 border-b flex justify-between bg-slate-50 sticky top-0 z-10">
                     <div>
@@ -72,36 +71,33 @@
                     <div id="srcBox">
                         <label class="font-bold text-sm text-slate-700">Photo / Video Upload</label>
                         <input id="fileValue" type="file" class="w-full border border-slate-300 rounded-xl p-2 mt-1 bg-slate-50">
-                        <p class="text-[10px] text-slate-400 mt-1 mb-2">Or enter existing URL below:</p>
-                        <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:border-emerald-500 shadow-sm" placeholder="https://...">
+                        <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-3 mt-2 focus:outline-none focus:border-emerald-500 shadow-sm" placeholder="Existing URL / path">
                     </div>
                     <div id="hrefBox">
-                        <label class="font-bold text-sm text-slate-700">Link / Button Destination (URL)</label>
-                        <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm" placeholder="e.g. contact.html or https://...">
+                        <label class="font-bold text-sm text-slate-700">Link / Button URL</label>
+                        <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm">
                     </div>
                     <div id="altBox">
                         <label class="font-bold text-sm text-slate-700">Alt / Title Text</label>
                         <input id="altValue" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm">
                     </div>
                     <div id="actionBox" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <label class="font-bold text-sm text-slate-800"><i class="fa-solid fa-wrench text-amber-500"></i> Advanced Settings (Brochure/TDS)</label>
+                        <label class="font-bold text-sm text-slate-800"><i class="fa-solid fa-wrench text-amber-500"></i> Advanced Settings</label>
                         <input id="action1" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Title / Product Name">
                         <input id="action2" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Specification / PDF File Link">
                         <input id="action3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Standard / Extra">
                         <input id="action4" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Packaging (if applicable)">
-                        
                         <div id="brochureTools" class="hidden border border-slate-300 rounded-xl p-3 bg-white mt-2">
                             <div class="text-xs font-bold text-slate-700 mb-1">Replace Brochure File</div>
                             <input id="brochureFile" type="file" accept=".pdf,.doc,.docx" class="w-full border rounded-lg p-1.5 text-xs bg-slate-50">
                             <label class="flex items-center gap-2 text-xs font-bold text-rose-600 mt-3 cursor-pointer">
-                                <input id="deleteBrochure" type="checkbox" class="w-4 h-4"> Hide/Remove this brochure from website
+                                <input id="deleteBrochure" type="checkbox" class="w-4 h-4"> Hide/Remove this brochure
                             </label>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <button id="saveElement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl font-black shadow-lg transition">SAVE CHANGES TO WEBSITE</button>
+                        <button id="saveElement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl font-black shadow-lg transition">SAVE CHANGES</button>
                         <div id="saveMsg" class="text-sm font-bold mt-3 text-center"></div>
-                        <div id="syncMsg" class="text-[10px] text-slate-400 text-center mt-1">Changes are instantly synced to the live database.</div>
                     </div>
                 </div>
             </div>
@@ -109,7 +105,6 @@
     </div>
 </div>
 
-<!-- Right Side Drawer Modal (For Data Tables) -->
 <div id="drawer" class="hidden fixed inset-0 bg-black/60 z-[100] glass">
     <div class="absolute right-0 top-0 h-full w-[580px] max-w-[96vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
         <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
@@ -121,9 +116,6 @@
 </div>
 
 <script>
-// ==========================================
-// 1. SETUP & AUTHENTICATION
-// ==========================================
 const cfg = window.DEVI_CMS_CONFIG; 
 const sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey); 
 const frame = document.getElementById('siteFrame'); 
@@ -150,9 +142,6 @@ async function upload(file, folder='visual') {
     return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
 }
 
-// ==========================================
-// 2. LIVE EDITOR FUNCTIONALITY
-// ==========================================
 window.addEventListener('message', e => {
     if(e.data?.source !== 'devi-visual-cms') return;
     if(e.data.type === 'SELECT') { selected = e.data.element; openEditor(selected); }
@@ -241,27 +230,26 @@ document.getElementById('saveElement').onclick = async () => {
         }
         if (result.error) throw result.error;
 
-        document.getElementById('saveMsg').innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved to live website';
+        document.getElementById('saveMsg').innerHTML = 'Saved to live website';
         document.getElementById('saveMsg').className = 'text-sm font-bold mt-3 text-center text-emerald-600';
-        setTimeout(() => { frame.src = '../index.html?admin=1&sync=' + Date.now(); saveBtn.innerText = "SAVE CHANGES TO WEBSITE"; saveBtn.classList.remove('opacity-70'); }, 500);
+        setTimeout(() => { frame.src = '../index.html?admin=1&sync=' + Date.now(); saveBtn.innerText = "SAVE CHANGES"; saveBtn.classList.remove('opacity-70'); }, 500);
         
     } catch(err) {
         document.getElementById('saveMsg').textContent = err.message;
         document.getElementById('saveMsg').className = 'text-sm font-bold mt-3 text-center text-rose-600';
-        saveBtn.innerText = "SAVE CHANGES TO WEBSITE"; saveBtn.classList.remove('opacity-70');
+        saveBtn.innerText = "SAVE CHANGES"; saveBtn.classList.remove('opacity-70');
     }
 };
 
-// ==========================================
-// 3. BROCHURES MANAGER (With ADD NEW)
-// ==========================================
+function esc(v) { return String(v??'').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[m])); }
+
+// ==================== BROCHURES ====================
 document.getElementById('brochuresBtn').onclick = () => {
     frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
 };
 
 function openBrochureManager(items) {
     document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-file-pdf text-rose-500"></i> BROCHURE MANAGER';
-    
     const uploadHtml = `
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5 shadow-sm">
         <h4 class="font-black text-slate-800 text-sm mb-2">Upload New Brochure (PDF)</h4>
@@ -269,7 +257,6 @@ function openBrochureManager(items) {
         <button onclick="uploadNewBrochure()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold w-full transition shadow-md">Upload to Cloud Storage</button>
         <div id="newBrochureStatus" class="hidden mt-3 p-3 rounded-xl border text-xs break-all"></div>
     </div>`;
-
     const rows = (items||[]).map((x,i) => `
         <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 shadow-sm hover:border-blue-300 transition">
             <div class="font-black text-slate-800">${i+1}. ${esc(x.title||x.name||'Brochure')}</div>
@@ -278,14 +265,9 @@ function openBrochureManager(items) {
         </div>`).join('') || '<p class="text-slate-500 text-center py-5">No brochure buttons found on this page.</p>';
     
     document.getElementById('drawerBody').innerHTML = uploadHtml + '<h4 class="font-black text-slate-800 text-sm mb-3">Existing Website Brochures</h4>' + rows;
-    
     document.querySelectorAll('[data-bid]').forEach(b => b.onclick = () => {
         const x = items[Number(b.dataset.bid)];
-        if(x) {
-            selected = x;
-            document.getElementById('drawer').classList.add('hidden');
-            openEditor(x);
-        }
+        if(x) { selected = x; document.getElementById('drawer').classList.add('hidden'); openEditor(x); }
     });
     document.getElementById('drawer').classList.remove('hidden');
 }
@@ -294,18 +276,12 @@ window.uploadNewBrochure = async () => {
     const fileInput = document.getElementById('newBrochureFile');
     const status = document.getElementById('newBrochureStatus');
     const file = fileInput.files[0];
-    
     if(!file) {
-        status.classList.remove('hidden');
-        status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
-        status.innerText = 'Please select a PDF file first!';
-        return;
+        status.classList.remove('hidden'); status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
+        status.innerText = 'Please select a PDF file first!'; return;
     }
-    
-    status.classList.remove('hidden');
-    status.className = 'mt-3 p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-600 text-xs font-bold';
+    status.classList.remove('hidden'); status.className = 'mt-3 p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-600 text-xs font-bold';
     status.innerText = 'Uploading... Please wait.';
-    
     try {
         const url = await upload(file, 'brochures');
         status.className = 'mt-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs shadow-sm';
@@ -319,63 +295,21 @@ window.uploadNewBrochure = async () => {
     }
 };
 
-// ==========================================
-// 4. DATABASE MANAGERS (Reviews, Products, Units)
-// ==========================================
-function esc(v) { return String(v??'').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[m])); }
-
-// --- REVIEWS ---
-async function openReviews() {
-    const {data, error} = await sb.from('reviews').select('*').order('created_at', {ascending: false});
-    if(error) return alert(error.message);
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-star text-amber-500"></i> REVIEWS';
-    document.getElementById('drawerBody').innerHTML = (data||[]).map((r,i) => `
-        <div class="border border-slate-200 bg-slate-50 rounded-2xl p-5 mb-4 shadow-sm">
-            <div class="font-black mb-3 text-slate-800">#${i+1}. Client Review</div>
-            <label class="text-xs font-bold text-slate-600">Client Name<input id="rname${r.id}" value="${esc(r.name||'')}" class="w-full border rounded-xl p-2.5 mt-1 focus:border-emerald-500 focus:outline-none"></label>
-            <label class="text-xs font-bold text-slate-600 block mt-3">Country / Title<input id="rcountry${r.id}" value="${esc(r.country||'')}" class="w-full border rounded-xl p-2.5 mt-1 focus:border-emerald-500 focus:outline-none"></label>
-            <label class="text-xs font-bold text-slate-600 block mt-3">Stars Rating (1-5)<input id="rstars${r.id}" type="number" min="1" max="5" value="${r.stars||r.rating||5}" class="w-full border rounded-xl p-2.5 mt-1 focus:border-emerald-500 focus:outline-none"></label>
-            <label class="text-xs font-bold text-slate-600 block mt-3">Review Text<textarea id="rv${r.id}" rows="3" class="w-full border rounded-xl p-2.5 mt-1 focus:border-emerald-500 focus:outline-none">${esc(r.message||r.msg||r.review||'')}</textarea></label>
-            <div class="flex gap-2 mt-4">
-                <button onclick="saveReview('${r.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition">Save Update</button>
-                <button onclick="deleteReview('${r.id}')" class="bg-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white font-bold px-4 py-2.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
-            </div>
-        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
-    document.getElementById('drawer').classList.remove('hidden');
-}
-
-window.saveReview = async id => {
-    const msg = document.getElementById('rv'+id).value;
-    const name = document.getElementById('rname'+id).value;
-    const country = document.getElementById('rcountry'+id).value;
-    const stars = Number(document.getElementById('rstars'+id).value)||5;
-    const {error} = await sb.from('reviews').update({name, country, stars, message:msg, review:msg}).eq('id', id);
-    if(error) alert(error.message); else alert('Review saved successfully ✓');
-};
-window.deleteReview = async id => {
-    if(!confirm('Delete this review permanently?')) return;
-    const {error} = await sb.from('reviews').delete().eq('id', id);
-    if(error) alert(error.message); else openReviews();
-};
-
-// --- PRODUCTS --- (With ADD NEW)
-async function openProducts() {
+// ==================== PRODUCTS ====================
+document.getElementById('productsBtn').onclick = async () => {
     const {data, error} = await sb.from('products').select('*').order('name');
     if(error) return alert(error.message);
     document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-box text-blue-500"></i> PRODUCTS MANAGER';
-    
     const rows = (data||[]).map((r,i) => `
         <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 cursor-pointer hover:border-emerald-400 hover:shadow-md transition" onclick='editProduct(${JSON.stringify(r)})'>
             <div class="font-black text-slate-800">${i+1}. ${esc(r.name || 'Untitled Product')}</div>
             <div class="text-xs text-slate-500 mt-1">Click to view and edit details</div>
         </div>`).join('');
-    
     document.getElementById('drawerBody').innerHTML = `
         <button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD NEW PRODUCT</button>
         ${rows || '<p class="text-slate-500 text-center py-10">No products found in database.</p>'}`;
-    
     document.getElementById('drawer').classList.remove('hidden');
-}
+};
 
 window.newProduct = () => {
     const emptyProd = { name: '', description: '', category: '', standard_packaging: '', purity: '', image_url: '' };
@@ -384,132 +318,131 @@ window.newProduct = () => {
 
 window.editProduct = (r, isNew=false) => {
     document.getElementById('drawerTitle').innerHTML = isNew ? 'ADD NEW PRODUCT' : 'EDIT PRODUCT';
-    
     let html = Object.keys(r).filter(k => !['id','created_at','updated_at'].includes(k)).map(k => `
         <label class="block mb-3">
             <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">${esc(k)}</span>
             <textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border border-slate-300 rounded-xl p-3 mt-1 text-sm font-medium focus:border-emerald-500 focus:outline-none shadow-sm">${esc(r[k]??'')}</textarea>
         </label>`).join('');
-    
     html += `
         <div class="flex gap-2 mt-6">
             <button onclick="saveProduct('${r.id||''}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-black shadow-md transition">SAVE PRODUCT</button>
             ${!isNew ? `<button onclick="deleteProduct('${r.id}')" class="bg-rose-100 hover:bg-rose-600 text-rose-600 hover:text-white px-5 py-3 rounded-xl font-bold shadow-md transition">Delete</button>` : ''}
-            <button onclick="openProducts()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-3 rounded-xl font-bold transition">Cancel</button>
+            <button onclick="document.getElementById('productsBtn').click()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-3 rounded-xl font-bold transition">Cancel</button>
         </div>`;
-    
     document.getElementById('drawerBody').innerHTML = html;
 };
 
 window.saveProduct = async id => {
     const fields = {};
     document.querySelectorAll('[id^="pf_"]').forEach(x => fields[x.dataset.key] = x.value);
-    
     let q;
-    if(id && id !== 'undefined' && id !== '') {
-        q = sb.from('products').update(fields).eq('id', id);
-    } else {
-        q = sb.from('products').insert([fields]);
-    }
-    
+    if(id && id !== 'undefined' && id !== '') q = sb.from('products').update(fields).eq('id', id);
+    else q = sb.from('products').insert([fields]);
     const {error} = await q;
     if(error) alert(error.message);
-    else { alert('Product saved successfully ✓'); openProducts(); }
+    else { alert('Product saved successfully ✓'); document.getElementById('productsBtn').click(); }
 };
 
 window.deleteProduct = async id => {
     if(!confirm('Are you sure you want to permanently delete this product?')) return;
     const {error} = await sb.from('products').delete().eq('id', id);
-    if(error) alert(error.message); else openProducts();
+    if(error) alert(error.message); else document.getElementById('productsBtn').click();
 };
 
-// --- BUSINESS UNITS ---
-async function openUnits() {
-  const {data,error} = await sb.from('business_units').select('*').order('id',{ascending:true});
-  if(error) return alert(error.message);
-  document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-building text-emerald-500"></i> BUSINESS UNITS';
-  
-  const rows = (data||[]).map((r,i) => `
-  <div class="border border-slate-200 bg-white rounded-2xl p-5 mb-4 shadow-sm">
-    <div class="flex gap-4 items-start">
-      <div class="w-24 h-20 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">${r.image_url ? `<img src="${esc(r.image_url)}" class="w-full h-full object-cover">` : '<div class="h-full grid place-items-center text-xs text-slate-400">No Image</div>'}</div>
-      <div class="flex-1 min-w-0">
-          <div class="font-black text-lg text-slate-800">${esc(r.name||r.title||'Business Unit')}</div>
-          <div class="text-xs text-slate-500 mt-1 whitespace-pre-wrap leading-relaxed">${esc(r.description||'')}</div>
-      </div>
-    </div>
-    <div class="flex gap-2 mt-4 pt-4 border-t border-slate-100">
-        <button class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl transition" onclick='editUnit(${JSON.stringify(r)})'>Edit Details</button>
-        <button class="bg-rose-100 hover:bg-rose-600 text-rose-600 hover:text-white px-4 py-2.5 rounded-xl font-bold transition" onclick="deleteUnit('${r.id}')"><i class="fa-solid fa-trash"></i></button>
-    </div>
-  </div>`).join('');
-  
-  document.getElementById('drawerBody').innerHTML = `<button onclick="newUnit()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition"><i class="fa-solid fa-plus mr-2"></i> ADD BUSINESS UNIT</button>${rows||'<p class="text-slate-500 text-center py-10">No Business Units found.</p>'}`;
-  document.getElementById('drawer').classList.remove('hidden');
-}
+// ==================== REVIEWS ====================
+document.getElementById('reviewsBtn').onclick = async () => {
+    const {data, error} = await sb.from('reviews').select('*').order('created_at', {ascending: false});
+    if(error) return alert(error.message);
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-star text-amber-500"></i> REVIEWS';
+    document.getElementById('drawerBody').innerHTML = (data||[]).map((r,i) => `
+        <div class="border border-slate-200 bg-slate-50 rounded-2xl p-5 mb-4 shadow-sm">
+            <div class="font-black mb-3 text-slate-800">#${i+1}. Client Review</div>
+            <label class="text-xs font-bold text-slate-600">Name<input id="rname${r.id}" value="${esc(r.name||'')}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Country<input id="rcountry${r.id}" value="${esc(r.country||'')}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Stars<input id="rstars${r.id}" type="number" min="1" max="5" value="${r.stars||r.rating||5}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Review Text<textarea id="rv${r.id}" rows="3" class="w-full border rounded-xl p-2.5 mt-1">${esc(r.message||r.msg||r.review||'')}</textarea></label>
+            <div class="flex gap-2 mt-4">
+                <button onclick="saveReview('${r.id}')" class="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition">Save Update</button>
+                <button onclick="deleteReview('${r.id}')" class="bg-rose-100 text-rose-600 font-bold px-4 py-2.5 rounded-xl transition">Delete</button>
+            </div>
+        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
+    document.getElementById('drawer').classList.remove('hidden');
+};
+
+window.saveReview = async id => {
+    const msg = document.getElementById('rv'+id).value, name = document.getElementById('rname'+id).value, country = document.getElementById('rcountry'+id).value, stars = Number(document.getElementById('rstars'+id).value)||5;
+    const {error} = await sb.from('reviews').update({name, country, stars, message:msg, review:msg}).eq('id', id);
+    if(error) alert(error.message); else alert('Review saved successfully ✓');
+};
+window.deleteReview = async id => {
+    if(!confirm('Delete this review permanently?')) return;
+    const {error} = await sb.from('reviews').delete().eq('id', id);
+    if(error) alert(error.message); else document.getElementById('reviewsBtn').click();
+};
+
+// ==================== BUSINESS UNITS ====================
+document.getElementById('unitsBtn').onclick = async () => {
+    const {data,error} = await sb.from('business_units').select('*').order('id',{ascending:true});
+    if(error) return alert(error.message);
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-building text-emerald-500"></i> BUSINESS UNITS';
+    const rows = (data||[]).map((r,i) => `
+    <div class="border border-slate-200 bg-white rounded-2xl p-5 mb-4 shadow-sm">
+        <div class="font-black text-lg text-slate-800">${esc(r.name||r.title||'Business Unit')}</div>
+        <div class="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+            <button class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-xl transition" onclick='editUnit(${JSON.stringify(r)})'>Edit Details</button>
+            <button class="bg-rose-100 text-rose-600 px-4 py-2.5 rounded-xl font-bold transition" onclick="deleteUnit('${r.id}')">Delete</button>
+        </div>
+    </div>`).join('');
+    document.getElementById('drawerBody').innerHTML = `<button onclick="newUnit()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD BUSINESS UNIT</button>${rows||'<p class="text-slate-500 text-center py-10">No Business Units found.</p>'}`;
+    document.getElementById('drawer').classList.remove('hidden');
+};
 
 function unitForm(r={}) {
-  document.getElementById('drawerTitle').innerHTML = r.id ? '<i class="fa-solid fa-pen text-emerald-500"></i> EDIT BUSINESS UNIT' : '<i class="fa-solid fa-plus text-emerald-500"></i> ADD BUSINESS UNIT';
-  document.getElementById('drawerBody').innerHTML = `
-  <div class="space-y-4">
-    <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Name</span><input id="u_name" class="w-full border border-slate-300 rounded-xl p-3 mt-1 text-sm font-medium focus:border-emerald-500 focus:outline-none" value="${esc(r.name||r.title||'')}"></label>
-    <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Description</span><textarea id="u_desc" rows="5" class="w-full border border-slate-300 rounded-xl p-3 mt-1 text-sm font-medium focus:border-emerald-500 focus:outline-none">${esc(r.description||'')}</textarea></label>
-    <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Image URL</span><input id="u_img" class="w-full border border-slate-300 rounded-xl p-3 mt-1 text-xs bg-slate-50" value="${esc(r.image_url||'')}"></label>
-    <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Upload New Image</span><input id="u_file" type="file" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2 mt-1"></label>
-    ${r.image_url ? `<div class="p-2 border rounded-xl inline-block bg-slate-50"><img src="${esc(r.image_url)}" class="h-32 object-contain rounded-lg"></div>` : ''}
-    <div class="flex gap-2 pt-4">
-        <button onclick="saveUnit(${r.id ? `'${r.id}'` : 'null'})" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-black shadow-md transition">SAVE CHANGES</button>
-        <button onclick="openUnits()" class="px-5 bg-slate-200 hover:bg-slate-300 rounded-xl font-bold text-slate-700 transition">Cancel</button>
-    </div>
-  </div>`;
+    document.getElementById('drawerTitle').innerHTML = r.id ? 'EDIT BUSINESS UNIT' : 'ADD BUSINESS UNIT';
+    document.getElementById('drawerBody').innerHTML = `
+    <div class="space-y-4">
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Name</span><input id="u_name" class="w-full border border-slate-300 rounded-xl p-3 mt-1" value="${esc(r.name||r.title||'')}"></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Description</span><textarea id="u_desc" rows="5" class="w-full border border-slate-300 rounded-xl p-3 mt-1">${esc(r.description||'')}</textarea></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Image URL</span><input id="u_img" class="w-full border border-slate-300 rounded-xl p-3 mt-1 bg-slate-50" value="${esc(r.image_url||'')}"></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Upload New Image</span><input id="u_file" type="file" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2 mt-1"></label>
+        <div class="flex gap-2 pt-4">
+            <button onclick="saveUnit(${r.id ? `'${r.id}'` : 'null'})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black shadow-md">SAVE CHANGES</button>
+            <button onclick="document.getElementById('unitsBtn').click()" class="px-5 bg-slate-200 rounded-xl font-bold text-slate-700">Cancel</button>
+        </div>
+    </div>`;
 }
 window.newUnit = () => unitForm({});
 window.editUnit = r => unitForm(r);
 window.saveUnit = async id => {
     try {
-        const name = document.getElementById('u_name').value.trim(); 
-        if(!name) return alert('Name is required.');
-        let image = document.getElementById('u_img').value.trim(); 
-        const f = document.getElementById('u_file').files[0]; 
-        if(f) image = await upload(f, 'business-units');
-        
+        const name = document.getElementById('u_name').value.trim(); if(!name) return alert('Name is required.');
+        let image = document.getElementById('u_img').value.trim(); const f = document.getElementById('u_file').files[0]; if(f) image = await upload(f, 'business-units');
         const payload = { name, description: document.getElementById('u_desc').value.trim(), image_url: image };
         const q = id ? sb.from('business_units').update(payload).eq('id',id) : sb.from('business_units').insert([payload]); 
-        
-        const {error} = await q; 
-        if(error) throw error; 
-        alert('Saved successfully!'); await openUnits();
+        const {error} = await q; if(error) throw error; alert('Saved successfully!'); document.getElementById('unitsBtn').click();
     } catch(e) { alert(e.message || 'Unable to save business unit.') }
 };
 window.deleteUnit = async id => {
     if(!confirm('Permanently delete this Business Unit?')) return;
     const {error} = await sb.from('business_units').delete().eq('id',id);
-    if(error) alert(error.message); else openUnits();
+    if(error) alert(error.message); else document.getElementById('unitsBtn').click();
 };
 
 document.getElementById('refreshSite').onclick = () => { frame.src = '../index.html?admin=1&sync=' + Date.now(); document.getElementById('editor').classList.add('hidden'); };
-document.getElementById('reviewsBtn').onclick = openReviews;
-document.getElementById('productsBtn').onclick = openProducts;
-document.getElementById('unitsBtn').onclick = openUnits;
 document.getElementById('drawerClose').onclick = () => document.getElementById('drawer').classList.add('hidden');
 
 document.getElementById('loginForm').onsubmit = async e => {
     e.preventDefault();
-    const msg = document.getElementById('loginMsg');
-    msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
+    document.getElementById('loginMsg').innerHTML = 'Logging in...';
     const {error} = await sb.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
-    if(error) { msg.textContent = error.message; return; }
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
+    if(error) { document.getElementById('loginMsg').textContent = error.message; return; }
+    document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
 };
 
 document.getElementById('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
 sb.auth.getSession().then(({data}) => {
-    if(data.session) {
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-    }
+    if(data.session) { document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
 });
 </script>
 </body>
