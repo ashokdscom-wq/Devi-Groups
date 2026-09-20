@@ -2854,12 +2854,13 @@
             }
         });
     </script>
-    // ==================== 2. ADMIN PANEL NAVIGATION SYNC ====================
+            // ==================== ADMIN PANEL NAVIGATION SYNC ====================
         window.addEventListener('message', function(e) {
             if (e.data && e.data.source === 'devi-visual-cms' && e.data.type === 'NAVIGATE') {
                 showPage(e.data.page);
             }
         });
+
     <!-- ========================================== -->
 </body>
 </html>
