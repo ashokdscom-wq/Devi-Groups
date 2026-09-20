@@ -2854,15 +2854,13 @@
                 });
             }
         });
-    </script>
-            // ==================== ADMIN PANEL NAVIGATION SYNC ====================
-        window.addEventListener('message', function(e) {
-            if (e.data && e.data.source === 'devi-visual-cms' && e.data.type === 'NAVIGATE') {
-                showPage(e.data.page);
-            }
-        });
-
-    <!-- ========================================== -->
+   <script>
+    // ========== ADMIN PANEL NAVIGATION SYNC ==========
+    window.addEventListener('message', e => {
+        if(e.data.source === 'devi-visual-cms' && e.data.type === 'NAVIGATE') {
+            showPage(e.data.page);
+        }
+    });
+</script>
 </body>
 </html>
-
