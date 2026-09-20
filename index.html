@@ -2494,14 +2494,14 @@
                         e.stopPropagation();
                         e.preventDefault();
                         const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
-                        window.parent.postMessage({
+                      window.parent.postMessage({
                             source: 'devi-visual-cms',
                             type: 'SELECT',
                             element: {
                                 id: el.id,
                                 page: page,
                                 tag: el.tagName.toLowerCase(),
-                                text: el.innerHTML || el.textContent,
+                                text: el.innerHTML.trim(), // આનાથી આઇકોન ભૂંસાશે નહીં
                                 src: el.src || '',
                                 href: el.href || '',
                                 onclick: el.getAttribute('onclick') || ''
@@ -2854,6 +2854,12 @@
             }
         });
     </script>
+    // ==================== 2. ADMIN PANEL NAVIGATION SYNC ====================
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.source === 'devi-visual-cms' && e.data.type === 'NAVIGATE') {
+                showPage(e.data.page);
+            }
+        });
     <!-- ========================================== -->
 </body>
 </html>
