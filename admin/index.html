@@ -81,19 +81,19 @@ document.getElementById('saveElement').onclick=async()=>{try{
  setTimeout(()=>{frame.src='../index.html?admin=1&sync='+Date.now();},150);
 }catch(err){document.getElementById('saveMsg').textContent=err.message;document.getElementById('saveMsg').className='text-sm text-rose-600 font-bold';}};
 
-// ==================== BROCHURE MANAGER ====================
+// ==================== BROCHURES MANAGER ====================
 function openBrochureManager(items){
- document.getElementById('drawerTitle').textContent='BROCHURES';
- const uploadHtml=`<div class="border rounded-2xl p-4 mb-4 bg-slate-50"><div class="font-black text-sm mb-2">Upload New Brochure (PDF)</div><input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border rounded-xl p-2 mb-2 bg-white text-xs"><button onclick="uploadNewBrochure()" class="w-full bg-blue-600 text-white p-2.5 rounded-xl font-bold text-xs">Upload Brochure</button><div id="newBrochureStatus" class="hidden text-xs mt-2"></div></div>`;
- const listHtml=(items||[]).map((x,i)=>`<div class="border rounded-2xl p-4 mb-3"><div class="font-black">${i+1}. ${esc(x.title||x.name||'Brochure')}</div><div class="text-xs text-slate-500 mb-3">${esc(x.page||'')} • ${esc(x.file||'')}</div><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold" data-bid="${i}">Open / Edit Brochure</button></div>`).join('')||'<p class="text-slate-500 text-xs">No brochure buttons found on this page.</p>';
- document.getElementById('drawerBody').innerHTML=uploadHtml+listHtml;
+ document.getElementById('drawerTitle').textContent='BROCHURE MANAGER';
+ const uploadBox = `<div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-5 shadow-sm"><div class="font-black text-sm text-blue-900 mb-2">📄 Upload New Brochure (PDF)</div><input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border rounded-xl p-2 mb-3 bg-white text-xs"><button onclick="uploadNewBrochure()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-xs shadow">Upload to Cloud</button><div id="newBrochureStatus" class="hidden text-xs mt-2 font-bold"></div></div>`;
+ const listHtml = (items||[]).map((x,i)=>`<div class="border rounded-2xl p-4 mb-3 shadow-sm bg-white"><div class="font-black">${i+1}. ${esc(x.title||x.name||'Brochure')}</div><div class="text-xs text-slate-500 mb-3">${esc(x.page||'')} • ${esc(x.file||'')}</div><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold" data-bid="${i}">Open / Edit Brochure</button></div>`).join('')||'<p class="text-slate-500 text-xs">No brochure buttons found on this page.</p>';
+ document.getElementById('drawerBody').innerHTML = uploadBox + '<div class="font-black text-xs text-slate-500 uppercase mb-2">Existing Website Brochures</div>' + listHtml;
  document.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{const x=items[Number(b.dataset.bid)];if(x){selected=x;document.getElementById('drawer').classList.add('hidden');openEditor(x);}});
  document.getElementById('drawer').classList.remove('hidden');
 }
 window.uploadNewBrochure=async()=>{
  const fileInput=document.getElementById('newBrochureFile'); const status=document.getElementById('newBrochureStatus');
  const file=fileInput.files[0]; if(!file)return alert('Please select a file first.');
- status.classList.remove('hidden'); status.textContent='Uploading...';
+ status.classList.remove('hidden'); status.className='text-xs mt-2 text-amber-600 font-bold'; status.textContent='Uploading...';
  try{
   const url=await upload(file,'brochures');
   status.className='text-xs mt-2 text-emerald-600 font-bold';
@@ -112,14 +112,15 @@ async function openProducts(){
  const {data,error}=await sb.from('products').select('*').order('name');
  if(error)return alert(error.message);
  document.getElementById('drawerTitle').textContent='PRODUCTS MANAGER';
- const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3 cursor-pointer hover:bg-slate-50 flex justify-between items-center"><div onclick='editProduct(${JSON.stringify(r)})' class="flex-1"><div class="font-black">${i+1}. ${esc(r.name||'')}</div><div class="text-xs text-slate-500">Click to edit</div></div><button onclick="deleteProduct('${r.id}')" class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">Delete</button></div>`).join('');
- document.getElementById('drawerBody').innerHTML=`<button onclick="newProduct()" class="w-full bg-blue-600 text-white p-3 rounded-xl font-black mb-4">+ ADD NEW PRODUCT</button>${rows||'<p class="text-slate-500 text-xs">No products found.</p>'}`;
+ const addBtn = `<button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD NEW PRODUCT</button>`;
+ const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3 bg-white shadow-sm flex justify-between items-center"><div onclick='editProduct(${JSON.stringify(r)})' class="flex-1 cursor-pointer"><div class="font-black text-slate-800">${i+1}. ${esc(r.name||'')}</div><div class="text-xs text-slate-500">Click to edit product fields</div></div><button onclick="deleteProduct('${r.id}')" class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">Delete</button></div>`).join('');
+ document.getElementById('drawerBody').innerHTML = addBtn + (rows||'<p class="text-slate-500 text-xs">No products found.</p>');
  document.getElementById('drawer').classList.remove('hidden');
 }
 window.newProduct=()=>{ editProduct({name:'',description:'',category:'',standard_packaging:'',purity:'',image_url:''}, true); }
 window.editProduct=(r, isNew=false)=>{
  document.getElementById('drawerTitle').textContent=isNew?'ADD NEW PRODUCT':'EDIT PRODUCT';
- document.getElementById('drawerBody').innerHTML=Object.keys(r).filter(k=>!['id','created_at','updated_at'].includes(k)).map(k=>`<label class="block mb-3"><span class="text-xs font-bold uppercase">${esc(k)}</span><textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border rounded-xl p-2 mt-1 text-sm">${esc(r[k]??'')}</textarea></label>`).join('')+`<div class="flex gap-2 mt-4"><button onclick="saveProduct(${isNew?'null':`'${r.id}'`})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black">SAVE PRODUCT</button><button onclick="openProducts()" class="px-4 bg-slate-200 rounded-xl font-bold">Cancel</button></div>`;
+ document.getElementById('drawerBody').innerHTML=Object.keys(r).filter(k=>!['id','created_at','updated_at'].includes(k)).map(k=>`<label class="block mb-3"><span class="text-xs font-bold uppercase text-slate-500">${esc(k)}</span><textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border rounded-xl p-2.5 mt-1 text-sm">${esc(r[k]??'')}</textarea></label>`).join('')+`<div class="flex gap-2 mt-4"><button onclick="saveProduct(${isNew?'null':`'${r.id}'`})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black">SAVE PRODUCT</button><button onclick="openProducts()" class="px-4 bg-slate-200 rounded-xl font-bold">Cancel</button></div>`;
 };
 window.saveProduct=async id=>{
  const fields={}; document.querySelectorAll('[id^="pf_"]').forEach(x=>fields[x.dataset.key]=x.value);
@@ -133,14 +134,15 @@ async function openUnits(){
   const {data,error}=await sb.from('business_units').select('*').order('id',{ascending:true});
   if(error)return alert(error.message);
   document.getElementById('drawerTitle').textContent='BUSINESS UNITS';
-  const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3">
+  const addBtn = `<button onclick="newUnit()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD BUSINESS UNIT</button>`;
+  const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3 bg-white shadow-sm">
     <div class="flex gap-4 items-start">
       <div class="w-24 h-20 rounded-xl bg-slate-100 overflow-hidden shrink-0">${r.image_url?`<img src="${esc(r.image_url)}" class="w-full h-full object-cover">`:'<div class="h-full grid place-items-center text-xs text-slate-400">No Image</div>'}</div>
       <div class="flex-1 min-w-0"><div class="font-black text-lg">${esc(r.name||r.title||'Business Unit')}</div><div class="text-sm text-slate-500 mt-1 whitespace-pre-wrap">${esc(r.description||'')}</div></div>
     </div>
-    <div class="flex gap-2 mt-4"><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs" onclick='editUnit(${JSON.stringify(r)})'>Edit</button><button class="bg-rose-600 text-white px-4 py-2 rounded-lg text-xs" onclick="deleteUnit('${r.id}')">Delete</button></div>
+    <div class="flex gap-2 mt-4"><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold" onclick='editUnit(${JSON.stringify(r)})'>Edit</button><button class="bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-bold" onclick="deleteUnit('${r.id}')">Delete</button></div>
   </div>`).join('');
-  document.getElementById('drawerBody').innerHTML=`<button onclick="newUnit()" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black mb-4">+ ADD BUSINESS UNIT</button>${rows||'<p class="text-slate-500 text-xs">No Business Units found.</p>'}`;
+  document.getElementById('drawerBody').innerHTML = addBtn + (rows||'<p class="text-slate-500 text-xs">No Business Units found.</p>');
   document.getElementById('drawer').classList.remove('hidden');
 }
 function unitForm(r={}){
@@ -164,7 +166,10 @@ window.saveUnit=async id=>{try{
 window.deleteUnit=async id=>{if(!confirm('Delete this Business Unit?'))return;const {error}=await sb.from('business_units').delete().eq('id',id);if(error)alert(error.message);else openUnits()};
 
 document.getElementById('refreshSite').onclick=()=>{frame.src='../index.html?admin=1&sync='+Date.now();document.getElementById('editor').classList.add('hidden');};
-document.getElementById('reviewsBtn').onclick=openReviews;document.getElementById('productsBtn').onclick=openProducts;document.getElementById('unitsBtn').onclick=openUnits;document.getElementById('brochuresBtn').onclick=()=>frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
+document.getElementById('reviewsBtn').onclick=openReviews;
+document.getElementById('productsBtn').onclick=openProducts;
+document.getElementById('unitsBtn').onclick=openUnits;
+document.getElementById('brochuresBtn').onclick=()=>frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
 document.getElementById('drawerClose').onclick=()=>document.getElementById('drawer').classList.add('hidden');
 document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();const msg=document.getElementById('loginMsg');msg.textContent='Logging in...';const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(error){msg.textContent=error.message;return}document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')};document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
 sb.auth.getSession().then(({data})=>{if(data.session){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')}});
