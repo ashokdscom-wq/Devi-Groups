@@ -1,179 +1,450 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DEVI GROUPS — Complete Visual Admin</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../cms-config.js"></script><style>html,body{height:100%;margin:0}#siteFrame{width:100%;height:100%;border:0}.glass{backdrop-filter:blur(10px)}</style></head><body class="bg-slate-100 text-slate-900">
-<div id="login" class="min-h-screen grid place-items-center"><form id="loginForm" class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]"><h1 class="text-3xl font-black">DEVI GROUPS</h1><p class="text-slate-500 mb-6">Complete Website Visual Admin Panel</p><input id="email" type="email" required placeholder="Admin email" class="w-full border rounded-xl p-3 mb-3"><input id="password" type="password" required placeholder="Password" class="w-full border rounded-xl p-3 mb-4"><button class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold">Login</button><div id="loginMsg" class="text-sm text-rose-600 mt-3"></div></form></div>
-<div id="app" class="hidden h-screen flex flex-col"><header class="h-16 bg-slate-950 text-white flex items-center justify-between px-5 shrink-0"><div><b class="text-xl">DEVI GROUPS</b><span class="text-xs text-slate-400 ml-2">Exact Website Visual Editor</span></div><div class="flex gap-2"><button id="refreshSite" class="px-3 py-2 rounded-lg bg-white/10">↻ Refresh Website</button><a href="../index.html" target="_blank" class="px-3 py-2 rounded-lg bg-white/10">Open Website ↗</a><button id="logout" class="px-3 py-2 rounded-lg bg-white/10">Logout</button></div></header>
-<div class="flex-1 min-h-0 flex"><aside class="w-64 bg-white border-r p-3 overflow-y-auto space-y-2"><div class="font-black mb-2 text-xs text-slate-400">WEBSITE PAGES</div><div id="pages" class="space-y-1"></div><hr class="my-3"><div class="font-black mb-2 text-xs text-slate-400">DATABASE & MANAGERS</div><button id="reviewsBtn" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-sm">★ Reviews</button><button id="productsBtn" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-sm">▦ Products</button><button id="addProductDirectBtn" onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl text-xs font-black shadow transition">+ Add New Product</button><button id="unitsBtn" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-sm">▤ Business Units</button><button id="brochuresBtn" class="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-sm">▣ Brochures</button><button id="addBrochureDirectBtn" onclick="openBrochureManagerModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl text-xs font-black shadow transition">+ Upload Brochure</button></aside><main class="flex-1 min-w-0 relative bg-slate-200"><iframe id="siteFrame" src="../index.html?admin=1"></iframe><div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[92%] h-full bg-white shadow-2xl overflow-y-auto"><div class="p-5 border-b flex justify-between"><div><h2 class="text-2xl font-black">Edit</h2><p id="selectedInfo" class="text-xs text-slate-500"></p></div><button id="closeEditor" class="text-2xl">×</button></div><div class="p-5 space-y-4"><div id="textBox"><label class="font-bold text-sm">Text</label><textarea id="textValue" rows="7" class="w-full border rounded-xl p-3 mt-1"></textarea></div><div id="srcBox"><label class="font-bold text-sm">Photo / Video / File</label><input id="fileValue" type="file" class="w-full border rounded-xl p-2 mt-1"><input id="srcValue" class="w-full border rounded-xl p-3 mt-2" placeholder="Existing URL / path"></div><div id="hrefBox"><label class="font-bold text-sm">Link / Button URL</label><input id="hrefValue" class="w-full border rounded-xl p-3 mt-1"></div><div id="altBox"><label class="font-bold text-sm">Alt / Title</label><input id="altValue" class="w-full border rounded-xl p-3 mt-1"></div><div id="actionBox" class="hidden space-y-2"><label class="font-bold text-sm">TDS / Brochure / Image Details</label><input id="action1" class="w-full border rounded-xl p-3" placeholder="Title / Product"><input id="action2" class="w-full border rounded-xl p-3" placeholder="Specification / File"><input id="action3" class="w-full border rounded-xl p-3" placeholder="Standard / Extra"><input id="action4" class="w-full border rounded-xl p-3" placeholder="Packing (if applicable)"><div id="brochureTools" class="hidden border rounded-xl p-3 bg-slate-50 space-y-2"><div class="text-xs font-bold">Brochure File</div><input id="brochureFile" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" class="w-full border rounded-lg p-2 bg-white"><div class="text-xs text-slate-500">Upload a new brochure to replace the current one.</div><label class="flex items-center gap-2 text-sm font-semibold"><input id="deleteBrochure" type="checkbox"> Delete / hide brochure from website</label></div></div><button id="saveElement" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black">SAVE CHANGES</button><div id="saveMsg" class="text-sm"></div><div id="syncMsg" class="text-xs text-slate-500">Changes are saved to the live CMS.</div></div></div></main></div></div>
-<div id="drawer" class="hidden fixed inset-0 bg-black/40 z-50"><div class="absolute right-0 top-0 h-full w-[560px] max-w-[96vw] bg-white overflow-y-auto"><div class="p-5 border-b flex justify-between"><h2 id="drawerTitle" class="text-2xl font-black"></h2><button id="drawerClose" class="text-2xl">×</button></div><div id="drawerBody" class="p-5"></div></div></div>
-<script>
-const cfg=window.DEVI_CMS_CONFIG; const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey); const frame=document.getElementById('siteFrame'); let selected=null;
-const pages=[['home','HOME'],['about','ABOUT US'],['company','COMPANY'],['products','PRODUCTS'],['sister-brand','OUR SISTER BRAND'],['contact','CONTACT US']];
-function nav(p){frame.contentWindow.postMessage({source:'devi-visual-cms',type:'NAVIGATE',page:p},'*')}
-pages.forEach(([id,n])=>{const b=document.createElement('button');b.className='w-full text-left p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-sm';b.textContent=n;b.onclick=()=>nav(id);document.getElementById('pages').appendChild(b)});
-async function upload(file,folder='visual'){if(!file)return '';const ext=file.name.includes('.')?file.name.split('.').pop().toLowerCase():'';const path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}${ext?'.'+ext:''}`;const {error}=await sb.storage.from('devi-media').upload(path,file,{upsert:false});if(error)throw error;return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`}
-window.addEventListener('message',e=>{if(e.data?.source!=='devi-visual-cms')return;if(e.data.type==='SELECT'){selected=e.data.element;openEditor(selected)} if(e.data.type==='BROCHURES'){openBrochureManager(e.data.items||[]);}});
-function openEditor(x){
- document.getElementById('editor').classList.remove('hidden');
- document.getElementById('selectedInfo').textContent=x.page+' • '+x.tag+' • '+x.id;
- document.getElementById('textValue').value=x.text||x.value||'';
- document.getElementById('srcValue').value=x.src||'';
- document.getElementById('hrefValue').value=x.href||'';
- document.getElementById('altValue').value=(x.alt||'')+' '+(x.title||'');
- document.getElementById('textBox').style.display=['img','video','source','input','textarea'].includes(x.tag)?'none':'block';
- document.getElementById('srcBox').style.display=['img','video','source'].includes(x.tag)?'block':'none';
- document.getElementById('hrefBox').style.display=x.tag==='a'||x.tag==='button'?'block':'none';
- const ab=document.getElementById('actionBox'); const bt=document.getElementById('brochureTools');
- ab.classList.add('hidden'); bt.classList.add('hidden');
- document.getElementById('deleteBrochure').checked=false; document.getElementById('brochureFile').value='';
- if(x.onclick){
-  let m=x.onclick.match(/openTechSpecs\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*'([^']*)'\)/);
-  if(m){ab.classList.remove('hidden');['action1','action2','action3','action4'].forEach((id,i)=>document.getElementById(id).value=m[i+1]);ab.dataset.type='tds';}
-  else{
-   m=x.onclick.match(/openBrochureViewer\('([^']*)',\s*'([^']*)'\)/);
-   if(m){ab.classList.remove('hidden');bt.classList.remove('hidden');document.getElementById('action1').value=m[1];document.getElementById('action2').value=m[2];document.getElementById('action3').value='';document.getElementById('action4').value='';ab.dataset.type='brochure';}
-   else{m=x.onclick.match(/openLightbox\('([^']*)'\)/);if(m){ab.classList.remove('hidden');document.getElementById('action1').value=m[1];ab.dataset.type='image';}}
-  }
- }
-}
-document.getElementById('closeEditor').onclick=()=>document.getElementById('editor').classList.add('hidden');
-document.getElementById('saveElement').onclick=async()=>{try{
- const r={...selected};
- if(document.getElementById('textBox').style.display!=='none') r.text=document.getElementById('textValue').value;
- r.href=document.getElementById('hrefValue').value;
- r.src=document.getElementById('srcValue').value;
- const at=document.getElementById('altValue').value.trim(); r.alt=at;
- const ab=document.getElementById('actionBox');
- const q=v=>String(v??'').replaceAll('\\','\\\\').replaceAll("'","\\'");
- if(!ab.classList.contains('hidden')){
-   const a1=document.getElementById('action1').value,a2=document.getElementById('action2').value,a3=document.getElementById('action3').value,a4=document.getElementById('action4').value;
-   if(ab.dataset.type==='tds') r.onclick=`openTechSpecs('${q(a1)}','${q(a2)}','${q(a3)}','${q(a4)}')`;
-   if(ab.dataset.type==='brochure'){
-     const bf=document.getElementById('brochureFile').files[0];
-     if(bf) a2=await upload(bf,'brochures');
-     if(document.getElementById('deleteBrochure').checked){ r.onclick=''; r.hidden=true; }
-     else { r.onclick=`openBrochureViewer('${q(a1)}','${q(a2)}')`; r.hidden=false; }
-   }
-   if(ab.dataset.type==='image') r.onclick=`openLightbox('${q(a1)}')`;
- }
- const f=document.getElementById('fileValue').files[0];
- if(f) r.src=await upload(f,'visual');
- const key=String(r.id || '').trim();
- if(!key) throw new Error('Selected element is missing its key/id.');
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DEVI GROUPS — Complete Visual Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../cms-config.js"></script>
+    <style>
+        html,body{height:100%;margin:0}
+        #siteFrame{width:100%;height:100%;border:0}
+        .glass{backdrop-filter:blur(10px)}
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900">
 
- const content=JSON.stringify(r);
- const sectionMap={home:'home',about:'about',company:'company',products:'products','sister-brand':'sister-brand',contact:'contact'};
- const rawPage=String(r.page || 'home').toLowerCase().trim();
- const section_key=sectionMap[rawPage] || 'home';
+<div id="login" class="min-h-screen grid place-items-center">
+    <form id="loginForm" class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
+        <h1 class="text-3xl font-black">DEVI GROUPS</h1>
+        <p class="text-slate-500 mb-6">Complete Website Visual Admin Panel</p>
+        <input id="email" type="email" required placeholder="Admin email" class="w-full border rounded-xl p-3 mb-3">
+        <input id="password" type="password" required placeholder="Password" class="w-full border rounded-xl p-3 mb-4">
+        <button class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold">Login</button>
+        <div id="loginMsg" class="text-sm text-rose-600 mt-3"></div>
+    </form>
+</div>
 
- const {data:old,error:lookupError}=await sb.from('site_content').select('id').eq('key',key).maybeSingle();
- if(lookupError) throw lookupError;
+<div id="app" class="hidden h-screen flex flex-col">
+    <header class="h-16 bg-slate-950 text-white flex items-center justify-between px-5 shrink-0">
+        <div>
+            <b class="text-xl">DEVI GROUPS</b>
+            <span class="text-xs text-slate-400 ml-2">Exact Website Visual Editor</span>
+        </div>
+        <div class="flex gap-2">
+            <button id="refreshSite" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"><i class="fa-solid fa-rotate-right"></i> Refresh Website</button>
+            <a href="../index.html" target="_blank" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Website ↗</a>
+            <button id="logout" class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+    </header>
 
- let result;
- if(old?.id) {
-   result=await sb.from('site_content').update({section_key,content,active:true}).eq('id',old.id);
- } else {
-   result=await sb.from('site_content').insert({section_key,key,content,active:true,title:String(r.page || 'home')});
- }
- if(result.error) throw result.error;
+    <div class="flex-1 min-h-0 flex">
+        <aside class="w-64 bg-white border-r p-3 overflow-y-auto space-y-1">
+            <div class="font-black mb-2 text-xs text-slate-400 tracking-wider">WEBSITE PAGES</div>
+            <div id="pages" class="space-y-1"></div>
+            <hr class="my-4 border-slate-200">
+            <div class="font-black mb-2 text-xs text-slate-400 tracking-wider">DATABASE MANAGERS</div>
+            <button id="reviewsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-sm transition"><i class="fa-solid fa-star text-amber-500 w-5"></i> Reviews</button>
+            <button id="productsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-sm transition"><i class="fa-solid fa-box text-blue-500 w-5"></i> Products</button>
+            <button id="unitsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-sm transition"><i class="fa-solid fa-building text-emerald-500 w-5"></i> Business Units</button>
+            <button id="brochuresBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-sm transition"><i class="fa-solid fa-file-pdf text-rose-500 w-5"></i> Brochures</button>
+        </aside>
 
- frame.contentWindow.postMessage({source:'devi-visual-cms',type:'APPLY',element:r},'*');
- document.getElementById('saveMsg').textContent='Saved to live website ✓';
- document.getElementById('saveMsg').className='text-sm text-emerald-600 font-bold';
- document.getElementById('syncMsg').textContent='Live sync complete. Refreshing website…';
- setTimeout(()=>{frame.src='../index.html?admin=1&sync='+Date.now();},150);
-}catch(err){document.getElementById('saveMsg').textContent=err.message;document.getElementById('saveMsg').className='text-sm text-rose-600 font-bold';}};
-
-window.openBrochureManagerModal=()=>{
- document.getElementById('drawerTitle').textContent='BROCHURE MANAGER';
- document.getElementById('drawerBody').innerHTML=`<div class="border rounded-2xl p-4 mb-4 bg-slate-50"><div class="font-black text-sm mb-2">Upload New Brochure (PDF)</div><input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border rounded-xl p-2 mb-2 bg-white text-xs"><button onclick="uploadNewBrochure()" class="w-full bg-emerald-600 text-white p-2.5 rounded-xl font-bold text-xs">Upload Brochure</button><div id="newBrochureStatus" class="hidden text-xs mt-2"></div></div>`;
- document.getElementById('drawer').classList.remove('hidden');
-};
-
-function openBrochureManager(items){
- document.getElementById('drawerTitle').textContent='BROCHURES';
- const uploadHtml=`<div class="border rounded-2xl p-4 mb-4 bg-slate-50"><div class="font-black text-sm mb-2">Upload New Brochure (PDF)</div><input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border rounded-xl p-2 mb-2 bg-white text-xs"><button onclick="uploadNewBrochure()" class="w-full bg-emerald-600 text-white p-2.5 rounded-xl font-bold text-xs">Upload Brochure</button><div id="newBrochureStatus" class="hidden text-xs mt-2"></div></div>`;
- const listHtml=(items||[]).map((x,i)=>`<div class="border rounded-2xl p-4 mb-3"><div class="font-black">${i+1}. ${esc(x.title||x.name||'Brochure')}</div><div class="text-xs text-slate-500 mb-3">${esc(x.page||'')} • ${esc(x.file||'')}</div><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold" data-bid="${i}">Open / Edit Brochure</button></div>`).join('')||'<p class="text-slate-500 text-xs">No brochure buttons found on this page.</p>';
- document.getElementById('drawerBody').innerHTML=uploadHtml+listHtml;
- document.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{const x=items[Number(b.dataset.bid)];if(x){selected=x;document.getElementById('drawer').classList.add('hidden');openEditor(x);}});
- document.getElementById('drawer').classList.remove('hidden');
-}
-window.uploadNewBrochure=async()=>{
- const fileInput=document.getElementById('newBrochureFile'); const status=document.getElementById('newBrochureStatus');
- const file=fileInput.files[0]; if(!file)return alert('Please select a file first.');
- status.classList.remove('hidden'); status.textContent='Uploading...';
- try{
-  const url=await upload(file,'brochures');
-  status.className='text-xs mt-2 text-emerald-600 font-bold';
-  status.innerHTML=`Uploaded successfully! Link: <a href="${url}" target="_blank" class="underline">${url}</a>`;
-  fileInput.value='';
- }catch(e){status.className='text-xs mt-2 text-rose-600 font-bold'; status.textContent='Error: '+e.message;}
-};
-document.getElementById('brochuresBtn').onclick=()=>frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
-
-async function openReviews(){const {data,error}=await sb.from('reviews').select('*').order('created_at',{ascending:false});if(error)return alert(error.message);document.getElementById('drawerTitle').textContent='REVIEWS';document.getElementById('drawerBody').innerHTML=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3"><div class="font-black mb-2">${i+1}. Review</div><label class="text-xs font-bold">Name<input id="rname${r.id}" value="${esc(r.name||'')}" class="w-full border rounded-xl p-2 mt-1"></label><label class="text-xs font-bold block mt-2">Country<input id="rcountry${r.id}" value="${esc(r.country||'')}" class="w-full border rounded-xl p-2 mt-1"></label><label class="text-xs font-bold block mt-2">Stars<input id="rstars${r.id}" type="number" min="1" max="5" value="${r.stars||r.rating||5}" class="w-full border rounded-xl p-2 mt-1"></label><label class="text-xs font-bold block mt-2">Review Text<textarea id="rv${r.id}" rows="4" class="w-full border rounded-xl p-3 mt-1">${esc(r.message||r.msg||r.review||'')}</textarea></label><div class="flex gap-2 mt-3"><button onclick="saveReview('${r.id}')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg">Save</button><button onclick="deleteReview('${r.id}')" class="bg-rose-600 text-white px-4 py-2 rounded-lg">Delete</button></div></div>`).join('')||'<p class="text-slate-500">No database reviews yet.</p>';document.getElementById('drawer').classList.remove('hidden')}
-function esc(v){return String(v??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[m]))}
-window.saveReview=async id=>{const msg=document.getElementById('rv'+id).value;const name=document.getElementById('rname'+id).value;const country=document.getElementById('rcountry'+id).value;const stars=Number(document.getElementById('rstars'+id).value)||5;const {error}=await sb.from('reviews').update({name,country,stars,message:msg,review:msg}).eq('id',id);if(error)alert(error.message);else alert('Review saved ✓')};window.deleteReview=async id=>{if(!confirm('Delete this review?'))return;const {error}=await sb.from('reviews').delete().eq('id',id);if(error)alert(error.message);else openReviews()};
-
-async function openProducts(){
- const {data,error}=await sb.from('products').select('*').order('name');
- if(error)return alert(error.message);
- document.getElementById('drawerTitle').textContent='PRODUCTS MANAGER';
- const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3 bg-white flex justify-between items-center"><div onclick='editProduct(${JSON.stringify(r)})' class="flex-1 cursor-pointer"><div class="font-black">${i+1}. ${esc(r.name||'')}</div><div class="text-xs text-slate-500">Click to edit</div></div><button onclick="deleteProduct('${r.id}')" class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">Delete</button></div>`).join('');
- document.getElementById('drawerBody').innerHTML=`<button onclick="newProduct()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black mb-4 shadow">+ Add New Product</button>`+(rows||'<p class="text-slate-500 text-xs">No products found.</p>');
- document.getElementById('drawer').classList.remove('hidden');
-}
-window.newProduct=()=>{ editProduct({name:'',description:'',category:'',standard_packaging:'',purity:'',image_url:''}, true); }
-window.editProduct=(r, isNew=false)=>{
- document.getElementById('drawerTitle').textContent=isNew?'ADD NEW PRODUCT':'EDIT PRODUCT';
- document.getElementById('drawerBody').innerHTML=Object.keys(r).filter(k=>!['id','created_at','updated_at'].includes(k)).map(k=>`<label class="block mb-3"><span class="text-xs font-bold uppercase">${esc(k)}</span><textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border rounded-xl p-2.5 mt-1 text-sm">${esc(r[k]??'')}</textarea></label>`).join('')+`<div class="flex gap-2 mt-4"><button onclick="saveProduct(${isNew?'null':`'${r.id}'`})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black">SAVE PRODUCT</button><button onclick="openProducts()" class="px-4 bg-slate-200 rounded-xl font-bold">Cancel</button></div>`;
- document.getElementById('drawer').classList.remove('hidden');
-};
-window.saveProduct=async id=>{
- const fields={}; document.querySelectorAll('[id^="pf_"]').forEach(x=>fields[x.dataset.key]=x.value);
- const q = id ? sb.from('products').update(fields).eq('id',id) : sb.from('products').insert([fields]);
- const {error}=await q; if(error)alert(error.message);else{alert('Product saved successfully ✓');openProducts();}
-};
-window.deleteProduct=async id=>{if(!confirm('Delete this product?'))return;const {error}=await sb.from('products').delete().eq('id',id);if(error)alert(error.message);else openProducts()};
-
-async function openUnits(){
-  const {data,error}=await sb.from('business_units').select('*').order('id',{ascending:true});
-  if(error)return alert(error.message);
-  document.getElementById('drawerTitle').textContent='BUSINESS UNITS';
-  const rows=(data||[]).map((r,i)=>`<div class="border rounded-2xl p-4 mb-3 bg-white">
-    <div class="flex gap-4 items-start">
-      <div class="w-24 h-20 rounded-xl bg-slate-100 overflow-hidden shrink-0">${r.image_url?`<img src="${esc(r.image_url)}" class="w-full h-full object-cover">`:'<div class="h-full grid place-items-center text-xs text-slate-400">No Image</div>'}</div>
-      <div class="flex-1 min-w-0"><div class="font-black text-lg">${esc(r.name||r.title||'Business Unit')}</div><div class="text-sm text-slate-500 mt-1 whitespace-pre-wrap">${esc(r.description||'')}</div></div>
+        <main class="flex-1 min-w-0 relative bg-slate-200">
+            <iframe id="siteFrame" src="../index.html?admin=1"></iframe>
+            
+            <div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[92%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+                <div class="p-5 border-b flex justify-between bg-slate-50 sticky top-0 z-10">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">Edit Element</h2>
+                        <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-1"></p>
+                    </div>
+                    <button id="closeEditor" class="text-2xl text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div id="textBox">
+                        <label class="font-bold text-sm text-slate-700">Display Text</label>
+                        <textarea id="textValue" rows="7" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm"></textarea>
+                    </div>
+                    <div id="srcBox">
+                        <label class="font-bold text-sm text-slate-700">Photo / Video Upload</label>
+                        <input id="fileValue" type="file" class="w-full border border-slate-300 rounded-xl p-2 mt-1 bg-slate-50">
+                        <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-3 mt-2 focus:outline-none focus:border-emerald-500 shadow-sm" placeholder="Existing URL / path">
+                    </div>
+                    <div id="hrefBox">
+                        <label class="font-bold text-sm text-slate-700">Link / Button URL</label>
+                        <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm">
+                    </div>
+                    <div id="altBox">
+                        <label class="font-bold text-sm text-slate-700">Alt / Title Text</label>
+                        <input id="altValue" class="w-full border border-slate-300 rounded-xl p-3 mt-1 focus:outline-none focus:border-emerald-500 shadow-sm">
+                    </div>
+                    <div id="actionBox" class="hidden space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <label class="font-bold text-sm text-slate-800"><i class="fa-solid fa-wrench text-amber-500"></i> Advanced Settings</label>
+                        <input id="action1" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Title / Product Name">
+                        <input id="action2" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Specification / PDF File Link">
+                        <input id="action3" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Standard / Extra">
+                        <input id="action4" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm" placeholder="Packing (if applicable)">
+                        <div id="brochureTools" class="hidden border border-slate-300 rounded-xl p-3 bg-white mt-2">
+                            <div class="text-xs font-bold text-slate-700 mb-1">Replace Brochure File</div>
+                            <input id="brochureFile" type="file" accept=".pdf,.doc,.docx" class="w-full border rounded-lg p-1.5 text-xs bg-slate-50">
+                            <label class="flex items-center gap-2 text-xs font-bold text-rose-600 mt-3 cursor-pointer">
+                                <input id="deleteBrochure" type="checkbox" class="w-4 h-4"> Hide/Remove this brochure
+                            </label>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button id="saveElement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl font-black shadow-lg transition">SAVE CHANGES</button>
+                        <div id="saveMsg" class="text-sm font-bold mt-3 text-center"></div>
+                        <div id="syncMsg" class="text-xs text-slate-500 text-center mt-1">Changes are saved to the live CMS.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    <div class="flex gap-2 mt-4"><button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold" onclick='editUnit(${JSON.stringify(r)})'>Edit</button><button class="bg-rose-600 text-white px-4 py-2 rounded-lg text-xs font-bold" onclick="deleteUnit('${r.id}')">Delete</button></div>
-  </div>`).join('');
-  document.getElementById('drawerBody').innerHTML=`<button onclick="newUnit()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-black mb-4 shadow">+ Add Business Unit</button>`+(rows||'<p class="text-slate-500 text-xs">No Business Units found.</p>');
-  document.getElementById('drawer').classList.remove('hidden');
-}
-function unitForm(r={}){
-  document.getElementById('drawerTitle').textContent=r.id?'EDIT BUSINESS UNIT':'ADD BUSINESS UNIT';
-  document.getElementById('drawerBody').innerHTML=`<div class="space-y-4">
-    <label class="block"><span class="text-xs font-bold">Name</span><input id="u_name" class="w-full border rounded-xl p-3 mt-1" value="${esc(r.name||r.title||'')}"></label>
-    <label class="block"><span class="text-xs font-bold">Description</span><textarea id="u_desc" rows="6" class="w-full border rounded-xl p-3 mt-1">${esc(r.description||'')}</textarea></label>
-    <label class="block"><span class="text-xs font-bold">Image URL</span><input id="u_img" class="w-full border rounded-xl p-3 mt-1" value="${esc(r.image_url||'')}"></label>
-    <label class="block"><span class="text-xs font-bold">New Image</span><input id="u_file" type="file" accept="image/*" class="w-full border rounded-xl p-3 mt-1"></label>
-    <div class="flex gap-2"><button onclick="saveUnit(${r.id?`'${r.id}'`:'null'})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black">SAVE</button><button onclick="openUnits()" class="px-5 bg-slate-200 rounded-xl font-bold">Cancel</button></div>
-  </div>`;
-  document.getElementById('drawer').classList.remove('hidden');
-}
-window.newUnit=()=>unitForm({});
-window.editUnit=r=>unitForm(r);
-window.saveUnit=async id=>{try{
-  const name=document.getElementById('u_name').value.trim(); if(!name)return alert('Name is required.');
-  let image=document.getElementById('u_img').value.trim(); const f=document.getElementById('u_file').files[0]; if(f) image=await upload(f,'business-units');
-  const payload={name,description:document.getElementById('u_desc').value.trim(),image_url:image};
-  const q=id?sb.from('business_units').update(payload).eq('id',id):sb.from('business_units').insert([payload]); const {error}=await q; if(error)throw error; await openUnits();
-}catch(e){alert(e.message||'Unable to save business unit.')}};
-window.deleteUnit=async id=>{if(!confirm('Delete this Business Unit?'))return;const {error}=await sb.from('business_units').delete().eq('id',id);if(error)alert(error.message);else openUnits()};
+</div>
 
-document.getElementById('refreshSite').onclick=()=>{frame.src='../index.html?admin=1&sync='+Date.now();document.getElementById('editor').classList.add('hidden');};
-document.getElementById('reviewsBtn').onclick=openReviews;
-document.getElementById('productsBtn').onclick=openProducts;
-document.getElementById('unitsBtn').onclick=openUnits;
-document.getElementById('brochuresBtn').onclick=()=>frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
-document.getElementById('drawerClose').onclick=()=>document.getElementById('drawer').classList.add('hidden');
-document.getElementById('loginForm').onsubmit=async e=>{e.preventDefault();const msg=document.getElementById('loginMsg');msg.textContent='Logging in...';const {error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(error){msg.textContent=error.message;return}document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')};document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
-sb.auth.getSession().then(({data})=>{if(data.session){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden')}});
-</script></body></html>
+<div id="drawer" class="hidden fixed inset-0 bg-black/60 z-[100] glass">
+    <div class="absolute right-0 top-0 h-full w-[580px] max-w-[96vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
+        <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
+            <h2 id="drawerTitle" class="text-xl font-black text-slate-800 tracking-wide uppercase"></h2>
+            <button id="drawerClose" class="text-2xl text-slate-400 hover:text-rose-600 transition"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="drawerBody" class="p-6 flex-grow"></div>
+    </div>
+</div>
+
+<script>
+const cfg = window.DEVI_CMS_CONFIG; 
+const sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey); 
+const frame = document.getElementById('siteFrame'); 
+let selected = null;
+
+const pages = [['home','HOME'],['about','ABOUT US'],['company','COMPANY'],['products','PRODUCTS'],['sister-brand','OUR SISTER BRAND'],['contact','CONTACT US']];
+
+function nav(p) { frame.contentWindow.postMessage({source:'devi-visual-cms', type:'NAVIGATE', page:p}, '*'); }
+
+pages.forEach(([id, n]) => {
+    const b = document.createElement('button');
+    b.className = 'w-full text-left p-3 px-4 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-sm transition';
+    b.innerHTML = `<i class="fa-solid fa-caret-right text-slate-300 mr-2"></i> ${n}`;
+    b.onclick = () => nav(id);
+    document.getElementById('pages').appendChild(b);
+});
+
+async function upload(file, folder='visual') {
+    if(!file) return '';
+    const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}${ext?'.'+ext:''}`;
+    const {error} = await sb.storage.from('devi-media').upload(path, file, {upsert:false});
+    if(error) throw error;
+    return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
+}
+
+window.addEventListener('message', e => {
+    if(e.data?.source !== 'devi-visual-cms') return;
+    if(e.data.type === 'SELECT') { selected = e.data.element; openEditor(selected); }
+    if(e.data.type === 'BROCHURES') { openBrochureManager(e.data.items||[]); }
+});
+
+function openEditor(x) {
+    document.getElementById('editor').classList.remove('hidden');
+    document.getElementById('selectedInfo').innerHTML = `<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px] uppercase font-bold mr-1">${x.page}</span> ${x.tag} tag`;
+    document.getElementById('textValue').value = x.text || '';
+    document.getElementById('srcValue').value = x.src || '';
+    document.getElementById('hrefValue').value = x.href || '';
+    document.getElementById('altValue').value = (x.alt||'') + ' ' + (x.title||'');
+    
+    document.getElementById('textBox').style.display = ['img','video','source','input','textarea'].includes(x.tag) ? 'none' : 'block';
+    document.getElementById('srcBox').style.display = ['img','video','source'].includes(x.tag) ? 'block' : 'none';
+    document.getElementById('hrefBox').style.display = x.tag === 'a' || x.tag === 'button' ? 'block' : 'none';
+    
+    const ab = document.getElementById('actionBox'); 
+    const bt = document.getElementById('brochureTools');
+    ab.classList.add('hidden'); bt.classList.add('hidden');
+    document.getElementById('deleteBrochure').checked = false; 
+    document.getElementById('brochureFile').value = '';
+    
+    if(x.onclick) {
+        let m = x.onclick.match(/openTechSpecs\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*'([^']*)'\)/);
+        if(m) { ab.classList.remove('hidden'); ['action1','action2','action3','action4'].forEach((id,i) => document.getElementById(id).value = m[i+1]); ab.dataset.type = 'tds'; }
+        else {
+            m = x.onclick.match(/openBrochureViewer\('([^']*)',\s*'([^']*)'\)/);
+            if(m) { ab.classList.remove('hidden'); bt.classList.remove('hidden'); document.getElementById('action1').value = m[1]; document.getElementById('action2').value = m[2]; document.getElementById('action3').value = ''; document.getElementById('action4').value = ''; ab.dataset.type = 'brochure'; }
+            else { m = x.onclick.match(/openLightbox\('([^']*)'\)/); if(m) { ab.classList.remove('hidden'); document.getElementById('action1').value = m[1]; ab.dataset.type = 'image'; } }
+        }
+    }
+}
+
+document.getElementById('closeEditor').onclick = () => document.getElementById('editor').classList.add('hidden');
+
+document.getElementById('saveElement').onclick = async () => {
+    const saveBtn = document.getElementById('saveElement');
+    saveBtn.innerText = "SAVING..."; saveBtn.classList.add('opacity-70');
+    
+    try {
+        const r = {...selected};
+        if(document.getElementById('textBox').style.display !== 'none') r.text = document.getElementById('textValue').value;
+        r.href = document.getElementById('hrefValue').value;
+        r.src = document.getElementById('srcValue').value;
+        r.alt = document.getElementById('altValue').value.trim();
+        
+        const ab = document.getElementById('actionBox');
+        const q = v => String(v??'').replaceAll('\\','\\\\').replaceAll("'","\\'");
+        
+        if(!ab.classList.contains('hidden')) {
+            const a1 = document.getElementById('action1').value;
+            let a2 = document.getElementById('action2').value;
+            const a3 = document.getElementById('action3').value;
+            const a4 = document.getElementById('action4').value;
+            if(ab.dataset.type === 'tds') r.onclick = `openTechSpecs('${q(a1)}','${q(a2)}','${q(a3)}','${q(a4)}')`;
+            if(ab.dataset.type === 'brochure') {
+                const bf = document.getElementById('brochureFile').files[0];
+                if(bf) a2 = await upload(bf, 'brochures');
+                if(document.getElementById('deleteBrochure').checked) { r.onclick = ''; r.hidden = true; }
+                else { r.onclick = `openBrochureViewer('${q(a1)}','${q(a2)}')`; r.hidden = false; }
+            }
+            if(ab.dataset.type === 'image') r.onclick = `openLightbox('${q(a1)}')`;
+        }
+        
+        const f = document.getElementById('fileValue').files[0];
+        if(f) r.src = await upload(f, 'visual');
+        
+        const key = String(r.id || '').trim();
+        if(!key) throw new Error('Selected element missing ID.');
+
+        const content = JSON.stringify(r);
+        const sectionMap = { home:'home', about:'about', company:'company', products:'products', 'sister-brand':'sister-brand', contact:'contact' };
+        const rawPage = String(r.page || 'home').toLowerCase().trim();
+        const section_key = sectionMap[rawPage] || 'home';
+
+        const { data: old, error: lookupError } = await sb.from('site_content').select('id').eq('key', key).maybeSingle();
+        if (lookupError) throw lookupError;
+
+        let result;
+        if (old?.id) {
+            result = await sb.from('site_content').update({ section_key, content, active: true }).eq('id', old.id);
+        } else {
+            result = await sb.from('site_content').insert({ section_key, key, content, active: true, title: String(r.page || 'home') });
+        }
+        if (result.error) throw result.error;
+
+        document.getElementById('saveMsg').innerHTML = 'Saved to live website ✓';
+        document.getElementById('saveMsg').className = 'text-sm font-bold mt-3 text-center text-emerald-600';
+        setTimeout(() => { frame.src = '../index.html?admin=1&sync=' + Date.now(); saveBtn.innerText = "SAVE CHANGES"; saveBtn.classList.remove('opacity-70'); }, 500);
+        
+    } catch(err) {
+        document.getElementById('saveMsg').textContent = err.message;
+        document.getElementById('saveMsg').className = 'text-sm font-bold mt-3 text-center text-rose-600';
+        saveBtn.innerText = "SAVE CHANGES"; saveBtn.classList.remove('opacity-70');
+    }
+};
+
+function esc(v) { return String(v??'').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[m])); }
+
+// ==================== BROCHURES ====================
+document.getElementById('brochuresBtn').onclick = () => {
+    frame.contentWindow.postMessage({source:'devi-visual-cms',type:'LIST_BROCHURES'},'*');
+};
+
+function openBrochureManager(items) {
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-file-pdf text-rose-500"></i> BROCHURE MANAGER';
+    const uploadHtml = `
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5 shadow-sm">
+        <h4 class="font-black text-slate-800 text-sm mb-2">Upload New Brochure (PDF)</h4>
+        <input type="file" id="newBrochureFile" accept=".pdf,.doc,.docx" class="w-full border border-slate-300 rounded-xl p-2 mb-3 bg-white text-sm">
+        <button onclick="uploadNewBrochure()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold w-full transition shadow-md">Upload to Cloud Storage</button>
+        <div id="newBrochureStatus" class="hidden mt-3 p-3 rounded-xl border text-xs break-all"></div>
+    </div>`;
+    const rows = (items||[]).map((x,i) => `
+        <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 shadow-sm hover:border-blue-300 transition">
+            <div class="font-black text-slate-800">${i+1}. ${esc(x.title||x.name||'Brochure')}</div>
+            <div class="text-xs text-slate-500 mb-3">${esc(x.page||'')} • ${esc(x.file||'')}</div>
+            <button class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm shadow transition" data-bid="${i}">Open / Edit Brochure</button>
+        </div>`).join('') || '<p class="text-slate-500 text-center py-5">No brochure buttons found on this page.</p>';
+    
+    document.getElementById('drawerBody').innerHTML = uploadHtml + '<h4 class="font-black text-slate-800 text-sm mb-3">Existing Website Brochures</h4>' + rows;
+    document.querySelectorAll('[data-bid]').forEach(b => b.onclick = () => {
+        const x = items[Number(b.dataset.bid)];
+        if(x) { selected = x; document.getElementById('drawer').classList.add('hidden'); openEditor(x); }
+    });
+    document.getElementById('drawer').classList.remove('hidden');
+}
+
+window.uploadNewBrochure = async () => {
+    const fileInput = document.getElementById('newBrochureFile');
+    const status = document.getElementById('newBrochureStatus');
+    const file = fileInput.files[0];
+    if(!file) {
+        status.classList.remove('hidden'); status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
+        status.innerText = 'Please select a PDF file first!'; return;
+    }
+    status.classList.remove('hidden'); status.className = 'mt-3 p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-600 text-xs font-bold';
+    status.innerText = 'Uploading... Please wait.';
+    try {
+        const url = await upload(file, 'brochures');
+        status.className = 'mt-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs shadow-sm';
+        status.innerHTML = `<span class="font-black text-emerald-600 text-sm block mb-1">Upload Successful!</span>
+                            <span class="text-slate-600">Your Live Link:</span><br>
+                            <a href="${url}" target="_blank" class="text-blue-600 underline font-normal mt-1 inline-block break-all bg-white border p-2 rounded w-full">${url}</a>`;
+        fileInput.value = '';
+    } catch(e) {
+        status.className = 'mt-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold';
+        status.innerText = 'Error: ' + e.message;
+    }
+};
+
+// ==================== PRODUCTS ====================
+document.getElementById('productsBtn').onclick = async () => {
+    const {data, error} = await sb.from('products').select('*').order('name');
+    if(error) return alert(error.message);
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-box text-blue-500"></i> PRODUCTS MANAGER';
+    const rows = (data||[]).map((r,i) => `
+        <div class="border border-slate-200 bg-white rounded-2xl p-4 mb-3 cursor-pointer hover:border-emerald-400 hover:shadow-md transition" onclick='editProduct(${JSON.stringify(r)})'>
+            <div class="font-black text-slate-800">${i+1}. ${esc(r.name || 'Untitled Product')}</div>
+            <div class="text-xs text-slate-500 mt-1">Click to view and edit details</div>
+        </div>`).join('');
+    document.getElementById('drawerBody').innerHTML = `
+        <button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD NEW PRODUCT</button>
+        ${rows || '<p class="text-slate-500 text-center py-10">No products found in database.</p>'}`;
+    document.getElementById('drawer').classList.remove('hidden');
+};
+
+window.newProduct = () => {
+    const emptyProd = { name: '', description: '', category: '', standard_packaging: '', purity: '', image_url: '' };
+    editProduct(emptyProd, true);
+};
+
+window.editProduct = (r, isNew=false) => {
+    document.getElementById('drawerTitle').innerHTML = isNew ? 'ADD NEW PRODUCT' : 'EDIT PRODUCT';
+    let html = Object.keys(r).filter(k => !['id','created_at','updated_at'].includes(k)).map(k => `
+        <label class="block mb-3">
+            <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">${esc(k)}</span>
+            <textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border border-slate-300 rounded-xl p-3 mt-1 text-sm font-medium focus:border-emerald-500 focus:outline-none shadow-sm">${esc(r[k]??'')}</textarea>
+        </label>`).join('');
+    html += `
+        <div class="flex gap-2 mt-6">
+            <button onclick="saveProduct('${r.id||''}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-black shadow-md transition">SAVE PRODUCT</button>
+            ${!isNew ? `<button onclick="deleteProduct('${r.id}')" class="bg-rose-100 hover:bg-rose-600 text-rose-600 hover:text-white px-5 py-3 rounded-xl font-bold shadow-md transition">Delete</button>` : ''}
+            <button onclick="document.getElementById('productsBtn').click()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-3 rounded-xl font-bold transition">Cancel</button>
+        </div>`;
+    document.getElementById('drawerBody').innerHTML = html;
+};
+
+window.saveProduct = async id => {
+    const fields = {};
+    document.querySelectorAll('[id^="pf_"]').forEach(x => fields[x.dataset.key] = x.value);
+    let q;
+    if(id && id !== 'undefined' && id !== '') q = sb.from('products').update(fields).eq('id', id);
+    else q = sb.from('products').insert([fields]);
+    const {error} = await q;
+    if(error) alert(error.message);
+    else { alert('Product saved successfully ✓'); document.getElementById('productsBtn').click(); }
+};
+
+window.deleteProduct = async id => {
+    if(!confirm('Are you sure you want to permanently delete this product?')) return;
+    const {error} = await sb.from('products').delete().eq('id', id);
+    if(error) alert(error.message); else document.getElementById('productsBtn').click();
+};
+
+// ==================== REVIEWS ====================
+document.getElementById('reviewsBtn').onclick = async () => {
+    const {data, error} = await sb.from('reviews').select('*').order('created_at', {ascending: false});
+    if(error) return alert(error.message);
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-star text-amber-500"></i> REVIEWS';
+    document.getElementById('drawerBody').innerHTML = (data||[]).map((r,i) => `
+        <div class="border border-slate-200 bg-slate-50 rounded-2xl p-5 mb-4 shadow-sm">
+            <div class="font-black mb-3 text-slate-800">#${i+1}. Client Review</div>
+            <label class="text-xs font-bold text-slate-600">Name<input id="rname${r.id}" value="${esc(r.name||'')}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Country<input id="rcountry${r.id}" value="${esc(r.country||'')}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Stars<input id="rstars${r.id}" type="number" min="1" max="5" value="${r.stars||r.rating||5}" class="w-full border rounded-xl p-2.5 mt-1"></label>
+            <label class="text-xs font-bold text-slate-600 block mt-3">Review Text<textarea id="rv${r.id}" rows="3" class="w-full border rounded-xl p-2.5 mt-1">${esc(r.message||r.msg||r.review||'')}</textarea></label>
+            <div class="flex gap-2 mt-4">
+                <button onclick="saveReview('${r.id}')" class="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition">Save Update</button>
+                <button onclick="deleteReview('${r.id}')" class="bg-rose-100 text-rose-600 font-bold px-4 py-2.5 rounded-xl transition">Delete</button>
+            </div>
+        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
+    document.getElementById('drawer').classList.remove('hidden');
+};
+
+window.saveReview = async id => {
+    const msg = document.getElementById('rv'+id).value, name = document.getElementById('rname'+id).value, country = document.getElementById('rcountry'+id).value, stars = Number(document.getElementById('rstars'+id).value)||5;
+    const {error} = await sb.from('reviews').update({name, country, stars, message:msg, review:msg}).eq('id', id);
+    if(error) alert(error.message); else alert('Review saved successfully ✓');
+};
+window.deleteReview = async id => {
+    if(!confirm('Delete this review permanently?')) return;
+    const {error} = await sb.from('reviews').delete().eq('id', id);
+    if(error) alert(error.message); else document.getElementById('reviewsBtn').click();
+};
+
+// ==================== BUSINESS UNITS ====================
+document.getElementById('unitsBtn').onclick = async () => {
+    const {data,error} = await sb.from('business_units').select('*').order('id',{ascending:true});
+    if(error) return alert(error.message);
+    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-building text-emerald-500"></i> BUSINESS UNITS';
+    const rows = (data||[]).map((r,i) => `
+    <div class="border border-slate-200 bg-white rounded-2xl p-5 mb-4 shadow-sm">
+        <div class="font-black text-lg text-slate-800">${esc(r.name||r.title||'Business Unit')}</div>
+        <div class="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+            <button class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-xl transition" onclick='editUnit(${JSON.stringify(r)})'>Edit Details</button>
+            <button class="bg-rose-100 text-rose-600 px-4 py-2.5 rounded-xl font-bold transition" onclick="deleteUnit('${r.id}')">Delete</button>
+        </div>
+    </div>`).join('');
+    document.getElementById('drawerBody').innerHTML = `<button onclick="newUnit()" class="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-black mb-5 shadow-lg transition">+ ADD BUSINESS UNIT</button>${rows||'<p class="text-slate-500 text-center py-10">No Business Units found.</p>'}`;
+    document.getElementById('drawer').classList.remove('hidden');
+};
+
+function unitForm(r={}) {
+    document.getElementById('drawerTitle').innerHTML = r.id ? 'EDIT BUSINESS UNIT' : 'ADD BUSINESS UNIT';
+    document.getElementById('drawerBody').innerHTML = `
+    <div class="space-y-4">
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Name</span><input id="u_name" class="w-full border border-slate-300 rounded-xl p-3 mt-1" value="${esc(r.name||r.title||'')}"></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Description</span><textarea id="u_desc" rows="5" class="w-full border border-slate-300 rounded-xl p-3 mt-1">${esc(r.description||'')}</textarea></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Image URL</span><input id="u_img" class="w-full border border-slate-300 rounded-xl p-3 mt-1 bg-slate-50" value="${esc(r.image_url||'')}"></label>
+        <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Upload New Image</span><input id="u_file" type="file" accept="image/*" class="w-full border border-slate-300 rounded-xl p-2 mt-1"></label>
+        <div class="flex gap-2 pt-4">
+            <button onclick="saveUnit(${r.id ? `'${r.id}'` : 'null'})" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black shadow-md">SAVE CHANGES</button>
+            <button onclick="document.getElementById('unitsBtn').click()" class="px-5 bg-slate-200 rounded-xl font-bold text-slate-700">Cancel</button>
+        </div>
+    </div>`;
+}
+window.newUnit = () => unitForm({});
+window.editUnit = r => unitForm(r);
+window.saveUnit = async id => {
+    try {
+        const name = document.getElementById('u_name').value.trim(); if(!name) return alert('Name is required.');
+        let image = document.getElementById('u_img').value.trim(); const f = document.getElementById('u_file').files[0]; if(f) image = await upload(f, 'business-units');
+        const payload = { name, description: document.getElementById('u_desc').value.trim(), image_url: image };
+        const q = id ? sb.from('business_units').update(payload).eq('id',id) : sb.from('business_units').insert([payload]); 
+        const {error} = await q; if(error) throw error; alert('Saved successfully!'); document.getElementById('unitsBtn').click();
+    } catch(e) { alert(e.message || 'Unable to save business unit.') }
+};
+window.deleteUnit = async id => {
+    if(!confirm('Permanently delete this Business Unit?')) return;
+    const {error} = await sb.from('business_units').delete().eq('id',id);
+    if(error) alert(error.message); else document.getElementById('unitsBtn').click();
+};
+
+document.getElementById('refreshSite').onclick = () => { frame.src = '../index.html?admin=1&sync=' + Date.now(); document.getElementById('editor').classList.add('hidden'); };
+document.getElementById('drawerClose').onclick = () => document.getElementById('drawer').classList.add('hidden');
+
+document.getElementById('loginForm').onsubmit = async e => {
+    e.preventDefault();
+    document.getElementById('loginMsg').innerHTML = 'Logging in...';
+    const {error} = await sb.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
+    if(error) { document.getElementById('loginMsg').textContent = error.message; return; }
+    document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
+};
+
+document.getElementById('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+sb.auth.getSession().then(({data}) => {
+    if(data.session) { document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
+});
+</script>
+</body>
+</html>
