@@ -104,7 +104,7 @@
     </div>
 </div>
 
-<!-- Drawer for Databases (Products, Units, Brochures, Reviews) -->
+<!-- Drawer for Databases -->
 <div id="drawer" class="hidden fixed inset-0 bg-black/50 z-[100] glass flex items-center justify-end">
     <div class="h-full w-[600px] max-w-[95vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
         <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
@@ -194,8 +194,18 @@ document.getElementById('saveElement').onclick = async () => {
         let res = old?.id ? await sb.from('site_content').update({ section_key, content, active: true }).eq('id', old.id) : await sb.from('site_content').insert({ section_key, key, content, active: true, title: String(r.page || 'home') });
         if(res.error) throw res.error;
 
-        document.getElementById('saveMsg').innerHTML = '<span class="text-emerald-600">Saved successfully ✓</span>';
-        setTimeout(() => { frame.src = '../index.html?admin=1&sync=' + Date.now(); btn.innerText = "SAVE CHANGES"; }, 400);
+        // Fast Instant Apply without full reload delay
+        frame.contentWindow.postMessage({source:'devi-visual-cms', type:'APPLY', element:r}, '*');
+        
+        document.getElementById('saveMsg').innerHTML = '<span class="text-emerald-600">Saved & Updated ✓</span>';
+        btn.innerText = "SAVE CHANGES";
+        
+        // Chokkas samay pachi editor close thai jase
+        setTimeout(() => {
+            document.getElementById('editor').classList.add('hidden');
+            document.getElementById('saveMsg').innerHTML = '';
+        }, 600);
+
     } catch(err) {
         document.getElementById('saveMsg').innerHTML = `<span class="text-rose-600">${err.message}</span>`;
         btn.innerText = "SAVE CHANGES";
@@ -358,7 +368,7 @@ window.editUnit = r => {
 };
 
 window.saveUnit = async id => {
-    const payload = { name: document.getElementById('u_name').value.trim(), description: document.getElementById('u_desc').value.trim(), image_url: document.getElementById('u_img').value.trim() };
+    const payload = { name: document.getElementById('u_name'].value.trim(), description: document.getElementById('u_desc').value.trim(), image_url: document.getElementById('u_img').value.trim() };
     const {error} = await sb.from('business_units').update(payload).eq('id', id);
     if(error) alert(error.message); else { alert('Unit saved ✓'); document.getElementById('unitsBtn').click(); }
 };
@@ -381,3 +391,4 @@ sb.auth.getSession().then(({data}) => {
 </script>
 </body>
 </html>
+
