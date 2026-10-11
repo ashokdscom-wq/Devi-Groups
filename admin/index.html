@@ -300,13 +300,20 @@ function showLogin(message = '') {
 
 function nav(page) {
     if (!isAuthenticated) return;
+
+    const frame = document.getElementById('siteFrame');
+
+    if (!frame || !frame.contentWindow) {
+        alert('Website frame load થયો નથી. પેજ રિફ્રેશ કરો.');
+        return;
+    }
+
     frame.contentWindow.postMessage({
         source: 'devi-visual-cms',
         type: 'NAVIGATE',
-        page
-    }, '*');
+        page: page
+    }, window.location.origin);
 }
-
 
 // ================= WEBSITE PAGES =================
 
