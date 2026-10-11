@@ -1,394 +1,1151 @@
+
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>DEVI GROUPS — Final Admin Panel</title>
+    <title>DEVI GROUPS — Admin Panel</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../cms-config.js"></script>
-    <style>html,body{height:100%;margin:0}#siteFrame{width:100%;height:100%;border:0}.glass{backdrop-filter:blur(10px)}</style>
+
+    <style>
+        html,body { height:100%; margin:0; }
+        #siteFrame { width:100%; height:100%; border:0; }
+        .glass { backdrop-filter:blur(10px); }
+        button:disabled { opacity:.6; cursor:not-allowed; }
+    </style>
 </head>
+
 <body class="bg-slate-100 text-slate-900">
 
-<!-- Login Screen -->
-<div id="login" class="min-h-screen grid place-items-center">
-    <form id="loginForm" class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
+<!-- ================= LOGIN ================= -->
+<div id="login" class="min-h-screen grid place-items-center p-4">
+    <form id="loginForm"
+          class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
+
         <h1 class="text-3xl font-black text-slate-900">DEVI GROUPS</h1>
         <p class="text-slate-500 mb-6 text-sm">Secure Visual Admin Panel</p>
-        <input id="email" type="email" required placeholder="Admin email" class="w-full border border-slate-300 rounded-xl p-3 mb-3 text-sm focus:outline-none focus:border-emerald-500">
-        <input id="password" type="password" required placeholder="Password" class="w-full border border-slate-300 rounded-xl p-3 mb-4 text-sm focus:outline-none focus:border-emerald-500">
-        <button class="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl p-3 font-bold transition">Login to Admin</button>
-        <div id="loginMsg" class="text-xs text-rose-600 mt-3 font-bold"></div>
+
+        <label for="email" class="block text-xs font-bold mb-1">Admin Email</label>
+        <input id="email" type="email" autocomplete="username" required
+               placeholder="Admin email"
+               class="w-full border border-slate-300 rounded-xl p-3 mb-4 text-sm focus:outline-none focus:border-emerald-500">
+
+        <label for="password" class="block text-xs font-bold mb-1">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required
+               placeholder="Password"
+               class="w-full border border-slate-300 rounded-xl p-3 mb-3 text-sm focus:outline-none focus:border-emerald-500">
+
+        <button id="loginBtn" type="submit"
+                class="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl p-3 font-bold transition">
+            Login to Admin
+        </button>
+
+        <button id="forgotBtn" type="button"
+                class="w-full mt-3 text-sm font-bold text-blue-600 hover:underline">
+            Forgot Password?
+        </button>
+
+        <div id="loginMsg" role="status"
+             class="text-xs text-rose-600 mt-3 font-bold"
+             aria-live="polite"></div>
+
+        <div id="resetMsg" role="status"
+             class="text-xs mt-3 font-bold"
+             aria-live="polite"></div>
     </form>
 </div>
 
-<!-- Main Admin App -->
+
+<!-- ================= MAIN ADMIN APP ================= -->
 <div id="app" class="hidden h-screen flex flex-col">
-    <header class="h-16 bg-slate-950 text-white flex items-center justify-between px-5 shrink-0 shadow-md">
+
+    <header class="min-h-16 bg-slate-950 text-white flex items-center justify-between gap-3 px-5 py-3 shrink-0 shadow-md">
         <div>
             <b class="text-xl tracking-wide">DEVI GROUPS</b>
-            <span class="text-xs text-slate-400 ml-2 hidden sm:inline">Ultimate CMS & Visual Editor</span>
+            <span class="text-xs text-slate-400 ml-2 hidden sm:inline">
+                Ultimate CMS &amp; Visual Editor
+            </span>
         </div>
-        <div class="flex gap-2">
-            <button id="refreshSite" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-rotate"><span>Refresh</span></i></button>
-            <a href="../index.html" target="_blank" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-globe"></i> Website ↗</a>
-            <button id="logout" class="px-3 py-2 rounded-xl bg-rose-600/80 hover:bg-rose-600 text-xs font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+
+        <div class="flex flex-wrap gap-2">
+            <button id="refreshSite"
+                    class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition">
+                <i class="fa-solid fa-rotate mr-1"></i> Refresh
+            </button>
+
+            <a href="../index.html" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition">
+                <i class="fa-solid fa-globe mr-1"></i> Website ↗
+            </a>
+
+            <button id="logout"
+                    class="px-3 py-2 rounded-xl bg-rose-600/80 hover:bg-rose-600 text-xs font-bold transition">
+                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+            </button>
         </div>
     </header>
 
     <div class="flex-1 min-h-0 flex">
-        <!-- Sidebar with Direct Buttons -->
-        <aside class="w-72 bg-white border-r border-slate-200 p-4 overflow-y-auto space-y-3 shrink-0">
-            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Website Pages</div>
+
+        <!-- SIDEBAR -->
+        <aside class="w-72 max-w-[45vw] bg-white border-r border-slate-200 p-4 overflow-y-auto space-y-3 shrink-0">
+
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                Website Pages
+            </div>
+
             <div id="pages" class="space-y-1"></div>
-            
+
             <hr class="border-slate-200 my-4">
-            
-            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Database Managers</div>
-            <button id="reviewsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition"><i class="fa-solid fa-star text-amber-500 w-4"></i> Manage Reviews</button>
-            
-            <button id="productsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition"><i class="fa-solid fa-box text-blue-500 w-4"></i> View All Products</button>
-            <button onclick="newProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-plus"></i> + Add New Product</button>
-            
-            <button id="unitsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition"><i class="fa-solid fa-building text-emerald-500 w-4"></i> Business Units</button>
-            
-            <button id="brochuresBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition"><i class="fa-solid fa-file-pdf text-rose-500 w-4"></i> View Brochures</button>
-            <button onclick="openBrochureUploadModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition flex items-center justify-center gap-1.5"><i class="fa-solid fa-upload"></i> + Upload New Brochure</button>
+
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                Database Managers
+            </div>
+
+            <button id="reviewsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-star text-amber-500 w-4"></i> Manage Reviews
+            </button>
+
+            <button id="productsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-box text-blue-500 w-4"></i> View All Products
+            </button>
+
+            <button type="button" onclick="newProduct()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition">
+                <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+
+            <button id="unitsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-building text-emerald-500 w-4"></i> Business Units
+            </button>
+
+            <button id="brochuresBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-file-pdf text-rose-500 w-4"></i> View Brochures
+            </button>
+
+            <button type="button" onclick="openBrochureUploadModal()"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition">
+                <i class="fa-solid fa-upload"></i> Upload New Brochure
+            </button>
         </aside>
 
-        <!-- Main Live Frame & Inline Element Editor -->
+
+        <!-- WEBSITE FRAME AND EDITOR -->
         <main class="flex-1 min-w-0 relative bg-slate-200">
-            <iframe id="siteFrame" src="../index.html?admin=1"></iframe>
-            
-            <div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[92%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+
+            <iframe id="siteFrame" title="Website Visual Editor"
+                    src="../index.html?admin=1"></iframe>
+
+            <div id="editor"
+                 class="hidden absolute top-0 right-0 w-[420px] max-w-[95%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+
                 <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
                     <div>
                         <h2 class="text-xl font-black text-slate-800">Edit Element</h2>
-                        <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-0.5"></p>
+                        <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-1"></p>
                     </div>
-                    <button id="closeEditor" class="text-xl text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
+
+                    <button id="closeEditor" type="button"
+                            class="text-xl text-slate-400 hover:text-rose-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
+
                 <div class="p-5 space-y-4 text-xs">
+
                     <div id="textBox">
-                        <label class="font-bold text-slate-700 block mb-1">Display Text</label>
-                        <textarea id="textValue" rows="6" class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:outline-none focus:border-emerald-500 shadow-sm"></textarea>
+                        <label for="textValue" class="font-bold text-slate-700 block mb-1">
+                            Display Text
+                        </label>
+                        <textarea id="textValue" rows="6"
+                                  class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:outline-none focus:border-emerald-500 shadow-sm"></textarea>
                     </div>
+
                     <div id="srcBox">
-                        <label class="font-bold text-slate-700 block mb-1">Upload Photo / File</label>
-                        <input id="fileValue" type="file" class="w-full border border-slate-300 rounded-xl p-2 mb-2 bg-slate-50">
-                        <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500" placeholder="Existing URL / path">
+                        <label for="fileValue" class="font-bold text-slate-700 block mb-1">
+                            Upload Photo / File
+                        </label>
+                        <input id="fileValue" type="file"
+                               class="w-full border border-slate-300 rounded-xl p-2 mb-2 bg-slate-50">
+
+                        <input id="srcValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500"
+                               placeholder="Existing URL / path">
                     </div>
+
                     <div id="hrefBox">
-                        <label class="font-bold text-slate-700 block mb-1">Link / Button URL</label>
-                        <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
+                        <label for="hrefValue" class="font-bold text-slate-700 block mb-1">
+                            Link / Button URL
+                        </label>
+                        <input id="hrefValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
                     </div>
+
                     <div id="altBox">
-                        <label class="font-bold text-slate-700 block mb-1">Alt / Title Text</label>
-                        <input id="altValue" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
+                        <label for="altValue" class="font-bold text-slate-700 block mb-1">
+                            Alt / Title Text
+                        </label>
+                        <input id="altValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
                     </div>
-                    <div id="actionBox" class="hidden space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                        <label class="font-bold text-slate-800"><i class="fa-solid fa-wrench text-amber-500"></i> Advanced Details</label>
+
+                    <div id="actionBox"
+                         class="hidden space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="font-bold text-slate-800">
+                            <i class="fa-solid fa-wrench text-amber-500"></i> Advanced Details
+                        </label>
                         <input id="action1" class="w-full border rounded-xl p-2" placeholder="Title / Product Name">
                         <input id="action2" class="w-full border rounded-xl p-2" placeholder="Specification / PDF Link">
                         <input id="action3" class="w-full border rounded-xl p-2" placeholder="Standard / Extra">
                         <input id="action4" class="w-full border rounded-xl p-2" placeholder="Packing">
                     </div>
-                    <button id="saveElement" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-black text-sm shadow-md transition">SAVE CHANGES</button>
-                    <div id="saveMsg" class="font-bold text-center"></div>
-                    <div id="syncMsg" class="text-slate-400 text-center">Changes sync live to website.</div>
+
+                    <button id="saveElement" type="button"
+                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-black text-sm shadow-md transition">
+                        SAVE CHANGES
+                    </button>
+
+                    <div id="saveMsg" role="status" class="font-bold text-center"></div>
+                    <div id="syncMsg" class="text-slate-400 text-center">
+                        Changes sync live to website when the site supports CMS messages.
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Drawer for Databases -->
-<div id="drawer" class="hidden fixed inset-0 bg-black/50 z-[100] glass flex items-center justify-end">
+
+<!-- ================= DATABASE DRAWER ================= -->
+<div id="drawer"
+     class="hidden fixed inset-0 bg-black/50 z-[100] glass items-center justify-end">
+
     <div class="h-full w-[600px] max-w-[95vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
+
         <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
             <h2 id="drawerTitle" class="text-lg font-black text-slate-800 tracking-wide uppercase"></h2>
-            <button id="drawerClose" class="text-xl text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
+            <button id="drawerClose" type="button"
+                    class="text-xl text-slate-400 hover:text-rose-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
+
         <div id="drawerBody" class="p-6 flex-grow"></div>
     </div>
 </div>
 
+
 <script>
+'use strict';
+
 const cfg = window.DEVI_CMS_CONFIG;
-const sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+
+if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey) {
+    document.getElementById('loginMsg').textContent =
+        'Configuration error: check the ../cms-config.js file and Supabase settings.';
+    throw new Error('DEVI_CMS_CONFIG is missing or incomplete.');
+}
+
+const sb = window.supabase.createClient(
+    cfg.supabaseUrl,
+    cfg.supabaseKey
+);
+
 const frame = document.getElementById('siteFrame');
 let selected = null;
+let isAuthenticated = false;
 
-const pages = [['home','HOME'],['about','ABOUT US'],['company','COMPANY'],['products','PRODUCTS'],['sister-brand','OUR SISTER BRAND'],['contact','CONTACT US']];
+const $ = id => document.getElementById(id);
 
-function nav(p) { frame.contentWindow.postMessage({source:'devi-visual-cms', type:'NAVIGATE', page:p}, '*'); }
+function showDrawer() {
+    $('drawer').classList.remove('hidden');
+    $('drawer').classList.add('flex');
+}
 
-pages.forEach(([id, n]) => {
-    const b = document.createElement('button');
-    b.className = 'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
-    b.innerHTML = `<i class="fa-solid fa-angle-right text-slate-300"></i> ${n}`;
-    b.onclick = () => nav(id);
-    document.getElementById('pages').appendChild(b);
+function hideDrawer() {
+    $('drawer').classList.add('hidden');
+    $('drawer').classList.remove('flex');
+}
+
+function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[ch]);
+}
+
+function showApp() {
+    isAuthenticated = true;
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
+}
+
+function showLogin(message = '') {
+    isAuthenticated = false;
+    $('app').classList.add('hidden');
+    $('login').classList.remove('hidden');
+    $('loginMsg').textContent = message;
+}
+
+function nav(page) {
+    if (!isAuthenticated) return;
+    frame.contentWindow.postMessage({
+        source: 'devi-visual-cms',
+        type: 'NAVIGATE',
+        page
+    }, '*');
+}
+
+
+// ================= WEBSITE PAGES =================
+
+const pages = [
+    ['home', 'HOME'],
+    ['about', 'ABOUT US'],
+    ['company', 'COMPANY'],
+    ['products', 'PRODUCTS'],
+    ['sister-brand', 'OUR SISTER BRAND'],
+    ['contact', 'CONTACT US']
+];
+
+pages.forEach(([id, name]) => {
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.className =
+        'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
+
+    const icon = document.createElement('i');
+    icon.className = 'fa-solid fa-angle-right text-slate-300';
+
+    button.append(icon, document.createTextNode(' ' + name));
+    button.addEventListener('click', () => nav(id));
+
+    $('pages').appendChild(button);
 });
 
-async function upload(file, folder='visual') {
-    if(!file) return '';
-    const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
-    const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}${ext?'.'+ext:''}`;
-    const {error} = await sb.storage.from('devi-media').upload(path, file, {upsert:false});
-    if(error) throw error;
+
+// ================= FILE UPLOAD =================
+
+async function upload(file, folder = 'visual') {
+    if (!file) return '';
+
+    if (!isAuthenticated) {
+        throw new Error('Please log in first.');
+    }
+
+    const extension = file.name.includes('.')
+        ? file.name.split('.').pop().toLowerCase()
+        : '';
+
+    const path =
+        `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}` +
+        `${extension ? '.' + extension : ''}`;
+
+    const { error } = await sb.storage
+        .from('devi-media')
+        .upload(path, file, { upsert: false });
+
+    if (error) throw error;
+
     return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
 }
 
-window.addEventListener('message', e => {
-    if(e.data?.source !== 'devi-visual-cms') return;
-    if(e.data.type === 'SELECT') { selected = e.data.element; openEditor(selected); }
-    if(e.data.type === 'BROCHURES') { openBrochureManager(e.data.items||[]); }
+
+// ================= VISUAL EDITOR MESSAGES =================
+
+window.addEventListener('message', event => {
+    if (!isAuthenticated) return;
+    if (event.origin !== new URL(frame.src, location.href).origin) return;
+    if (event.data?.source !== 'devi-visual-cms') return;
+
+    if (event.data.type === 'SELECT' && event.data.element) {
+        selected = event.data.element;
+        openEditor(selected);
+    }
+
+    if (event.data.type === 'BROCHURES') {
+        openBrochureManager(event.data.items || []);
+    }
 });
 
-function openEditor(x) {
-    document.getElementById('editor').classList.remove('hidden');
-    document.getElementById('selectedInfo').innerHTML = `<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">${x.page}</span> • ${x.tag}`;
-    document.getElementById('textValue').value = x.text || '';
-    document.getElementById('srcValue').value = x.src || '';
-    document.getElementById('hrefValue').value = x.href || '';
-    document.getElementById('altValue').value = (x.alt||'') + ' ' + (x.title||'');
-    
-    document.getElementById('textBox').style.display = ['img','video','source','input','textarea'].includes(x.tag) ? 'none' : 'block';
-    document.getElementById('srcBox').style.display = ['img','video','source'].includes(x.tag) ? 'block' : 'none';
-    document.getElementById('hrefBox').style.display = x.tag === 'a' || x.tag === 'button' ? 'block' : 'none';
-    
-    const ab = document.getElementById('actionBox');
-    ab.classList.add('hidden');
-    if(x.onclick) {
-        let m = x.onclick.match(/openTechSpecs\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*'([^']*)'\)/);
-        if(m) { ab.classList.remove('hidden'); ['action1','action2','action3','action4'].forEach((id,i) => document.getElementById(id).value = m[i+1]); }
+function openEditor(item) {
+    $('editor').classList.remove('hidden');
+
+    $('selectedInfo').textContent =
+        `${item.page || 'page'} • ${item.tag || 'element'}`;
+
+    $('textValue').value = item.text || '';
+    $('srcValue').value = item.src || '';
+    $('hrefValue').value = item.href || '';
+    $('altValue').value = [item.alt || '', item.title || '']
+        .filter(Boolean).join(' ');
+
+    $('fileValue').value = '';
+
+    $('textBox').style.display =
+        ['img', 'video', 'source', 'input', 'textarea'].includes(item.tag)
+            ? 'none' : 'block';
+
+    $('srcBox').style.display =
+        ['img', 'video', 'source'].includes(item.tag)
+            ? 'block' : 'none';
+
+    $('hrefBox').style.display =
+        ['a', 'button'].includes(item.tag) ? 'block' : 'none';
+
+    $('actionBox').classList.add('hidden');
+
+    const match = String(item.onclick || '').match(
+        /openTechSpecs\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*'([^']*)'\)/
+    );
+
+    if (match) {
+        $('actionBox').classList.remove('hidden');
+        ['action1', 'action2', 'action3', 'action4'].forEach((id, index) => {
+            $(id).value = match[index + 1] || '';
+        });
     }
+
+    $('saveMsg').textContent = '';
 }
 
-document.getElementById('closeEditor').onclick = () => document.getElementById('editor').classList.add('hidden');
+$('closeEditor').addEventListener('click', () => {
+    $('editor').classList.add('hidden');
+});
 
-document.getElementById('saveElement').onclick = async () => {
-    const btn = document.getElementById('saveElement');
-    btn.innerText = "SAVING...";
+$('saveElement').addEventListener('click', async () => {
+    if (!isAuthenticated || !selected) return;
+
+    const button = $('saveElement');
+    button.disabled = true;
+    button.textContent = 'SAVING...';
+
     try {
-        const r = {...selected};
-        if(document.getElementById('textBox').style.display !== 'none') r.text = document.getElementById('textValue').value;
-        r.href = document.getElementById('hrefValue').value;
-        r.src = document.getElementById('srcValue').value;
-        r.alt = document.getElementById('altValue').value.trim();
-        
-        const f = document.getElementById('fileValue').files[0];
-        if(f) r.src = await upload(f, 'visual');
-        
-        const key = String(r.id || '').trim();
-        if(!key) throw new Error('Missing element ID.');
+        const record = { ...selected };
 
-        const content = JSON.stringify(r);
-        const sectionMap = { home:'home', about:'about', company:'company', products:'products', 'sister-brand':'sister-brand', contact:'contact' };
-        const section_key = sectionMap[String(r.page || 'home').toLowerCase().trim()] || 'home';
+        if ($('textBox').style.display !== 'none') {
+            record.text = $('textValue').value;
+        }
 
-        const { data: old } = await sb.from('site_content').select('id').eq('key', key).maybeSingle();
-        let res = old?.id ? await sb.from('site_content').update({ section_key, content, active: true }).eq('id', old.id) : await sb.from('site_content').insert({ section_key, key, content, active: true, title: String(r.page || 'home') });
-        if(res.error) throw res.error;
+        record.href = $('hrefValue').value;
+        record.src = $('srcValue').value;
+        record.alt = $('altValue').value.trim();
 
-        // Fast Instant Apply without full reload delay
-        frame.contentWindow.postMessage({source:'devi-visual-cms', type:'APPLY', element:r}, '*');
-        
-        document.getElementById('saveMsg').innerHTML = '<span class="text-emerald-600">Saved & Updated ✓</span>';
-        btn.innerText = "SAVE CHANGES";
-        
-        // Chokkas samay pachi editor close thai jase
+        const file = $('fileValue').files[0];
+        if (file) record.src = await upload(file, 'visual');
+
+        const key = String(record.id || '').trim();
+        if (!key) throw new Error('Missing element ID.');
+
+        const content = JSON.stringify(record);
+
+        const sectionMap = {
+            home: 'home',
+            about: 'about',
+            company: 'company',
+            products: 'products',
+            'sister-brand': 'sister-brand',
+            contact: 'contact'
+        };
+
+        const sectionKey =
+            sectionMap[String(record.page || 'home').toLowerCase().trim()] || 'home';
+
+        const { data: old, error: lookupError } = await sb
+            .from('site_content')
+            .select('id')
+            .eq('key', key)
+            .maybeSingle();
+
+        if (lookupError) throw lookupError;
+
+        let result;
+
+        if (old?.id) {
+            result = await sb
+                .from('site_content')
+                .update({ section_key: sectionKey, content, active: true })
+                .eq('id', old.id);
+        } else {
+            result = await sb
+                .from('site_content')
+                .insert({
+                    section_key: sectionKey,
+                    key,
+                    content,
+                    active: true,
+                    title: String(record.page || 'home')
+                });
+        }
+
+        if (result.error) throw result.error;
+
+        frame.contentWindow.postMessage({
+            source: 'devi-visual-cms',
+            type: 'APPLY',
+            element: record
+        }, '*');
+
+        $('saveMsg').textContent = 'Saved successfully ✓';
+        $('saveMsg').className = 'font-bold text-center text-emerald-600';
+
         setTimeout(() => {
-            document.getElementById('editor').classList.add('hidden');
-            document.getElementById('saveMsg').innerHTML = '';
-        }, 600);
+            $('editor').classList.add('hidden');
+            $('saveMsg').textContent = '';
+        }, 900);
 
-    } catch(err) {
-        document.getElementById('saveMsg').innerHTML = `<span class="text-rose-600">${err.message}</span>`;
-        btn.innerText = "SAVE CHANGES";
+    } catch (error) {
+        $('saveMsg').textContent = error.message || 'Could not save changes.';
+        $('saveMsg').className = 'font-bold text-center text-rose-600';
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SAVE CHANGES';
     }
-};
+});
 
-function esc(v) { return String(v??'').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\':'&#92;','"':'&quot;'}[m])); }
 
-// ==================== BROCHURES ====================
-document.getElementById('brochuresBtn').onclick = () => frame.contentWindow.postMessage({source:'devi-visual-cms', type:'LIST_BROCHURES'}, '*');
+// ================= BROCHURES =================
+
+$('brochuresBtn').addEventListener('click', () => {
+    if (!isAuthenticated) return;
+
+    frame.contentWindow.postMessage({
+        source: 'devi-visual-cms',
+        type: 'LIST_BROCHURES'
+    }, '*');
+});
 
 window.openBrochureUploadModal = () => {
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-file-pdf text-rose-500"></i> Upload Brochure';
-    document.getElementById('drawerBody').innerHTML = `
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').innerHTML =
+        '<i class="fa-solid fa-file-pdf text-rose-500"></i> Upload Brochure';
+
+    $('drawerBody').innerHTML = `
         <div class="space-y-4">
-            <label class="block font-bold text-slate-700 text-xs">Select PDF / Document File</label>
-            <input type="file" id="uploadBrochureFile" accept=".pdf,.doc,.docx" class="w-full border p-3 rounded-xl bg-slate-50 text-xs">
-            <button onclick="submitNewBrochure()" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">Upload & Generate Link</button>
-            <div id="brochureUploadStatus" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+            <label for="uploadBrochureFile"
+                   class="block font-bold text-slate-700 text-xs">
+                Select PDF / Document File
+            </label>
+            <input type="file" id="uploadBrochureFile"
+                   accept=".pdf,.doc,.docx"
+                   class="w-full border p-3 rounded-xl bg-slate-50 text-xs">
+            <button type="button" id="submitBrochureBtn"
+                    class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">
+                Upload &amp; Generate Link
+            </button>
+            <div id="brochureUploadStatus"
+                 class="hidden p-3 rounded-xl text-xs font-bold"></div>
         </div>`;
-    document.getElementById('drawer').classList.remove('hidden');
+
+    $('submitBrochureBtn').addEventListener('click', window.submitNewBrochure);
+    showDrawer();
 };
 
 window.submitNewBrochure = async () => {
-    const file = document.getElementById('uploadBrochureFile').files[0];
-    const status = document.getElementById('brochureUploadStatus');
-    if(!file) return alert('Please choose a file first.');
-    status.classList.remove('hidden'); status.className = 'p-3 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold'; status.innerText = 'Uploading to cloud...';
+    if (!isAuthenticated) return;
+
+    const file = $('uploadBrochureFile').files[0];
+    const status = $('brochureUploadStatus');
+
+    if (!file) {
+        alert('Please choose a file first.');
+        return;
+    }
+
+    status.classList.remove('hidden');
+    status.className =
+        'p-3 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold';
+    status.textContent = 'Uploading to cloud...';
+
     try {
         const url = await upload(file, 'brochures');
-        status.className = 'p-4 rounded-xl bg-emerald-50 text-emerald-700 text-xs';
-        status.innerHTML = `<b>Uploaded Successfully!</b><br><a href="${url}" target="_blank" class="underline text-blue-600 break-all">${url}</a>`;
-    } catch(e) {
-        status.className = 'p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold';
-        status.innerText = 'Error: ' + e.message;
+
+        status.className =
+            'p-4 rounded-xl bg-emerald-50 text-emerald-700 text-xs';
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'underline text-blue-600 break-all';
+        link.textContent = url;
+
+        status.replaceChildren();
+        const heading = document.createElement('b');
+        heading.textContent = 'Uploaded successfully! ';
+        status.append(heading, document.createElement('br'), link);
+
+    } catch (error) {
+        status.className =
+            'p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold';
+        status.textContent = 'Error: ' + error.message;
     }
 };
 
 function openBrochureManager(items) {
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-file-pdf text-rose-500"></i> Brochure Manager';
-    document.getElementById('drawerBody').innerHTML = (items||[]).map((x,i) => `
-        <div class="border rounded-2xl p-4 mb-3 bg-slate-50 flex justify-between items-center">
-            <div>
-                <div class="font-black text-slate-800 text-sm">${i+1}. ${esc(x.title||'Brochure')}</div>
-                <div class="text-xs text-slate-500 mt-0.5">${esc(x.file||'')}</div>
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').innerHTML =
+        '<i class="fa-solid fa-file-pdf text-rose-500"></i> Brochure Manager';
+
+    $('drawerBody').innerHTML = (items || []).map((item, index) => `
+        <div class="border rounded-2xl p-4 mb-3 bg-slate-50 flex justify-between items-center gap-3">
+            <div class="min-w-0">
+                <div class="font-black text-slate-800 text-sm">
+                    ${index + 1}. ${esc(item.title || 'Brochure')}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 break-all">
+                    ${esc(item.file || '')}
+                </div>
             </div>
-            <button class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold" data-bid="${i}">Edit</button>
-        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No brochures found.</p>';
-    document.querySelectorAll('[data-bid]').forEach(b => b.onclick = () => {
-        const x = items[Number(b.dataset.bid)];
-        if(x) { selected = x; document.getElementById('drawer').classList.add('hidden'); openEditor(x); }
+            <button type="button" data-bid="${index}"
+                    class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                Edit
+            </button>
+        </div>
+    `).join('') || '<p class="text-slate-500 text-center py-10">No brochures found.</p>';
+
+    $('drawerBody').querySelectorAll('[data-bid]').forEach(button => {
+        button.addEventListener('click', () => {
+            const item = items[Number(button.dataset.bid)];
+            if (item) {
+                selected = item;
+                hideDrawer();
+                openEditor(item);
+            }
+        });
     });
-    document.getElementById('drawer').classList.remove('hidden');
+
+    showDrawer();
 }
 
-// ==================== PRODUCTS ====================
-document.getElementById('productsBtn').onclick = async () => {
-    const {data, error} = await sb.from('products').select('*').order('name');
-    if(error) return alert(error.message);
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-box text-blue-500"></i> Products Manager';
-    const rows = (data||[]).map((r,i) => `
-        <div class="border rounded-2xl p-4 mb-3 bg-white shadow-sm flex justify-between items-center cursor-pointer hover:border-blue-400 transition" onclick='editProduct(${JSON.stringify(r)})'>
-            <div>
-                <div class="font-black text-slate-800 text-sm">${i+1}. ${esc(r.name||'Product')}</div>
-                <div class="text-xs text-slate-500">Click to edit details</div>
-            </div>
-            <button onclick="event.stopPropagation(); deleteProduct('${r.id}')" class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">Delete</button>
-        </div>`).join('');
-    document.getElementById('drawerBody').innerHTML = `
-        <button onclick="newProduct()" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-xs mb-4 shadow">+ Add New Product</button>
-        ${rows || '<p class="text-slate-500 text-center py-10">No products found.</p>'}`;
-    document.getElementById('drawer').classList.remove('hidden');
-};
 
-window.newProduct = () => editProduct({ name:'', description:'', category:'', standard_packaging:'', purity:'', image_url:'' }, true);
+// ================= PRODUCTS =================
 
-window.editProduct = (r, isNew=false) => {
-    document.getElementById('drawerTitle').innerHTML = isNew ? 'Add New Product' : 'Edit Product';
-    let html = Object.keys(r).filter(k => !['id','created_at','updated_at'].includes(k)).map(k => `
-        <label class="block mb-3">
-            <span class="text-[10px] font-black uppercase text-slate-400">${esc(k)}</span>
-            <textarea id="pf_${esc(k)}" data-key="${esc(k)}" class="w-full border rounded-xl p-2.5 mt-1 text-xs focus:outline-none focus:border-emerald-500">${esc(r[k]??'')}</textarea>
-        </label>`).join('');
-    html += `
+$('productsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Products Manager';
+    $('drawerBody').textContent = 'Loading products...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('products')
+            .select('*')
+            .order('name');
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = `
+            <button type="button" id="addProductBtn"
+                    class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-xs mb-4 shadow">
+                + Add New Product
+            </button>
+            ${(data || []).map((item, index) => `
+                <div class="border rounded-2xl p-4 mb-3 bg-white shadow-sm flex justify-between items-center gap-3">
+                    <button type="button" data-edit-product="${index}"
+                            class="text-left flex-1 min-w-0">
+                        <div class="font-black text-slate-800 text-sm">
+                            ${index + 1}. ${esc(item.name || 'Product')}
+                        </div>
+                        <div class="text-xs text-slate-500">Click to edit details</div>
+                    </button>
+                    <button type="button" data-delete-product="${index}"
+                            class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">
+                        Delete
+                    </button>
+                </div>
+            `).join('') || '<p class="text-slate-500 text-center py-10">No products found.</p>'}
+        `;
+
+        $('addProductBtn').addEventListener('click', () => window.newProduct());
+
+        $('drawerBody').querySelectorAll('[data-edit-product]').forEach(button => {
+            button.addEventListener('click', () => {
+                window.editProduct(data[Number(button.dataset.editProduct)]);
+            });
+        });
+
+        $('drawerBody').querySelectorAll('[data-delete-product]').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = data[Number(button.dataset.deleteProduct)];
+                if (item) window.deleteProduct(item.id);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.newProduct = () => window.editProduct({
+    name: '',
+    description: '',
+    category: '',
+    standard_packaging: '',
+    purity: '',
+    image_url: ''
+}, true);
+
+window.editProduct = (record, isNew = false) => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = isNew ? 'Add New Product' : 'Edit Product';
+
+    const fields = Object.keys(record)
+        .filter(key => !['id', 'created_at', 'updated_at'].includes(key));
+
+    $('drawerBody').innerHTML = `
+        <div id="productFields">
+            ${fields.map(key => `
+                <label class="block mb-3">
+                    <span class="text-[10px] font-black uppercase text-slate-400">
+                        ${esc(key)}
+                    </span>
+                    <textarea data-product-key="${esc(key)}" rows="2"
+                              class="w-full border rounded-xl p-2.5 mt-1 text-xs focus:outline-none focus:border-emerald-500">${esc(
+                                  record[key] != null && typeof record[key] === 'object'
+                                      ? JSON.stringify(record[key])
+                                      : record[key] ?? ''
+                              )}</textarea>
+                </label>
+            `).join('')}
+        </div>
+
         <div class="flex gap-2 mt-5">
-            <button onclick="saveProduct('${r.id||''}')" class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">Save Product</button>
-            <button onclick="document.getElementById('productsBtn').click()" class="px-4 bg-slate-200 rounded-xl font-bold text-xs">Cancel</button>
-        </div>`;
-    document.getElementById('drawerBody').innerHTML = html;
-    document.getElementById('drawer').classList.remove('hidden');
+            <button type="button" id="saveProductBtn"
+                    class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">
+                Save Product
+            </button>
+            <button type="button" id="cancelProductBtn"
+                    class="px-4 bg-slate-200 rounded-xl font-bold text-xs">
+                Cancel
+            </button>
+        </div>
+    `;
+
+    $('saveProductBtn').addEventListener('click', () => {
+        window.saveProduct(record.id || '');
+    });
+
+    $('cancelProductBtn').addEventListener('click', () => {
+        $('productsBtn').click();
+    });
+
+    showDrawer();
 };
 
 window.saveProduct = async id => {
-    const fields = {};
-    document.querySelectorAll('[id^="pf_"]').forEach(x => fields[x.dataset.key] = x.value);
-    const q = (id && id !== 'undefined' && id !== '') ? sb.from('products').update(fields).eq('id', id) : sb.from('products').insert([fields]);
-    const {error} = await q;
-    if(error) alert(error.message); else { alert('Product saved ✓'); document.getElementById('productsBtn').click(); }
+    if (!isAuthenticated) return;
+
+    const payload = {};
+
+    $('drawerBody').querySelectorAll('[data-product-key]').forEach(field => {
+        payload[field.dataset.productKey] = field.value;
+    });
+
+    const button = $('saveProductBtn');
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Saving...';
+    }
+
+    try {
+        const query = id
+            ? sb.from('products').update(payload).eq('id', id)
+            : sb.from('products').insert([payload]);
+
+        const { error } = await query;
+        if (error) throw error;
+
+        alert('Product saved successfully.');
+        $('productsBtn').click();
+
+    } catch (error) {
+        alert('Error saving product: ' + error.message);
+        if (button) {
+            button.disabled = false;
+            button.textContent = 'Save Product';
+        }
+    }
 };
 
 window.deleteProduct = async id => {
-    if(!confirm('Delete this product?')) return;
-    const {error} = await sb.from('products').delete().eq('id', id);
-    if(error) alert(error.message); else document.getElementById('productsBtn').click();
+    if (!isAuthenticated || !confirm('Delete this product?')) return;
+
+    const { error } = await sb.from('products').delete().eq('id', id);
+
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        $('productsBtn').click();
+    }
 };
 
-// ==================== REVIEWS ====================
-document.getElementById('reviewsBtn').onclick = async () => {
-    const {data, error} = await sb.from('reviews').select('*').order('created_at', {ascending: false});
-    if(error) return alert(error.message);
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-star text-amber-500"></i> Reviews Manager';
-    document.getElementById('drawerBody').innerHTML = (data||[]).map((r,i) => `
-        <div class="border rounded-2xl p-4 mb-4 bg-slate-50 text-xs">
-            <div class="font-black mb-2 text-sm">#${i+1}. Review</div>
-            <label class="font-bold">Name<input id="rname${r.id}" value="${esc(r.name||'')}" class="w-full border rounded-lg p-2 mt-1 mb-2 bg-white"></label>
-            <label class="font-bold">Country<input id="rcountry${r.id}" value="${esc(r.country||'')}" class="w-full border rounded-lg p-2 mt-1 mb-2 bg-white"></label>
-            <label class="font-bold">Stars<input id="rstars${r.id}" type="number" min="1" max="5" value="${r.stars||5}" class="w-full border rounded-lg p-2 mt-1 mb-2 bg-white"></label>
-            <label class="font-bold">Message<textarea id="rv${r.id}" rows="3" class="w-full border rounded-lg p-2 mt-1 mb-3 bg-white">${esc(r.message||r.review||'')}</textarea></label>
-            <div class="flex gap-2">
-                <button onclick="saveReview('${r.id}')" class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-lg">Save</button>
-                <button onclick="deleteReview('${r.id}')" class="bg-rose-100 text-rose-600 font-bold px-4 py-2 rounded-lg">Delete</button>
+
+// ================= REVIEWS =================
+
+$('reviewsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Reviews Manager';
+    $('drawerBody').textContent = 'Loading reviews...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = (data || []).map((review, index) => `
+            <div class="border rounded-2xl p-4 mb-4 bg-slate-50 text-xs">
+                <div class="font-black mb-2 text-sm">#${index + 1}. Review</div>
+
+                <label class="font-bold block mb-2">
+                    Name
+                    <input data-review-field="name" data-review-id="${index}"
+                           value="${esc(review.name || '')}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-2">
+                    Country
+                    <input data-review-field="country" data-review-id="${index}"
+                           value="${esc(review.country || '')}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-2">
+                    Stars
+                    <input data-review-field="stars" data-review-id="${index}"
+                           type="number" min="1" max="5"
+                           value="${Number(review.stars) || 5}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-3">
+                    Message
+                    <textarea data-review-field="message" data-review-id="${index}"
+                              rows="3"
+                              class="w-full border rounded-lg p-2 mt-1 bg-white">${esc(review.message || review.review || '')}</textarea>
+                </label>
+
+                <div class="flex gap-2">
+                    <button type="button" data-save-review="${index}"
+                            class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-lg">
+                        Save
+                    </button>
+                    <button type="button" data-delete-review="${index}"
+                            class="bg-rose-100 text-rose-600 font-bold px-4 py-2 rounded-lg">
+                        Delete
+                    </button>
+                </div>
             </div>
-        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
-    document.getElementById('drawer').classList.remove('hidden');
+        `).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
+
+        $('drawerBody').querySelectorAll('[data-save-review]').forEach(button => {
+            button.addEventListener('click', () => {
+                const index = Number(button.dataset.saveReview);
+                const review = data[index];
+                if (review) window.saveReview(review.id, index);
+            });
+        });
+
+        $('drawerBody').querySelectorAll('[data-delete-review]').forEach(button => {
+            button.addEventListener('click', () => {
+                const review = data[Number(button.dataset.deleteReview)];
+                if (review) window.deleteReview(review.id);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.saveReview = async (id, index) => {
+    if (!isAuthenticated) return;
+
+    const getValue = field =>
+        $('drawerBody').querySelector(
+            `[data-review-field="${field}"][data-review-id="${index}"]`
+        ).value;
+
+    const message = getValue('message');
+    const payload = {
+        name: getValue('name'),
+        country: getValue('country'),
+        stars: Math.max(1, Math.min(5, Number(getValue('stars')) || 5)),
+        message,
+        review: message
+    };
+
+    const { error } = await sb.from('reviews').update(payload).eq('id', id);
+
+    if (error) alert('Error: ' + error.message);
+    else alert('Review saved successfully.');
 };
 
-window.saveReview = async id => {
-    const msg = document.getElementById('rv'+id).value, name = document.getElementById('rname'+id).value, country = document.getElementById('rcountry'+id).value, stars = Number(document.getElementById('rstars'+id).value)||5;
-    const {error} = await sb.from('reviews').update({name, country, stars, message:msg, review:msg}).eq('id', id);
-    if(error) alert(error.message); else alert('Review saved ✓');
-};
 window.deleteReview = async id => {
-    if(!confirm('Delete review?')) return;
-    const {error} = await sb.from('reviews').delete().eq('id', id);
-    if(error) alert(error.message); else document.getElementById('reviewsBtn').click();
+    if (!isAuthenticated || !confirm('Delete this review?')) return;
+
+    const { error } = await sb.from('reviews').delete().eq('id', id);
+
+    if (error) alert('Error: ' + error.message);
+    else $('reviewsBtn').click();
 };
 
-// ==================== BUSINESS UNITS ====================
-document.getElementById('unitsBtn').onclick = async () => {
-    const {data, error} = await sb.from('business_units').select('*').order('id',{ascending:true});
-    if(error) return alert(error.message);
-    document.getElementById('drawerTitle').innerHTML = '<i class="fa-solid fa-building text-emerald-500"></i> Business Units';
-    document.getElementById('drawerBody').innerHTML = (data||[]).map((r,i) => `
-        <div class="border rounded-2xl p-4 mb-3 bg-white flex justify-between items-center">
-            <div><div class="font-black text-sm text-slate-800">${esc(r.name||r.title||'Unit')}</div></div>
-            <button onclick='editUnit(${JSON.stringify(r)})' class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Edit</button>
-        </div>`).join('') || '<p class="text-slate-500 text-center py-10">No units found.</p>';
-    document.getElementById('drawer').classList.remove('hidden');
-};
 
-window.editUnit = r => {
-    document.getElementById('drawerTitle').innerHTML = 'Edit Business Unit';
-    document.getElementById('drawerBody').innerHTML = `
+// ================= BUSINESS UNITS =================
+
+$('unitsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Business Units';
+    $('drawerBody').textContent = 'Loading business units...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('business_units')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = (data || []).map((unit, index) => `
+            <div class="border rounded-2xl p-4 mb-3 bg-white flex justify-between items-center gap-3">
+                <div class="font-black text-sm text-slate-800">
+                    ${esc(unit.name || unit.title || 'Unit')}
+                </div>
+                <button type="button" data-edit-unit="${index}"
+                        class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                    Edit
+                </button>
+            </div>
+        `).join('') || '<p class="text-slate-500 text-center py-10">No units found.</p>';
+
+        $('drawerBody').querySelectorAll('[data-edit-unit]').forEach(button => {
+            button.addEventListener('click', () => {
+                window.editUnit(data[Number(button.dataset.editUnit)]);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.editUnit = unit => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Edit Business Unit';
+
+    $('drawerBody').innerHTML = `
         <div class="space-y-3 text-xs">
-            <label class="font-bold">Name<input id="u_name" class="w-full border p-2.5 rounded-xl mt-1" value="${esc(r.name||r.title||'')}"></label>
-            <label class="font-bold">Description<textarea id="u_desc" rows="5" class="w-full border p-2.5 rounded-xl mt-1">${esc(r.description||'')}</textarea></label>
-            <label class="font-bold">Image URL<input id="u_img" class="w-full border p-2.5 rounded-xl mt-1" value="${esc(r.image_url||'')}"></label>
-            <button onclick="saveUnit('${r.id}')" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black mt-2 shadow">Save Unit</button>
-        </div>`;
+            <label class="font-bold block">
+                Name
+                <input id="u_name"
+                       class="w-full border p-2.5 rounded-xl mt-1"
+                       value="${esc(unit.name || unit.title || '')}">
+            </label>
+
+            <label class="font-bold block">
+                Description
+                <textarea id="u_desc" rows="5"
+                          class="w-full border p-2.5 rounded-xl mt-1">${esc(unit.description || '')}</textarea>
+            </label>
+
+            <label class="font-bold block">
+                Image URL
+                <input id="u_img"
+                       class="w-full border p-2.5 rounded-xl mt-1"
+                       value="${esc(unit.image_url || '')}">
+            </label>
+
+            <button type="button" id="saveUnitBtn"
+                    class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black mt-2 shadow">
+                Save Unit
+            </button>
+        </div>
+    `;
+
+    $('saveUnitBtn').addEventListener('click', () => window.saveUnit(unit.id));
 };
 
 window.saveUnit = async id => {
-    const payload = { name: document.getElementById('u_name'].value.trim(), description: document.getElementById('u_desc').value.trim(), image_url: document.getElementById('u_img').value.trim() };
-    const {error} = await sb.from('business_units').update(payload).eq('id', id);
-    if(error) alert(error.message); else { alert('Unit saved ✓'); document.getElementById('unitsBtn').click(); }
+    if (!isAuthenticated) return;
+
+    // Fixed the original JavaScript syntax error in u_name.
+    const payload = {
+        name: $('u_name').value.trim(),
+        description: $('u_desc').value.trim(),
+        image_url: $('u_img').value.trim()
+    };
+
+    const button = $('saveUnitBtn');
+    button.disabled = true;
+    button.textContent = 'Saving...';
+
+    const { error } = await sb
+        .from('business_units')
+        .update(payload)
+        .eq('id', id);
+
+    if (error) {
+        alert('Error saving unit: ' + error.message);
+        button.disabled = false;
+        button.textContent = 'Save Unit';
+    } else {
+        alert('Business unit saved successfully.');
+        $('unitsBtn').click();
+    }
 };
 
-document.getElementById('refreshSite').onclick = () => frame.src = '../index.html?admin=1&sync=' + Date.now();
-document.getElementById('drawerClose').onclick = () => document.getElementById('drawer').classList.add('hidden');
 
-document.getElementById('loginForm').onsubmit = async e => {
-    e.preventDefault();
-    const {error} = await sb.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
-    if(error) { document.getElementById('loginMsg').textContent = error.message; return; }
-    document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
-};
+// ================= REFRESH / DRAWER =================
 
-document.getElementById('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
-
-sb.auth.getSession().then(({data}) => {
-    if(data.session) { document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); }
+$('refreshSite').addEventListener('click', () => {
+    if (!isAuthenticated) return;
+    frame.src = '../index.html?admin=1&sync=' + Date.now();
 });
+
+$('drawerClose').addEventListener('click', hideDrawer);
+
+
+// ================= FORGOT PASSWORD =================
+
+$('forgotBtn').addEventListener('click', async () => {
+    const email = $('email').value.trim();
+    const message = $('resetMsg');
+
+    message.textContent = '';
+
+    if (!email) {
+        message.className = 'text-xs mt-3 font-bold text-rose-600';
+        message.textContent = 'Enter your admin email first.';
+        $('email').focus();
+        return;
+    }
+
+    const button = $('forgotBtn');
+    button.disabled = true;
+    button.textContent = 'Sending reset email...';
+
+    try {
+        const resetUrl = new URL('reset-password.html', location.href).href;
+
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: resetUrl
+        });
+
+        if (error) throw error;
+
+        message.className = 'text-xs mt-3 font-bold text-emerald-700';
+        message.textContent =
+            'If this email is registered, a reset email will be sent. Check your inbox and spam folder.';
+
+    } catch (error) {
+        message.className = 'text-xs mt-3 font-bold text-rose-600';
+        message.textContent = error.message || 'Could not send reset email.';
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Forgot Password?';
+    }
+});
+
+
+// ================= LOGIN =================
+
+$('loginForm').addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const email = $('email').value.trim();
+    const password = $('password').value;
+    const button = $('loginBtn');
+
+    button.disabled = true;
+    button.textContent = 'Signing in...';
+    $('loginMsg').textContent = '';
+
+    try {
+        const { error } = await sb.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        $('password').value = '';
+        showApp();
+
+    } catch (error) {
+        showLogin(error.message || 'Login failed.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Login to Admin';
+    }
+});
+
+
+// ================= LOGOUT / SESSION =================
+
+$('logout').addEventListener('click', async () => {
+    $('logout').disabled = true;
+
+    try {
+        const { error } = await sb.auth.signOut();
+        if (error) throw error;
+
+        showLogin('You have been logged out.');
+        location.reload();
+
+    } catch (error) {
+        alert('Logout error: ' + error.message);
+        $('logout').disabled = false;
+    }
+});
+
+sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+        showLogin();
+    } else if (session && ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+        showApp();
+    }
+});
+
+(async () => {
+    try {
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+
+        if (data.session) {
+            showApp();
+        } else {
+            showLogin();
+        }
+    } catch (error) {
+        showLogin('Could not verify session. Please sign in again.');
+    }
+})();
 </script>
+
 </body>
 </html>
-
