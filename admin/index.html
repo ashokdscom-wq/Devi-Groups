@@ -227,49 +227,62 @@ async function upload(file, folder = 'visual') {
 
 // VISUAL EDITOR MESSAGES
 window.addEventListener('message', event => {
-  if (event.origin !== window.location.origin) return;
-  const data = event.data;
-  if (!data || data.source !== 'devi-visual-cms') return;
-  if (data.type === 'EDIT_ELEMENT') {
-    selected = data.element || data.payload || null;
-    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
-    $('textValue').value = selected?.text || selected?.textContent || '';
-    $('srcValue').value = selected?.src || selected?.image || '';
-    $('hrefValue').value = selected?.href || '';
-    $('altValue').value = selected?.alt || selected?.title || '';
-    $('editor').classList.remove('hidden');
-  }
-  if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
+  const data = event.data;
+  if (!data || data.source !== 'devi-visual-cms') return;
+  if (data.type === 'EDIT_ELEMENT' || data.type === 'SELECT') {
+    selected = data.element || data.payload || null;
+    $('selectedInfo').textContent = selected ? `${selected.page || ''} #${selected.id || ''}` : '';
+    $('textValue').value = selected?.text || selected?.textContent || '';
+    $('srcValue').value = selected?.src \vert{}\vert{} selected?.image \vert{}\vert{} '';$('hrefValue').value = selected?.href || '';
+    $('altValue').value = selected?.alt \vert{}\vert{} selected?.title \vert{}\vert{} '';$('fileValue').value = '';
+    $('saveMsg').textContent = '';$('editor').classList.remove('hidden');
+  }
+  if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
 });
 
-$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));
-$('saveElement').addEventListener('click', async () => {
-  if (!isAuthenticated || !selected) return;
-  $('saveMsg').textContent = 'Saving...';
-  try {
-    let src = $('srcValue').value.trim();
-    const file = $('fileValue').files[0];
-    if (file) src = await upload(file, 'visual');
-    frame.contentWindow.postMessage({
-      source:'devi-visual-cms',
-      type:'SAVE_ELEMENT',
-      payload:{
-        ...selected,
-        text:$('textValue').value,
-        src,
-        href:$('hrefValue').value,
-        alt:$('altValue').value,
-        action1:$('action1').value,
-        action2:$('action2').value,
-        action3:$('action3').value,
-        action4:$('action4').value
-      }
-    }, window.location.origin);
-    $('saveMsg').textContent = 'Save request sent to website.';
-  } catch (error) {
-    $('saveMsg').textContent = 'Error: ' + error.message;
-  }
+$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));$('saveElement').addEventListener('click', async () => {
+  if (!isAuthenticated || !selected || !selected.id) return;
+  $('saveMsg').textContent = 'Saving...';
+  try {
+    let src = $('srcValue').value.trim();
+    const file = $('fileValue').files[0];
+    if (file) src = await upload(file, 'visual');
+
+    const contentObj = {
+      text: $('textValue').value,
+      src: src,
+      href: $('hrefValue').value,
+      alt: $('altValue').value,
+      onclick: selected.onclick || ''
+    };
+
+    const payload = {
+      key: selected.id,
+      content: JSON.stringify(contentObj),
+      active: true,
+      updated_at: new Date().toISOString()
+    };
+
+    // Supabase ના site_content ટેબલમાં સેવ કરવા માટે
+    const { data: existing } = await sb.from('site_content').select('id').eq('key', selected.id).maybeSingle();
+    const res = existing?.id
+      ? await sb.from('site_content').update(payload).eq('id', existing.id)
+      : await sb.from('site_content').insert([payload]);
+
+    if (res.error) throw res.error;
+
+    frame.contentWindow.postMessage({
+      source: 'devi-visual-cms',
+      type: 'SAVE_ELEMENT',
+      payload: { id: selected.id, ...contentObj }
+    }, '*');
+
+    $('saveMsg').textContent = 'Saved successfully!';
+  } catch (error) {
+    $('saveMsg').textContent = 'Error: ' + error.message;
+  }
 });
+
     // PRODUCTS MANAGER
 async function openProductsManager() {
   if (!isAuthenticated) return;
