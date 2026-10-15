@@ -160,10 +160,12 @@ let isAuthenticated = false;
 const $ = id => document.getElementById(id);
 
 function showDrawer() {
-  $('drawer').classList.remove('hidden');$('drawer').classList.add('flex');
+  $('drawer').classList.remove('hidden');
+  $('drawer').classList.add('flex');
 }
 function hideDrawer() {
-  $('drawer').classList.add('hidden');$('drawer').classList.remove('flex');
+  $('drawer').classList.add('hidden');
+  $('drawer').classList.remove('flex');
 }
 function esc(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -172,12 +174,14 @@ function esc(value) {
 }
 function showApp() {
   isAuthenticated = true;
-  $('login').classList.add('hidden');$('app').classList.remove('hidden');
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
 }
 function showLogin(message = '') {
   isAuthenticated = false;
   $('app').classList.add('hidden');
-  $('login').classList.remove('hidden');$('loginMsg').textContent = message;
+  $('login').classList.remove('hidden');
+  $('loginMsg').textContent = message;
 }
 function nav(page) {
   if (!isAuthenticated) return;
@@ -229,13 +233,16 @@ window.addEventListener('message', event => {
     selected = data.element || data.payload || null;
     $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
     $('textValue').value = selected?.text || selected?.textContent || '';
-    $('srcValue').value = selected?.src \vert{}\vert{} selected?.image \vert{}\vert{} '';$('hrefValue').value = selected?.href || '';
-    $('altValue').value = selected?.alt \vert{}\vert{} selected?.title \vert{}\vert{} '';$('editor').classList.remove('hidden');
+    $('srcValue').value = selected?.src || selected?.image || '';
+    $('hrefValue').value = selected?.href || '';
+    $('altValue').value = selected?.alt || selected?.title || '';
+    $('editor').classList.remove('hidden');
   }
   if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
 });
 
-$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));$('saveElement').addEventListener('click', async () => {
+$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));
+$('saveElement').addEventListener('click', async () => {
   if (!isAuthenticated || !selected) return;
   $('saveMsg').textContent = 'Saving...';
   try {
@@ -266,7 +273,8 @@ $('closeEditor').addEventListener('click', () => $('editor').classList.add('hidd
 async function openProductsManager() {
   if (!isAuthenticated) return;
 
-  $('drawerTitle').textContent = 'All Products';$('drawerBody').innerHTML = '<p class="text-slate-500">Loading products...</p>';
+  $('drawerTitle').textContent = 'All Products';
+  $('drawerBody').innerHTML = '<p class="text-slate-500">Loading products...</p>';
   showDrawer();
 
   try {
@@ -468,7 +476,8 @@ window.editProduct = (product = {}, isNew = false) => {
 async function openUnitsManager() {
   if (!isAuthenticated) return;
 
-  $('drawerTitle').textContent = 'Business Units';$('drawerBody').textContent = 'Loading business units...';
+  $('drawerTitle').textContent = 'Business Units';
+  $('drawerBody').textContent = 'Loading business units...';
   showDrawer();
 
   try {
@@ -612,7 +621,8 @@ window.editUnit = (unit = {}, isNew = false) => {
 async function openBrochureManager() {
   if (!isAuthenticated) return;
 
-  $('drawerTitle').textContent = 'View Brochures';$('drawerBody').textContent = 'Loading brochures...';
+  $('drawerTitle').textContent = 'View Brochures';
+  $('drawerBody').textContent = 'Loading brochures...';
   showDrawer();
 
   try {
@@ -700,7 +710,8 @@ const AON_REVIEW_PAGE_SIZE = 10;
 async function openReviewsManager() {
   if (!isAuthenticated) return;
 
-  $('drawerTitle').textContent = 'Manage Reviews';$('drawerBody').innerHTML = '<p class="p-6 text-center">Loading reviews...</p>';
+  $('drawerTitle').textContent = 'Manage Reviews';
+  $('drawerBody').innerHTML = '<p class="p-6 text-center">Loading reviews...</p>';
   showDrawer();
 
   try {
@@ -1068,3 +1079,268 @@ function renderAonReviews() {
       const modal = $('aonReviewEditModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+    };
+  });
+
+  const closeEditModal = () => {
+    $('aonReviewEditModal').classList.add('hidden');$('aonReviewEditModal').classList.remove('flex');
+  };
+
+  $('aonReviewEditClose').onclick = closeEditModal;
+  $('aonReviewEditCancel').onclick = closeEditModal;
+
+  // Save edited review
+  $('aonReviewEditForm').onsubmit = async event => {
+    event.preventDefault();
+
+    const id = $('aonEditReviewId').value;
+    const stars = Math.max(
+      1,
+      Math.min(5, Number($('aonEditReviewStars').value) || 5)
+    );
+    const message = $('aonEditReviewMessage').value.trim();
+    const status = $('aonEditReviewStatus').value;
+    const active = $('aonEditReviewActive').checked;
+
+    const payload = {
+      name: $('aonEditReviewName').value.trim(),
+      country: $('aonEditReviewCountry').value.trim() || null,
+      stars,
+      rating: stars,
+      message,
+      review: message,
+      status,
+      active,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await sb
+      .from('reviews')
+      .update(payload)
+      .eq('id', id);
+
+    if (error) {
+      alert('Save failed: ' + error.message);
+      return;
+    }
+
+    closeEditModal();
+    alert('Review updated successfully.');
+    await openReviewsManager();
+  };
+
+  // Approve / unpublish one review
+  body.querySelectorAll('[data-aon-approve]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonApprove
+      );
+      if (!r) return;
+
+      const currentlyPublished =
+        r.active !== false &&
+        ['approved', 'published', ''].includes(
+          String(r.status || '').toLowerCase()
+        );
+
+      const payload = currentlyPublished
+        ? { active: false, status: 'pending', updated_at: new Date().toISOString() }
+        : { active: true, status: 'approved', updated_at: new Date().toISOString() };
+
+      const { error } = await sb
+        .from('reviews')
+        .update(payload)
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Update failed: ' + error.message);
+        return;
+      }
+
+      await openReviewsManager();
+    };
+  });
+
+  // Delete one review
+  body.querySelectorAll('[data-aon-delete]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonDelete
+      );
+      if (!r || !confirm('Permanently delete this review?')) return;
+
+      const { error } = await sb
+        .from('reviews')
+        .delete()
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Delete failed: ' + error.message);
+        return;
+      }
+
+      aonReviewSelected.delete(String(r.id));
+      await openReviewsManager();
+    };
+  });
+
+  // Bulk approve selected reviews
+  $('aonBulkApprove').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Approve and publish ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .update({
+        active: true,
+        status: 'approved',
+        updated_at: new Date().toISOString()
+      })
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk approve failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+
+  // Bulk delete selected reviews
+  $('aonBulkDelete').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Permanently delete ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .delete()
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk delete failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+}
+
+$('reviewsBtn').addEventListener('click', openReviewsManager);
+// REFRESH WEBSITE
+$('refreshSite').addEventListener('click', () => {
+  if (!isAuthenticated) return;
+  frame.src = '../index.html?admin=1&sync=' + Date.now();
+});
+
+$('drawerClose').addEventListener('click', hideDrawer);
+
+// FORGOT PASSWORD
+$('forgotBtn').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  const message = $('resetMsg');
+  message.textContent = '';
+
+  if (!email) {
+    message.className = 'text-xs mt-3 font-bold text-rose-600';
+    message.textContent = 'Enter your admin email first.';
+    $('email').focus();
+    return;
+  }
+
+  const button = $('forgotBtn');
+  button.disabled = true;
+  button.textContent = 'Sending reset email...';
+
+  try {
+    const resetUrl = new URL('reset-password.html', location.href).href;
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: resetUrl
+    });
+
+    if (error) throw error;
+
+    message.className = 'text-xs mt-3 font-bold text-emerald-700';
+    message.textContent = 'If this email is registered, check your inbox and spam folder.';
+  } catch (error) {
+    message.className = 'text-xs mt-3 font-bold text-rose-600';
+    message.textContent = error.message || 'Could not send reset email.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Forgot Password?';
+  }
+});
+
+// LOGIN
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const button = $('loginBtn');
+
+  button.disabled = true;
+  button.textContent = 'Signing in...';
+  $('loginMsg').textContent = '';
+
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    $('password').value = '';
+    showApp();
+  } catch (error) {
+    showLogin(error.message || 'Login failed.');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Login to Admin';
+  }
+});
+
+// LOGOUT
+$('logout').addEventListener('click', async () => {
+  const { error } = await sb.auth.signOut();
+
+  if (error) {
+    alert('Logout error: ' + error.message);
+    return;
+  }
+
+  showLogin('You have been logged out.');
+  location.reload();
+});
+
+// AUTH SESSION
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') {
+    showLogin();
+  } else if (session && ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+    showApp();
+  }
+});
+
+(async () => {
+  try {
+    const { data, error } = await sb.auth.getSession();
+    if (error) throw error;
+
+    if (data.session) showApp();
+    else showLogin();
+  } catch (error) {
+    showLogin('Could not verify session. Please sign in again.');
+  }
+})();
+</script>
+</body>
+</html>
