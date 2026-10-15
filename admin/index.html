@@ -195,23 +195,99 @@ function nav(page) {
 }
 
 const pages = [
-  ['home','HOME'],
-  ['about','ABOUT US'],
-  ['company','COMPANY'],
-  ['products','PRODUCTS'],
-  ['sister-brand','OUR SISTER BRAND'],
-  ['contact','CONTACT US']
+  ['home','HOME', 'Homepage ના લખાણ, બેનર, ફોટા અને બટન'],
+  ['about','ABOUT US', 'કંપનીનો પરિચય, માહિતી અને ફોટા'],
+  ['company','COMPANY', 'કંપનીની વિગતો અને વિભાગો'],
+  ['products','PRODUCTS', 'પ્રોડક્ટની માહિતી, ફોટા અને કેટેગરી'],
+  ['sister-brand','OUR SISTER BRANDS', 'બ્રાન્ડનાં નામ, લોગો અને લિંક્સ'],
+  ['contact','CONTACT US', 'સરનામું, ફોન, ઇમેલ અને સોશિયલ લિંક્સ']
 ];
-pages.forEach(([id,name]) => {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
-  const icon = document.createElement('i');
-  icon.className = 'fa-solid fa-angle-right text-slate-300';
-  button.append(icon, document.createTextNode(' ' + name));
-  button.addEventListener('click', () => nav(id));
+
+pages.forEach(([id, name, desc]) => {
+  const button = document.createElement('div');
+  button.className = 'w-full p-2.5 px-3 rounded-xl hover:bg-slate-100 border border-slate-200/80 transition flex items-center justify-between gap-2 cursor-pointer bg-slate-50/50';
+  button.innerHTML = `
+    <div class="min-w-0 flex-1">
+      <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+        <i class="fa-solid fa-file-pen text-slate-400"></i> ${esc(name)}
+      </div>
+      <div class="text-[10px] text-slate-500 truncate mt-0.5">${esc(desc)}</div>
+    </div>
+    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0">Editable</span>
+  `;
+  button.addEventListener('click', () => {
+    nav(id);
+    openPageContentDrawer(id, name);
+  });
   $('pages').appendChild(button);
 });
+
+// પેજ મુજબ તમામ એલિમેન્ટનું લિસ્ટ ખોલવા માટેનું ફંક્શન
+function openPageContentDrawer(pageId, pageName) {
+  if (!isAuthenticated || !frame.contentDocument) return;
+  const doc = frame.contentDocument;
+  const section = doc.getElementById('page-' + pageId);
+  if (!section) return;
+
+  $('drawerTitle').textContent = pageName + ' — Edit Content';
+  const elements = Array.from(section.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img')).filter(el => el.id);
+
+  $('drawerBody').innerHTML = `
+    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 font-semibold">
+      💡 નીચેનામાંથી કોઈપણ લખાણ કે ફોટા પર <b>"Edit"</b> દબાવો અથવા સીધું વેબસાઇટના પ્રિવ્યૂ પર ક્લિક કરીને ફેરફાર કરો.
+    </div>
+    <div class="space-y-2.5">
+      ${elements.map(el => {
+        const tag = el.tagName.toLowerCase();
+        const isImg = tag === 'img';
+        const preview = isImg ? (el.getAttribute('src') || '') : (el.textContent || '').trim();
+        if (!preview && !isImg) return '';
+        return `
+          <div class="border rounded-xl p-3 flex items-center justify-between gap-3 bg-white hover:bg-slate-50">
+            <div class="min-w-0 flex-1">
+              <span class="text-[10px] font-mono uppercase bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">${esc(tag)}</span>
+              <span class="text-[10px] font-mono text-slate-400 ml-1">#${esc(el.id)}</span>${isImg 
+                ? `<div class="mt-1 flex items-center gap-2"><img src="${esc(el.src)}" class="w-10 h-10 object-cover rounded border"><span class="text-xs text-slate-600 truncate">${esc(preview)}</span></div>`
+                : `<p class="text-xs text-slate-800 font-medium truncate mt-1">${esc(preview)}</p>`
+              }
+            </div>
+            <button data-edit-el="${esc(el.id)}" class="bg-slate-900 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shrink-0">Edit</button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  $('drawerBody').querySelectorAll('[data-edit-el]').forEach(btn => {
+    btn.onclick = () => {
+      const targetEl = doc.getElementById(btn.dataset.editEl);
+      if (targetEl) {
+        hideDrawer();
+        openElementEditor({
+          id: targetEl.id,
+          page: pageId,
+          tag: targetEl.tagName.toLowerCase(),
+          text: targetEl.innerHTML.trim(),
+          src: targetEl.src || '',
+          href: targetEl.href || '',
+          alt: targetEl.alt || targetEl.title || '',
+          onclick: targetEl.getAttribute('onclick') || ''
+        });
+      }
+    };
+  });
+
+  showDrawer();
+}
+
+function openElementEditor(elData) {
+  selected = elData;
+  $('selectedInfo').textContent = `${selected.page?.toUpperCase() || 'PAGE'} › <${selected.tag}> (#${selected.id})`;
+  $('textValue').value = selected.text || '';
+  $('srcValue').value = selected.src \vert{}\vert{} '';$('hrefValue').value = selected.href || '';
+  $('altValue').value = selected.alt \vert{}\vert{} '';$('fileValue').value = '';
+  $('saveMsg').textContent = '';$('editor').classList.remove('hidden');
+}
 
 // FILE UPLOAD
 async function upload(file, folder = 'visual') {
@@ -224,49 +300,72 @@ async function upload(file, folder = 'visual') {
   return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
 }
 
-// VISUAL EDITOR MESSAGES
+// VISUAL EDITOR MESSAGES (SELECT અને EDIT_ELEMENT બંને સપોર્ટ કરશે)
 window.addEventListener('message', event => {
-  if (event.origin !== window.location.origin) return;
   const data = event.data;
   if (!data || data.source !== 'devi-visual-cms') return;
-  if (data.type === 'EDIT_ELEMENT') {
-    selected = data.element || data.payload || null;
-    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
-    $('textValue').value = selected?.text || selected?.textContent || '';
-    $('srcValue').value = selected?.src || selected?.image || '';
-    $('hrefValue').value = selected?.href || '';
-    $('altValue').value = selected?.alt || selected?.title || '';
-    $('editor').classList.remove('hidden');
+  if (data.type === 'EDIT_ELEMENT' || data.type === 'SELECT') {
+    const elData = data.element || data.payload || null;
+    if (elData) openElementEditor(elData);
   }
   if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
 });
 
-$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));
+$('closeEditor').addEventListener('click', () =>$('editor').classList.add('hidden'));
+
+// SUPABASE site_content માં ડાયરેક્ટ સેવ કરવાનો કોડ
 $('saveElement').addEventListener('click', async () => {
-  if (!isAuthenticated || !selected) return;
-  $('saveMsg').textContent = 'Saving...';
+  if (!isAuthenticated || !selected || !selected.id) return;
+  $('saveMsg').className = 'font-bold text-center text-amber-600';$('saveMsg').textContent = 'Saving to Database...';
+
   try {
     let src = $('srcValue').value.trim();
     const file = $('fileValue').files[0];
     if (file) src = await upload(file, 'visual');
+
+    const contentObj = {
+      text: $('textValue').value,
+      src: src,
+      href: $('hrefValue').value.trim(),
+      alt: $('altValue').value.trim(),
+      onclick: selected.onclick || ''
+    };
+
+    const payload = {
+      key: selected.id,
+      content: JSON.stringify(contentObj),
+      active: true,
+      updated_at: new Date().toISOString()
+    };
+
+    // પહેલા ચેક કરો કે આ key પહેલેથી site_content માં છે કે નહીં
+    const { data: existing, error: fetchErr } = await sb
+      .from('site_content')
+      .select('id')
+      .eq('key', selected.id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+
+    let saveRes;
+    if (existing && existing.id) {
+      saveRes = await sb.from('site_content').update(payload).eq('id', existing.id);
+    } else {
+      saveRes = await sb.from('site_content').insert([payload]);
+    }
+
+    if (saveRes.error) throw saveRes.error;
+
+    // Iframe માં રહેલી વેબસાઇટમાં તરત જ લાઇવ અપડેટ બતાવો
     frame.contentWindow.postMessage({
-      source:'devi-visual-cms',
-      type:'SAVE_ELEMENT',
-      payload:{
-        ...selected,
-        text:$('textValue').value,
-        src,
-        href:$('hrefValue').value,
-        alt:$('altValue').value,
-        action1:$('action1').value,
-        action2:$('action2').value,
-        action3:$('action3').value,
-        action4:$('action4').value
-      }
-    }, window.location.origin);
-    $('saveMsg').textContent = 'Save request sent to website.';
+      source: 'devi-visual-cms',
+      type: 'SAVE_ELEMENT',
+      payload: { id: selected.id, ...contentObj }
+    }, '*');
+
+    $('saveMsg').className = 'font-bold text-center text-emerald-600';$('saveMsg').textContent = '✅ Saved successfully to Website!';
   } catch (error) {
-    $('saveMsg').textContent = 'Error: ' + error.message;
+    $('saveMsg').className = 'font-bold text-center text-rose-600';$('saveMsg').textContent = 'Error: ' + error.message;
   }
 });
     // PRODUCTS MANAGER
