@@ -1,758 +1,1348 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DEVI GROUPS | Admin Panel</title>
-<meta name="theme-color" content="#111827">
-<style>
-:root {
-  --bg:#f3f5f9; --panel:#fff; --text:#172033; --muted:#64748b;
-  --line:#e2e8f0; --gold:#b88a44; --dark:#111827;
-  --red:#dc2626; --green:#15803d; --blue:#2563eb;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.topbar{height:68px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:12px}
-.brand{font-weight:800;letter-spacing:1px;font-size:19px}
-.brand span{color:#d7ad68}
-.top-actions{display:flex;gap:8px;align-items:center}
-.layout{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:calc(100vh - 68px)}
-.sidebar{background:#fff;border-right:1px solid var(--line);padding:20px 13px}
-.side-label{font-size:11px;color:var(--muted);letter-spacing:1.5px;padding:12px}
-.nav{width:100%;text-align:left;padding:12px;border:0;border-radius:9px;background:transparent;color:#334155;margin:3px 0}
-.nav:hover,.nav.active{background:#f8eddd;color:#80551b;font-weight:bold}
-.main{padding:25px;min-width:0}
-.heading{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}
-h1{font-size:25px;margin:0 0 6px}
-h2{font-size:18px}
-.sub{font-size:13px;color:var(--muted)}
-.btn{border:0;border-radius:8px;padding:10px 14px;background:var(--dark);color:#fff;font-weight:600}
-.btn.gold{background:var(--gold);color:#111827}
-.btn.light{background:#edf1f6;color:#263246}
-.btn.red{background:var(--red)}
-.btn.green{background:var(--green)}
-.btn.small{font-size:12px;padding:7px 10px}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
-.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px}
-.stat .number{font-size:27px;font-weight:800;margin:12px 0 4px}
-.stat .label{font-size:13px;color:var(--muted)}
-.panel{margin-top:18px;min-width:0}
-.panel h2{margin:0 0 15px}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
-.toolbar input,.toolbar select{max-width:100%;width:auto;min-width:160px}
-input,textarea,select{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:11px;background:white;color:#172033}
-textarea{min-height:100px;resize:vertical}
-label{font-size:13px;font-weight:700;display:block;margin:13px 0 6px}
-.table-wrap{width:100%;overflow:auto}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{background:#f8fafc;color:#475569;white-space:nowrap}
-td{max-width:300px;overflow-wrap:anywhere}
-.thumb{width:55px;height:55px;object-fit:cover;border-radius:8px;background:#f1f5f9}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.notice{padding:12px 14px;border-radius:8px;margin:12px 0;font-size:14px;overflow-wrap:anywhere}
-.notice.error{background:#fee2e2;color:#991b1b}
-.notice.success{background:#dcfce7;color:#166534}
-.notice.info{background:#dbeafe;color:#1e40af}
-.login-page{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#111827,#263246)}
-.login-card{background:#fff;width:min(440px,100%);padding:30px;border-radius:16px;box-shadow:0 25px 80px #0003}
-.login-card h1{font-size:25px;margin:12px 0}
-.login-logo{font-size:24px;font-weight:900;letter-spacing:1px}
-.login-logo span{color:var(--gold)}
-.login-card .btn{width:100%;margin-top:17px}
-.login-card label{margin-top:17px}
-.modal{position:fixed;inset:0;background:#0f172acc;display:grid;place-items:center;padding:15px;z-index:20}
-.modal-card{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:22px}
-.modal-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.modal-head h2{margin:0}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-.form-grid .full{grid-column:1/-1}
-.footer-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px;flex-wrap:wrap}
-.empty{text-align:center;color:var(--muted);padding:30px}
-#toast{position:fixed;bottom:20px;right:20px;max-width:calc(100% - 40px);z-index:50}
-@media(max-width:900px){
- .layout{grid-template-columns:1fr}
- .sidebar{border-right:0;border-bottom:1px solid var(--line);display:flex;overflow:auto;padding:8px;gap:5px}
- .side-label{display:none}
- .nav{white-space:nowrap;width:auto;margin:0}
- .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .main{padding:16px}
-}
-@media(max-width:520px){
- .topbar{padding:0 12px;height:60px}
- .brand{font-size:15px}
- .grid{grid-template-columns:1fr 1fr;gap:8px}
- .stat{padding:12px}
- .stat .number{font-size:22px}
- .form-grid{grid-template-columns:1fr}
- .form-grid .full{grid-column:auto}
- .login-card{padding:22px}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DEVI GROUPS — Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../cms-config.js"></script>
+  <style>
+    html,body { height:100%; margin:0; }
+    #siteFrame { width:100%; height:100%; border:0; }
+    .glass { backdrop-filter:blur(10px); }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+  </style>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-900">
 
-<div id="loginPage" class="login-page">
-  <form id="loginForm" class="login-card">
-    <div class="login-logo">DEVI <span>GROUPS</span></div>
-    <h1>Admin Panel</h1>
-    <p class="sub">Sign in with your authorized administrator account.</p>
-    <div id="loginMessage"></div>
-    <label for="email">Email address</label>
-    <input id="email" type="email" autocomplete="username" required>
-    <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="current-password" required>
-    <button id="loginButton" class="btn gold" type="submit">Sign In</button>
-    <p class="sub">Only approved administrators can access this panel.</p>
-  </form>
+<!-- LOGIN -->
+<div id="login" class="min-h-screen grid place-items-center p-4">
+  <form id="loginForm" class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
+    <h1 class="text-3xl font-black text-slate-900">DEVI GROUPS</h1>
+    <p class="text-slate-500 mb-6 text-sm">Secure Visual Admin Panel</p>
+    <label for="email" class="block text-xs font-bold mb-1">Admin Email</label>
+    <input id="email" type="email" autocomplete="username" required placeholder="Admin email"
+      class="w-full border border-slate-300 rounded-xl p-3 mb-4 text-sm">
+    <label for="password" class="block text-xs font-bold mb-1">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required placeholder="Password"
+      class="w-full border border-slate-300 rounded-xl p-3 mb-3 text-sm">
+    <button id="loginBtn" type="submit" class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold">
+      Login to Admin
+    </button>
+    <button id="forgotBtn" type="button" class="w-full mt-3 text-sm font-bold text-blue-600">
+      Forgot Password?
+    </button>
+    <div id="loginMsg" role="status" class="text-xs text-rose-600 mt-3 font-bold" aria-live="polite"></div>
+    <div id="resetMsg" role="status" class="text-xs mt-3 font-bold" aria-live="polite"></div>
+  </form>
 </div>
 
-<div id="adminApp" class="hidden">
-  <header class="topbar">
-    <div class="brand">DEVI <span>GROUPS</span> <small style="font-size:11px;color:#cbd5e1"> / ADMIN</small></div>
-    <div class="top-actions">
-      <a href="../" target="_blank" rel="noopener" style="color:white;font-size:13px">View Website ↗</a>
-      <button id="logoutButton" class="btn gold small">Logout</button>
-    </div>
-  </header>
+<!-- MAIN ADMIN APP -->
+<div id="app" class="hidden h-screen flex flex-col">
+  <header class="min-h-16 bg-slate-950 text-white flex items-center justify-between gap-3 px-5 py-3 shrink-0 shadow-md">
+    <div>
+      <b class="text-xl tracking-wide">DEVI GROUPS</b>
+      <span class="text-xs text-slate-400 ml-2 hidden sm:inline">Ultimate CMS &amp; Visual Editor</span>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button id="refreshSite" class="px-3 py-2 rounded-xl bg-white/10 text-xs font-bold">
+        <i class="fa-solid fa-rotate mr-1"></i> Refresh
+      </button>
+      <a href="../index.html" target="_blank" rel="noopener noreferrer"
+        class="px-3 py-2 rounded-xl bg-white/10 text-xs font-bold">
+        <i class="fa-solid fa-globe mr-1"></i> Website ↗
+      </a>
+      <button id="logout" class="px-3 py-2 rounded-xl bg-rose-600/80 text-xs font-bold">
+        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+      </button>
+    </div>
+  </header>
 
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="side-label">MANAGEMENT</div>
-      <button class="nav active" data-page="dashboard">▦ Dashboard</button>
-      <button class="nav" data-page="products">▣ Products</button>
-      <button class="nav" data-page="business_units">▤ Business Units</button>
-      <button class="nav" data-page="reviews">☆ Reviews</button>
-      <button class="nav" data-page="site_content">✎ Site Content</button>
-      <button class="nav" data-page="brochures">▧ Brochures / Files</button>
-    </aside>
+  <div class="flex-1 min-h-0 flex">
+    <!-- SIDEBAR -->
+    <aside class="w-72 max-w-[45vw] bg-white border-r border-slate-200 p-4 overflow-y-auto space-y-3 shrink-0">
+      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Website Pages</div>
+      <div id="pages" class="space-y-1"></div>
+      <hr class="border-slate-200 my-4">
+      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Database Managers</div>
+      <button id="reviewsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
+        <i class="fa-solid fa-star text-amber-500 w-4"></i> Manage Reviews
+      </button>
+      <button id="productsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
+        <i class="fa-solid fa-box text-blue-500 w-4"></i> View All Products
+      </button>
+      <button id="unitsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
+        <i class="fa-solid fa-building text-emerald-500 w-4"></i> Business Units
+      </button>
+      <button id="brochuresBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
+        <i class="fa-solid fa-file-pdf text-rose-500 w-4"></i> View Brochures
+      </button>
+    </aside>
 
-    <main class="main">
-      <div id="globalMessage"></div>
-      <section id="dashboardPage">
-        <div class="heading">
-          <div><h1>Dashboard</h1><div class="sub">DEVI GROUPS website management</div></div>
-          <button class="btn gold" id="refreshDashboard">↻ Refresh</button>
-        </div>
-        <div class="grid">
-          <div class="stat"><div class="label">Products</div><div id="statProducts" class="number">—</div><div class="sub">Database records</div></div>
-          <div class="stat"><div class="label">Business Units</div><div id="statUnits" class="number">—</div><div class="sub">Database records</div></div>
-          <div class="stat"><div class="label">Reviews</div><div id="statReviews" class="number">—</div><div class="sub">All review records</div></div>
-          <div class="stat"><div class="label">Site Content</div><div id="statContent" class="number">—</div><div class="sub">Content records</div></div>
-        </div>
-        <div class="panel">
-          <h2>Quick Actions</h2>
-          <div class="toolbar">
-            <button class="btn" data-goto="products">Manage Products</button>
-            <button class="btn" data-goto="business_units">Manage Business Units</button>
-            <button class="btn" data-goto="reviews">Manage Reviews</button>
-            <button class="btn" data-goto="site_content">Edit Site Content</button>
-          </div>
-          <p class="sub">Changes are saved to Supabase. The public website must read the same tables for those changes to appear there.</p>
-        </div>
-      </section>
-
-      <section id="dataPage" class="hidden">
-        <div class="heading">
-          <div><h1 id="pageTitle">Manage Data</h1><div id="pageDescription" class="sub"></div></div>
-          <button id="addRecord" class="btn gold">＋ Add New</button>
-        </div>
-        <div class="panel">
-          <div class="toolbar">
-            <input id="searchInput" placeholder="Search loaded records..." aria-label="Search records">
-            <button id="reloadTable" class="btn light">↻ Reload</button>
-          </div>
-          <div id="tableMessage"></div>
-          <div class="table-wrap"><table>
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>
-          </table></div>
-          <div id="tableFooter" class="sub" style="margin-top:12px"></div>
-        </div>
-      </section>
-    </main>
-  </div>
+    <!-- WEBSITE FRAME AND EDITOR -->
+    <main class="flex-1 min-w-0 relative bg-slate-200">
+      <iframe id="siteFrame" title="Website Visual Editor" src="../index.html?admin=1"></iframe>
+      <div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[95%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+        <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
+          <div>
+            <h2 class="text-xl font-black text-slate-800">Edit Element</h2>
+            <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-1"></p>
+          </div>
+          <button id="closeEditor" type="button" class="text-xl text-slate-400">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-5 space-y-4 text-xs">
+          <div id="textBox">
+            <label for="textValue" class="font-bold text-slate-700 block mb-1">Display Text</label>
+            <textarea id="textValue" rows="6" class="w-full border border-slate-300 rounded-xl p-3 text-xs"></textarea>
+          </div>
+          <div id="srcBox">
+            <label for="fileValue" class="font-bold text-slate-700 block mb-1">Upload Photo / File</label>
+            <input id="fileValue" type="file" class="w-full border border-slate-300 rounded-xl p-2 mb-2 bg-slate-50">
+            <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-2.5" placeholder="Existing URL / path">
+          </div>
+          <div id="hrefBox">
+            <label for="hrefValue" class="font-bold text-slate-700 block mb-1">Link / Button URL</label>
+            <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-2.5">
+          </div>
+          <div id="altBox">
+            <label for="altValue" class="font-bold text-slate-700 block mb-1">Alt / Title Text</label>
+            <input id="altValue" class="w-full border border-slate-300 rounded-xl p-2.5">
+          </div>
+          <div id="actionBox" class="hidden space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label class="font-bold text-slate-800">Advanced Details</label>
+            <input id="action1" class="w-full border rounded-xl p-2" placeholder="Title / Product Name">
+            <input id="action2" class="w-full border rounded-xl p-2" placeholder="Specification / PDF Link">
+            <input id="action3" class="w-full border rounded-xl p-2" placeholder="Standard / Extra">
+            <input id="action4" class="w-full border rounded-xl p-2" placeholder="Packing">
+          </div>
+          <button id="saveElement" type="button" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black text-sm">
+            SAVE CHANGES
+          </button>
+          <div id="saveMsg" role="status" class="font-bold text-center"></div>
+          <div id="syncMsg" class="text-slate-400 text-center">Changes sync live to website when the site supports CMS messages.</div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
-<div id="editModal" class="modal hidden">
-  <div class="modal-card">
-    <div class="modal-head"><h2 id="modalTitle">Edit Record</h2><button id="closeModal" class="btn light">✕</button></div>
-    <div id="formMessage"></div>
-    <form id="recordForm">
-      <div id="recordFields" class="form-grid"></div>
-      <div class="footer-actions">
-        <button type="button" id="cancelEdit" class="btn light">Cancel</button>
-        <button type="submit" id="saveRecord" class="btn gold">Save Changes</button>
-      </div>
-    </form>
-  </div>
+<!-- DATABASE DRAWER -->
+<div id="drawer" class="hidden fixed inset-0 bg-black/50 z-[100] glass items-center justify-end">
+  <div class="h-full w-[600px] max-w-[95vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
+    <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
+      <h2 id="drawerTitle" class="text-lg font-black text-slate-800 tracking-wide uppercase"></h2>
+      <button id="drawerClose" type="button" class="text-xl text-slate-400 hover:text-rose-600">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="drawerBody" class="p-6 flex-grow"></div>
+  </div>
 </div>
 
-<div id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../cms-config.js"></script>
 <script>
-(() => {
-  "use strict";
+'use strict';
 
-  const $ = id => document.getElementById(id);
-  const TABLES = {
-    products: {
-      title: "Products",
-      description: "Create, edit and delete product records.",
-      fields: ["name","title","description","category","image","image_url","price","status","active","sort_order"]
-    },
-    business_units: {
-      title: "Business Units",
-      description: "Manage DEVI GROUPS divisions and business units.",
-      fields: ["name","title","description","category","image","image_url","status","active","sort_order"]
-    },
-    reviews: {
-      title: "Reviews",
-      description: "Review submitted feedback. Confirm your table's status fields before publishing.",
-      fields: ["name","company","rating","stars","review","message","status","active","country"]
-    },
-    site_content: {
-      title: "Site Content",
-      description: "Edit content records already stored in your site_content table.",
-      fields: ["key","title","content","value","description","section","active"]
-    },
-    brochures: {
-      title: "Brochures / Files",
-      description: "Upload a file to the devi-media storage bucket. This does not automatically create a brochure database record.",
-      fields: []
-    }
-  };
+const cfg = window.DEVI_CMS_CONFIG;
+if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey) {
+  document.getElementById('loginMsg').textContent =
+    'Configuration error: check the ../cms-config.js file and Supabase settings.';
+  throw new Error('DEVI_CMS_CONFIG is missing or incomplete.');
+}
 
-  let db = null;
-  let currentUser = null;
-  let currentPage = "dashboard";
-  let records = [];
-  let columnNames = [];
-  let editingRecord = null;
-  let toastTimer = null;
+const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+const frame = document.getElementById('siteFrame');
+let selected = null;
+let isAuthenticated = false;
+const $ = id => document.getElementById(id);
 
-  function notify(message, type = "info", target = "globalMessage") {
-    const el = $(target);
-    if (target === "toast") {
-      el.innerHTML = "";
-      const div = document.createElement("div");
-      div.className = "notice " + type;
-      div.textContent = message;
-      el.appendChild(div);
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.replaceChildren(), 4500);
-      return;
-    }
-    el.innerHTML = "";
-    const div = document.createElement("div");
-    div.className = "notice " + type;
-    div.textContent = message;
-    el.appendChild(div);
-  }
+function showDrawer() {
+  $('drawer').classList.remove('hidden');
+  $('drawer').classList.add('flex');
+}
+function hideDrawer() {
+  $('drawer').classList.add('hidden');
+  $('drawer').classList.remove('flex');
+}
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[ch]);
+}
+function showApp() {
+  isAuthenticated = true;
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
+}
+function showLogin(message = '') {
+  isAuthenticated = false;
+  $('app').classList.add('hidden');
+  $('login').classList.remove('hidden');
+  $('loginMsg').textContent = message;
+}
+function nav(page) {
+  if (!isAuthenticated) return;
+  if (!frame || !frame.contentWindow) {
+    alert('Website frame load થયો નથી. પેજ રિફ્રેશ કરો.');
+    return;
+  }
+  frame.contentWindow.postMessage({
+    source:'devi-visual-cms', type:'NAVIGATE', page
+  }, window.location.origin);
+}
 
-  function clearMessage(target) {
-    $(target).replaceChildren();
-  }
+const pages = [
+  ['home','HOME'],
+  ['about','ABOUT US'],
+  ['company','COMPANY'],
+  ['products','PRODUCTS'],
+  ['sister-brand','OUR SISTER BRAND'],
+  ['contact','CONTACT US']
+];
+pages.forEach(([id,name]) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
+  const icon = document.createElement('i');
+  icon.className = 'fa-solid fa-angle-right text-slate-300';
+  button.append(icon, document.createTextNode(' ' + name));
+  button.addEventListener('click', () => nav(id));
+  $('pages').appendChild(button);
+});
 
-  function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    })[c]);
-  }
+// FILE UPLOAD
+async function upload(file, folder = 'visual') {
+  if (!file) return '';
+  if (!isAuthenticated) throw new Error('Please log in first.');
+  const extension = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}${extension ? '.' + extension : ''}`;
+  const { error } = await sb.storage.from('devi-media').upload(path, file, { upsert:false });
+  if (error) throw error;
+  return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
+}
 
-  function safeUrl(value) {
-    try {
-      const url = new URL(String(value), location.href);
-      return ["https:","http:"].includes(url.protocol) ? url.href : "";
-    } catch {
-      return "";
-    }
-  }
+// VISUAL EDITOR MESSAGES
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin) return;
+  const data = event.data;
+  if (!data || data.source !== 'devi-visual-cms') return;
+  if (data.type === 'EDIT_ELEMENT') {
+    selected = data.element || data.payload || null;
+    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
+    $('textValue').value = selected?.text || selected?.textContent || '';
+    $('srcValue').value = selected?.src || selected?.image || '';
+    $('hrefValue').value = selected?.href || '';
+    $('altValue').value = selected?.alt || selected?.title || '';
+    $('editor').classList.remove('hidden');
+  }
+  if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
+});
 
-  function showLogin(message = "") {
-    $("adminApp").classList.add("hidden");
-    $("loginPage").classList.remove("hidden");
-    $("loginMessage").textContent = message;
-  }
+$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));
+$('saveElement').addEventListener('click', async () => {
+  if (!isAuthenticated || !selected) return;
+  $('saveMsg').textContent = 'Saving...';
+  try {
+    let src = $('srcValue').value.trim();
+    const file = $('fileValue').files[0];
+    if (file) src = await upload(file, 'visual');
+    frame.contentWindow.postMessage({
+      source:'devi-visual-cms',
+      type:'SAVE_ELEMENT',
+      payload:{
+        ...selected,
+        text:$('textValue').value,
+        src,
+        href:$('hrefValue').value,
+        alt:$('altValue').value,
+        action1:$('action1').value,
+        action2:$('action2').value,
+        action3:$('action3').value,
+        action4:$('action4').value
+      }
+    }, window.location.origin);
+    $('saveMsg').textContent = 'Save request sent to website.';
+  } catch (error) {
+    $('saveMsg').textContent = 'Error: ' + error.message;
+  }
+});
+    // PRODUCTS MANAGER
+async function openProductsManager() {
+  if (!isAuthenticated) return;
 
-  function showApp() {
-    $("loginPage").classList.add("hidden");
-    $("adminApp").classList.remove("hidden");
-  }
+  $('drawerTitle').textContent = 'All Products';
+  $('drawerBody').innerHTML = '<p class="text-slate-500">Loading products...</p>';
+  showDrawer();
 
-  function configClient() {
-    const config = window.DEVI_CMS_CONFIG;
-    if (!window.supabase || !config) {
-      throw new Error("Supabase client or ../cms-config.js is missing.");
-    }
-    const url = config.supabaseUrl || config.url;
-    const key = config.supabaseKey || config.publishableKey || config.anonKey;
-    if (!url || !key) {
-      throw new Error("cms-config.js must provide supabaseUrl and a publishable/anon key.");
-    }
-    db = window.supabase.createClient(url, key);
-  }
+  try {
+    const { data, error } = await sb.from('products')
+      .select('*').order('sort_order', { ascending: true });
 
-  async function checkAdmin(user) {
-    // First choice: existing server-side is_admin() RPC.
-    try {
-      const { data, error } = await db.rpc("is_admin");
-      if (!error && data === true) return true;
-    } catch (_) {}
+    if (error) throw error;
 
-    // Fallback: an admin_users table with user_id or email.
-    // RLS must permit the logged-in administrator to read their own record.
-    try {
-      const { data, error } = await db.from("admin_users").select("*").limit(500);
-      if (error || !Array.isArray(data)) return false;
-      return data.some(row => {
-        const sameUser = row.user_id && row.user_id === user.id;
-        const sameEmail = row.email &&
-          String(row.email).toLowerCase() === String(user.email || "").toLowerCase();
-        const roleOk = !row.role || ["admin","super_admin"].includes(String(row.role).toLowerCase());
-        const activeOk = row.active === undefined || row.active === true;
-        return (sameUser || sameEmail) && roleOk && activeOk;
-      });
-    } catch (_) {
-      return false;
-    }
-  }
+    $('drawerBody').innerHTML = `
+      <button id="addProductBtn"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-bold mb-4">
+        + Add New Product
+      </button>
+      ${(data || []).map((p, i) => `
+        <div class="border rounded-xl p-3 mb-3 flex gap-3 items-center">
+          ${p.photo_url || p.image_url
+            ? `<img src="${esc(p.photo_url || p.image_url)}" class="w-16 h-16 object-cover rounded-lg" alt="">`
+            : '<div class="w-16 h-16 bg-slate-100 rounded-lg grid place-items-center">No photo</div>'}
+          <div class="flex-1 min-w-0">
+            <b class="block text-sm">${esc(p.name || 'Unnamed Product')}</b>
+            <span class="text-xs text-slate-500">${esc(p.product_code || '')}</span>
+            <span class="block text-xs ${p.active === false ? 'text-rose-600' : 'text-emerald-600'}">
+              ${p.active === false ? 'Inactive' : 'Active'}
+            </span>
+          </div>
+          <button data-edit-product="${i}" class="bg-slate-900 text-white rounded-lg px-3 py-2 text-xs">Edit</button>
+          <button data-delete-product="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs">Delete</button>
+        </div>
+      `).join('') || '<p>No products found.</p>'}
+    `;
 
-  async function authorizeSession() {
-    const { data, error } = await db.auth.getSession();
-    if (error) throw error;
-    const user = data.session && data.session.user;
-    if (!user) {
-      showLogin();
-      return false;
-    }
-    const allowed = await checkAdmin(user);
-    if (!allowed) {
-      await db.auth.signOut();
-      showLogin("This account is not authorized as an administrator. Check admin_users / is_admin() setup.");
-      return false;
-    }
-    currentUser = user;
-    showApp();
-    await loadDashboard();
-    return true;
-  }
+    $('addProductBtn').onclick = () => editProduct({}, true);
 
-  $("loginForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    $("loginButton").disabled = true;
-    $("loginButton").textContent = "Signing in...";
-    $("loginMessage").textContent = "";
-    try {
-      if (!db) configClient();
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      const { error } = await db.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      const { data } = await db.auth.getSession();
-      if (!data.session || !await checkAdmin(data.session.user)) {
-        await db.auth.signOut();
-        throw new Error("Login succeeded, but this user is not an authorized administrator.");
-      }
-      currentUser = data.session.user;
-      showApp();
-      await loadDashboard();
-    } catch (error) {
-      $("loginMessage").textContent = error.message || "Login failed.";
-    } finally {
-      $("loginButton").disabled = false;
-      $("loginButton").textContent = "Sign In";
-    }
-  });
+    $('drawerBody').querySelectorAll('[data-edit-product]').forEach(btn => {
+      btn.onclick = () => editProduct(data[Number(btn.dataset.editProduct)]);
+    });
 
-  $("logoutButton").addEventListener("click", async () => {
-    if (db) await db.auth.signOut();
-    currentUser = null;
-    showLogin("You have signed out.");
-  });
+    $('drawerBody').querySelectorAll('[data-delete-product]').forEach(btn => {
+      btn.onclick = async () => {
+        const product = data[Number(btn.dataset.deleteProduct)];
+        if (!product || !confirm(`Delete ${product.name}?`)) return;
 
-  async function loadDashboard() {
-    const ids = {
-      products: "statProducts",
-      business_units: "statUnits",
-      reviews: "statReviews",
-      site_content: "statContent"
-    };
-    for (const [table, id] of Object.entries(ids)) {
-      try {
-        const { count, error } = await db.from(table).select("*", { count:"exact", head:true });
-        if (error) throw error;
-        $(id).textContent = count ?? 0;
-      } catch (_) {
-        $(id).textContent = "—";
-      }
-    }
-  }
+        const { error } = await sb.from('products').delete().eq('id', product.id);
+        if (error) alert('Delete error: ' + error.message);
+        else openProductsManager();
+      };
+    });
+  } catch (error) {
+    $('drawerBody').textContent = 'Error: ' + error.message;
+  }
+}
 
-  function gotoPage(page) {
-    if (page === "dashboard") {
-      currentPage = "dashboard";
-      $("dashboardPage").classList.remove("hidden");
-      $("dataPage").classList.add("hidden");
-      document.querySelectorAll(".nav").forEach(b => b.classList.toggle("active", b.dataset.page === page));
-      loadDashboard();
-      return;
-    }
-    if (!TABLES[page]) return;
-    currentPage = page;
-    $("dashboardPage").classList.add("hidden");
-    $("dataPage").classList.remove("hidden");
-    $("pageTitle").textContent = TABLES[page].title;
-    $("pageDescription").textContent = TABLES[page].description;
-    $("addRecord").classList.toggle("hidden", page === "brochures");
-    document.querySelectorAll(".nav").forEach(b => b.classList.toggle("active", b.dataset.page === page));
-    $("searchInput").value = "";
-    if (page === "brochures") renderUploadPanel();
-    else loadTable();
-  }
+$('productsBtn').addEventListener('click', openProductsManager);
 
-  document.querySelectorAll("[data-page]").forEach(button => {
-    button.addEventListener("click", () => gotoPage(button.dataset.page));
-  });
-  document.querySelectorAll("[data-goto]").forEach(button => {
-    button.addEventListener("click", () => gotoPage(button.dataset.goto));
-  });
-  $("refreshDashboard").addEventListener("click", loadDashboard);
-  $("reloadTable").addEventListener("click", () => currentPage === "brochures" ? renderUploadPanel() : loadTable());
-  $("searchInput").addEventListener("input", renderTable);
-  $("addRecord").addEventListener("click", () => openEditor(null));
+window.editProduct = (product = {}, isNew = false) => {
+  if (!isAuthenticated) return;
 
-  async function loadTable() {
-    clearMessage("tableMessage");
-    $("tableHead").replaceChildren();
-    $("tableBody").innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
-    $("tableFooter").textContent = "";
-    try {
-      const { data, error } = await db.from(currentPage).select("*").limit(500);
-      if (error) throw error;
-      records = data || [];
-      columnNames = records.length ? Object.keys(records[0]) : TABLES[currentPage].fields.slice();
-      renderTable();
-    } catch (error) {
-      records = [];
-      $("tableBody").replaceChildren();
-      notify("Could not load " + currentPage + ": " + error.message, "error", "tableMessage");
-    }
-  }
+  $('drawerTitle').textContent = isNew ? 'Add Product' : 'Edit Product';
 
-  function firstValue(row, candidates) {
-    for (const key of candidates) {
-      if (row[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
-    }
-    return "";
-  }
+  $('drawerBody').innerHTML = `
+    <form id="productForm" class="space-y-3 text-sm">
+      <label class="block font-bold">Product Name *
+        <input id="p_name" required class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.name || '')}">
+      </label>
 
-  function renderTable() {
-    const query = $("searchInput").value.trim().toLowerCase();
-    const filtered = records.filter(row => !query || JSON.stringify(row).toLowerCase().includes(query));
-    const head = $("tableHead");
-    const body = $("tableBody");
-    head.replaceChildren();
-    body.replaceChildren();
+      <label class="block font-bold">Product Code
+        <input id="p_code" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.product_code || '')}">
+      </label>
 
-    const trHead = document.createElement("tr");
-    const visible = currentPage === "reviews"
-      ? ["name","company","rating","stars","status","active"]
-      : currentPage === "site_content"
-      ? ["key","title","section","active"]
-      : ["name","title","category","status","active"];
-    const columns = visible.filter(k => columnNames.includes(k));
-    if (!columns.length) columns.push(...columnNames.filter(k => !["id","created_at","updated_at"].includes(k)).slice(0,5));
-    columns.forEach(key => {
-      const th = document.createElement("th");
-      th.textContent = key.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
-      trHead.appendChild(th);
-    });
-    const actionsTh = document.createElement("th");
-    actionsTh.textContent = "Actions";
-    trHead.appendChild(actionsTh);
-    head.appendChild(trHead);
+      <label class="block font-bold">Business Unit
+        <input id="p_unit" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.business_unit || '')}">
+      </label>
 
-    if (!filtered.length) {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = columns.length + 1;
-      td.className = "empty";
-      td.textContent = "No records found.";
-      tr.appendChild(td);
-      body.appendChild(tr);
-    }
+      <label class="block font-bold">Category
+        <input id="p_category" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.category || '')}">
+      </label>
 
-    filtered.forEach(row => {
-      const tr = document.createElement("tr");
-      columns.forEach(key => {
-        const td = document.createElement("td");
-        const value = row[key];
-        if (typeof value === "string" && /image|photo|thumbnail|logo|url/i.test(key) && safeUrl(value)) {
-          const img = document.createElement("img");
-          img.className = "thumb";
-          img.src = safeUrl(value);
-          img.alt = "";
-          img.loading = "lazy";
-          img.onerror = () => { img.replaceWith(document.createTextNode(String(value).slice(0,80))); };
-          td.appendChild(img);
-        } else {
-          td.textContent = value === null || value === undefined ? "—" :
-            typeof value === "object" ? JSON.stringify(value) : String(value);
-        }
-        tr.appendChild(td);
-      });
-      const tdActions = document.createElement("td");
-      tdActions.className = "actions";
-      const edit = document.createElement("button");
-      edit.className = "btn small";
-      edit.textContent = "Edit";
-      edit.addEventListener("click", () => openEditor(row));
-      const del = document.createElement("button");
-      del.className = "btn red small";
-      del.textContent = "Delete";
-      del.addEventListener("click", () => deleteRecord(row));
-      tdActions.append(edit, del);
-      tr.appendChild(tdActions);
-      body.appendChild(tr);
-    });
-    $("tableFooter").textContent = "Showing " + filtered.length + " of " + records.length + " loaded records.";
-  }
+      <label class="block font-bold">Description / Features
+        <textarea id="p_description" rows="4" class="w-full border rounded-xl p-2.5 mt-1">${esc(product.description || '')}</textarea>
+      </label>
 
-  function openEditor(row) {
-    editingRecord = row;
-    $("modalTitle").textContent = row ? "Edit " + TABLES[currentPage].title : "Add " + TABLES[currentPage].title;
-    $("formMessage").replaceChildren();
-    const fields = $("recordFields");
-    fields.replaceChildren();
+      <label class="block font-bold">Packing
+        <input id="p_packing" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.packing || '')}">
+      </label>
 
-    const keys = row ? Object.keys(row) : TABLES[currentPage].fields;
-    keys.forEach(key => {
-      if (["id","created_at","updated_at","created_by"].includes(key)) return;
-      const value = row ? row[key] : defaultValue(key);
-      const wrapper = document.createElement("div");
-      if (["description","content","message","review","value","body","html"].includes(key)) wrapper.className = "full";
-      const label = document.createElement("label");
-      label.htmlFor = "field_" + key;
-      label.textContent = key.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
-      const input = document.createElement(["description","content","message","review","value","body","html"].includes(key) ? "textarea" : "input");
-      input.id = "field_" + key;
-      input.dataset.column = key;
-      if (typeof value === "boolean") {
-        input.type = "checkbox";
-        input.checked = value;
-      } else if (typeof value === "number") {
-        input.type = "number";
-        input.value = value;
-        if (["rating","stars"].includes(key)) { input.min = "1"; input.max = "5"; }
-      } else {
-        input.type = "text";
-        input.value = value == null ? "" : typeof value === "object" ? JSON.stringify(value) : String(value);
-      }
-      if (key === "active" && !row) input.checked = true;
-      wrapper.append(label,input);
-      fields.appendChild(wrapper);
-    });
+      <label class="block font-bold">Unit
+        <input id="p_unit_name" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.unit || '')}">
+      </label>
 
-    if (currentPage === "products" || currentPage === "business_units") {
-      addImageUpload(fields);
-    }
-    $("editModal").classList.remove("hidden");
-  }
+      <label class="block font-bold">Sort Order
+        <input id="p_sort" type="number" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${Number(product.sort_order) || 0}">
+      </label>
 
-  function defaultValue(key) {
-    if (["active"].includes(key)) return true;
-    if (["rating","stars"].includes(key)) return 5;
-    if (["sort_order","price"].includes(key)) return 0;
-    if (key === "status") return currentPage === "reviews" ? "pending" : "active";
-    return "";
-  }
+      <label class="block font-bold">Product Photo
+        <input id="p_photo_file" type="file" accept="image/*"
+          class="w-full border rounded-xl p-2 mt-1">
+      </label>
 
-  function addImageUpload(fields) {
-    const wrap = document.createElement("div");
-    wrap.className = "full";
-    const label = document.createElement("label");
-    label.textContent = "Upload / Replace Image";
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.id = "imageUpload";
-    const hint = document.createElement("p");
-    hint.className = "sub";
-    hint.textContent = "Uploads to the devi-media storage bucket. The URL will be placed in the existing image/image_url field if available.";
-    wrap.append(label,input,hint);
-    fields.appendChild(wrap);
-  }
+      <label class="block font-bold">Or Photo URL
+        <input id="p_photo_url" class="w-full border rounded-xl p-2.5 mt-1"
+          value="${esc(product.photo_url || product.image_url || '')}">
+      </label>
 
-  function closeEditor() {
-    $("editModal").classList.add("hidden");
-    $("recordForm").reset();
-    editingRecord = null;
-  }
-  $("closeModal").addEventListener("click", closeEditor);
-  $("cancelEdit").addEventListener("click", closeEditor);
-  $("editModal").addEventListener("click", e => {
-    if (e.target === $("editModal")) closeEditor();
-  });
+      <label class="block font-bold">Additional Product Files
+        <input id="p_files" type="file" multiple
+          class="w-full border rounded-xl p-2 mt-1">
+      </label>
 
-  async function uploadImage(file) {
-    if (!file) return "";
-    if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
-    if (file.size > 10 * 1024 * 1024) throw new Error("Image size must be under 10 MB.");
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-    const path = "admin/" + Date.now() + "_" + safeName;
-    const { error } = await db.storage.from("devi-media").upload(path,file,{upsert:false,contentType:file.type});
-    if (error) throw error;
-    const { data } = db.storage.from("devi-media").getPublicUrl(path);
-    if (!data || !data.publicUrl) throw new Error("Could not get public URL. Check storage bucket settings.");
-    return data.publicUrl;
-  }
+      <label class="block font-bold">Brochure PDF / File
+        <input id="p_brochure" type="file" accept=".pdf,.doc,.docx"
+          class="w-full border rounded-xl p-2 mt-1">
+      </label>
 
-  $("recordForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    $("saveRecord").disabled = true;
-    $("saveRecord").textContent = "Saving...";
-    clearMessage("formMessage");
-    try {
-      const payload = {};
-      $("recordFields").querySelectorAll("[data-column]").forEach(input => {
-        const key = input.dataset.column;
-        if (input.type === "checkbox") {
-          payload[key] = input.checked;
-        } else if (input.type === "number") {
-          payload[key] = input.value === "" ? null : Number(input.value);
-        } else {
-          const raw = input.value.trim();
-          if (raw !== "" && ["metadata","features","gallery","images","links"].includes(key)) {
-            try { payload[key] = JSON.parse(raw); }
-            catch { payload[key] = raw; }
-          } else {
-            payload[key] = raw === "" ? null : raw;
-          }
-        }
-      });
+      ${product.brochure_url
+        ? `<a href="${esc(product.brochure_url)}" target="_blank" rel="noopener" class="text-blue-600 underline block">Open current brochure</a>`
+        : ''}
 
-      const file = $("imageUpload")?.files?.[0];
-      if (file) {
-        const url = await uploadImage(file);
-        const imageField = ["image_url","image","photo","thumbnail","logo_url"].find(k => columnNames.includes(k) || Object.hasOwn(editingRecord || {}, k));
-        if (imageField) payload[imageField] = url;
-        else throw new Error("Image uploaded, but this table has no known image URL column. Add the correct image field first.");
-      }
+      <label class="flex gap-2 items-center font-bold">
+        <input id="p_active" type="checkbox" ${product.active !== false ? 'checked' : ''}>
+        Active on website
+      </label>
 
-      let result;
-      if (editingRecord) {
-        if (!editingRecord.id) throw new Error("This record has no id field. Update cannot be safely performed.");
-        result = await db.from(currentPage).update(payload).eq("id",editingRecord.id);
-      } else {
-        result = await db.from(currentPage).insert(payload);
-      }
-      if (result.error) throw result.error;
-      notify("Record saved successfully.", "success", "toast");
-      closeEditor();
-      await loadTable();
-      await loadDashboard();
-    } catch (error) {
-      notify(error.message || "Could not save record.", "error", "formMessage");
-    } finally {
-      $("saveRecord").disabled = false;
-      $("saveRecord").textContent = "Save Changes";
-    }
-  });
+      <button id="saveProductBtn" class="w-full bg-emerald-600 text-white rounded-xl p-3 font-bold">
+        ${isNew ? 'Add Product' : 'Save Product'}
+      </button>
+      <p id="productStatus" class="text-sm font-bold"></p>
+    </form>
+  `;
 
-  async function deleteRecord(row) {
-    if (!row || !row.id) {
-      notify("This record has no id field. Cannot safely delete it.", "error", "toast");
-      return;
-    }
-    const name = firstValue(row,["name","title","key"]) || row.id;
-    if (!confirm("Delete this record?\n\n" + name + "\n\nThis cannot be undone.")) return;
-    try {
-      const { error } = await db.from(currentPage).delete().eq("id",row.id);
-      if (error) throw error;
-      notify("Record deleted.", "success", "toast");
-      await loadTable();
-      await loadDashboard();
-    } catch (error) {
-      notify("Delete failed: " + error.message, "error", "toast");
-    }
-  }
+  $('productForm').addEventListener('submit', async event => {
+    event.preventDefault();
 
-  function renderUploadPanel() {
-    $("tableHead").replaceChildren();
-    $("tableBody").replaceChildren();
-    $("tableFooter").textContent = "";
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.innerHTML = '<h2>Upload a file</h2><p class="sub">Choose an image or brochure PDF. Files go into the devi-media storage bucket.</p>';
-    const input = document.createElement("input");
-    input.type = "file";
-    input.id = "brochureFile";
-    input.accept = "image/*,.pdf";
-    input.style.maxWidth = "420px";
-    input.style.margin = "12px 0";
-    const button = document.createElement("button");
-    button.className = "btn gold";
-    button.textContent = "Upload File";
-    button.style.display = "block";
-    button.addEventListener("click", async () => {
-      const file = input.files[0];
-      if (!file) return notify("Please select a file first.", "info", "tableMessage");
-      if (file.size > 20 * 1024 * 1024) return notify("File must be under 20 MB.", "error", "tableMessage");
-      button.disabled = true;
-      try {
-        const path = "brochures/" + Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
-        const { error } = await db.storage.from("devi-media").upload(path,file,{upsert:false,contentType:file.type || "application/octet-stream"});
-        if (error) throw error;
-        const { data } = db.storage.from("devi-media").getPublicUrl(path);
-        const link = data.publicUrl;
-        td.querySelector(".uploaded-link")?.remove();
-        const a = document.createElement("a");
-        a.className = "uploaded-link";
-        a.href = link;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = "Open uploaded file";
-        a.style.display = "block";
-        a.style.marginTop = "12px";
-        td.appendChild(a);
-        notify("Upload complete. Copy or save the file URL into your website's brochure record if required.", "success", "tableMessage");
-      } catch (error) {
-        notify("Upload failed: " + error.message, "error", "tableMessage");
-      } finally {
-        button.disabled = false;
-      }
-    });
-    td.append(input,button);
-    tr.appendChild(td);
-    $("tableBody").appendChild(tr);
-    $("tableMessage").replaceChildren();
-  }
+    const btn = $('saveProductBtn');
+    const status = $('productStatus');
+    btn.disabled = true;
+    status.textContent = 'Saving product...';
 
-  async function init() {
-    try {
-      configClient();
-      await authorizeSession();
-      db.auth.onAuthStateChange((event, session) => {
-        if (event === "SIGNED_OUT" || !session) {
-          currentUser = null;
-          showLogin();
-        }
-      });
-    } catch (error) {
-      showLogin("Setup error: " + error.message + " Check cms-config.js and Supabase configuration.");
-    }
-  }
+    try {
+      const payload = {
+        name: $('p_name').value.trim(),
+        product_code: $('p_code').value.trim() || null,
+        business_unit: $('p_unit').value.trim() || null,
+        category: $('p_category').value.trim() || null,
+        description: $('p_description').value.trim() || null,
+        packing: $('p_packing').value.trim() || null,
+        unit: $('p_unit_name').value.trim() || null,
+        sort_order: Number($('p_sort').value) || 0,
+        active: $('p_active').checked,
+        updated_at: new Date().toISOString()
+      };
 
-  init();
+      const photo = $('p_photo_file').files[0];
+      let photoUrl = $('p_photo_url').value.trim();
+
+      if (photo) photoUrl = await upload(photo, 'products');
+
+      if (photoUrl) {
+        payload.photo_url = photoUrl;
+        payload.image_url = photoUrl;
+      }
+
+      const files = Array.from($('p_files').files);
+      if (files.length) {
+        const urls = [];
+        for (const file of files) urls.push(await upload(file, 'product-files'));
+        payload.files_url = JSON.stringify(urls);
+      }
+
+      const brochure = $('p_brochure').files[0];
+      if (brochure) payload.brochure_url = await upload(brochure, 'brochures');
+
+      const result = isNew
+        ? await sb.from('products').insert([payload])
+        : await sb.from('products').update(payload).eq('id', product.id);
+
+      if (result.error) throw result.error;
+
+      status.className = 'text-emerald-700 font-bold';
+      status.textContent = 'Product saved successfully.';
+      openProductsManager();
+    } catch (error) {
+      status.className = 'text-rose-600 font-bold';
+      status.textContent = 'Error: ' + error.message;
+      btn.disabled = false;
+    }
+  });
+
+  showDrawer();
+};
+
+// BUSINESS UNITS MANAGER
+async function openUnitsManager() {
+  if (!isAuthenticated) return;
+
+  $('drawerTitle').textContent = 'Business Units';
+  $('drawerBody').textContent = 'Loading business units...';
+  showDrawer();
+
+  try {
+    const { data, error } = await sb.from('business_units')
+      .select('*').order('sort_order', { ascending: true });
+
+    if (error) throw error;
+
+    $('drawerBody').innerHTML = `
+      <button id="addUnitBtn" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold mb-4">
+        + Add Business Unit
+      </button>
+      ${(data || []).map((u, i) => `
+        <div class="border rounded-xl p-3 mb-3 flex gap-3 items-center">
+          ${u.image_url ? `<img src="${esc(u.image_url)}" class="w-14 h-14 object-cover rounded-lg" alt="">` : ''}
+          <div class="flex-1">
+            <b>${esc(u.name || 'Business Unit')}</b>
+            <div class="text-xs text-slate-500">${esc(u.website || u.website_url || '')}</div>
+          </div>
+          <button data-edit-unit="${i}" class="bg-slate-900 text-white rounded-lg px-3 py-2 text-xs">Edit</button>
+          <button data-delete-unit="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs">Remove</button>
+        </div>
+      `).join('') || '<p>No business units found.</p>'}
+    `;
+
+    $('addUnitBtn').onclick = () => editUnit({}, true);
+
+    $('drawerBody').querySelectorAll('[data-edit-unit]').forEach(btn => {
+      btn.onclick = () => editUnit(data[Number(btn.dataset.editUnit)]);
+    });
+
+    $('drawerBody').querySelectorAll('[data-delete-unit]').forEach(btn => {
+      btn.onclick = async () => {
+        const unit = data[Number(btn.dataset.deleteUnit)];
+        if (!unit || !confirm(`Remove ${unit.name}?`)) return;
+
+        const { error } = await sb.from('business_units').delete().eq('id', unit.id);
+        if (error) alert(error.message);
+        else openUnitsManager();
+      };
+    });
+  } catch (error) {
+    $('drawerBody').textContent = 'Error: ' + error.message;
+  }
+}
+
+$('unitsBtn').addEventListener('click', openUnitsManager);
+
+window.editUnit = (unit = {}, isNew = false) => {
+  if (!isAuthenticated) return;
+
+  $('drawerTitle').textContent = isNew ? 'Add Business Unit' : 'Edit Business Unit';
+
+  $('drawerBody').innerHTML = `
+    <form id="unitForm" class="space-y-3 text-sm">
+      <label class="block font-bold">Name *
+        <input id="u_name" required class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.name || '')}">
+      </label>
+
+      <label class="block font-bold">Description
+        <textarea id="u_desc" rows="3" class="w-full border rounded-xl p-2.5 mt-1">${esc(unit.description || '')}</textarea>
+      </label>
+
+      <label class="block font-bold">Upload Photo
+        <input id="u_photo_file" type="file" accept="image/*" class="w-full border rounded-xl p-2 mt-1">
+      </label>
+
+      <label class="block font-bold">Image URL
+        <input id="u_img" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.image_url || '')}">
+      </label>
+
+      <label class="block font-bold">Website URL
+        <input id="u_website" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.website_url || unit.website || '')}">
+      </label>
+
+      <label class="block font-bold">Address
+        <textarea id="u_address" class="w-full border rounded-xl p-2.5 mt-1">${esc(unit.address || '')}</textarea>
+      </label>
+
+      <label class="block font-bold">Location URL
+        <input id="u_location" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.location_url || '')}">
+      </label>
+
+      <label class="block font-bold">Sort Order
+        <input id="u_sort" type="number" class="w-full border rounded-xl p-2.5 mt-1" value="${Number(unit.sort_order) || 0}">
+      </label>
+
+      <label class="flex gap-2 items-center font-bold">
+        <input id="u_active" type="checkbox" ${unit.active !== false ? 'checked' : ''}>
+        Active on website
+      </label>
+
+      <button id="saveUnitBtn" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">
+        ${isNew ? 'Add Business Unit' : 'Save Changes'}
+      </button>
+      <p id="unitStatus" class="font-bold"></p>
+    </form>
+  `;
+
+  $('unitForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    const btn = $('saveUnitBtn');
+    btn.disabled = true;
+
+    try {
+      const website = $('u_website').value.trim() || null;
+      const payload = {
+        name: $('u_name').value.trim(),
+        description: $('u_desc').value.trim() || null,
+        image_url: $('u_img').value.trim() || null,
+        website_url: website,
+        website,
+        address: $('u_address').value.trim() || null,
+        location_url: $('u_location').value.trim() || null,
+        sort_order: Number($('u_sort').value) || 0,
+        active: $('u_active').checked,
+        updated_at: new Date().toISOString()
+      };
+
+      const photo = $('u_photo_file').files[0];
+      if (photo) payload.image_url = await upload(photo, 'business-units');
+
+      const result = isNew
+        ? await sb.from('business_units').insert([payload])
+        : await sb.from('business_units').update(payload).eq('id', unit.id);
+
+      if (result.error) throw result.error;
+
+      alert('Business Unit saved successfully.');
+      openUnitsManager();
+    } catch (error) {
+      $('unitStatus').textContent = 'Error: ' + error.message;
+      btn.disabled = false;
+    }
+  });
+
+  showDrawer();
+};
+
+// BROCHURES MANAGER
+async function openBrochureManager() {
+  if (!isAuthenticated) return;
+
+  $('drawerTitle').textContent = 'View Brochures';
+  $('drawerBody').textContent = 'Loading brochures...';
+  showDrawer();
+
+  try {
+    const { data, error } = await sb.from('products')
+      .select('id,name,product_code,description,brochure_url')
+      .not('brochure_url', 'is', null)
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+
+    $('drawerBody').innerHTML = (data || []).map((p, i) => `
+      <div class="border rounded-xl p-4 mb-3">
+        <b class="block">${esc(p.name || 'Unnamed Product')}</b>
+        <p class="text-xs text-slate-500 mt-1">Product Code: ${esc(p.product_code || 'N/A')}</p>
+        <p class="text-xs text-slate-600 mt-1">${esc(p.description || '')}</p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <a class="bg-blue-100 text-blue-700 rounded-lg px-3 py-2 text-xs font-bold"
+             href="${esc(p.brochure_url)}" target="_blank" rel="noopener">Open Brochure ↗</a>
+          <button data-update-brochure="${i}" class="bg-emerald-100 text-emerald-700 rounded-lg px-3 py-2 text-xs font-bold">Replace File</button>
+          <button data-remove-brochure="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs font-bold">Remove Brochure</button>
+          <input id="brochure-file-${i}" type="file" accept=".pdf,.doc,.docx" class="hidden">
+        </div>
+      </div>
+    `).join('') || '<p>No brochures found. Add a brochure from the Add/Edit Product form.</p>';
+
+    $('drawerBody').querySelectorAll('[data-update-brochure]').forEach(btn => {
+      btn.onclick = () => {
+        const i = Number(btn.dataset.updateBrochure);
+        const input = $(`brochure-file-${i}`);
+        input.click();
+
+        input.onchange = async () => {
+          const file = input.files[0];
+          if (!file) return;
+
+          try {
+            const url = await upload(file, 'brochures');
+            const { error } = await sb.from('products')
+              .update({ brochure_url: url, updated_at: new Date().toISOString() })
+              .eq('id', data[i].id);
+
+            if (error) throw error;
+            alert('Brochure updated.');
+            openBrochureManager();
+          } catch (error) {
+            alert('Update failed: ' + error.message);
+          }
+        };
+      };
+    });
+
+    $('drawerBody').querySelectorAll('[data-remove-brochure]').forEach(btn => {
+      btn.onclick = async () => {
+        const p = data[Number(btn.dataset.removeBrochure)];
+        if (!confirm(`Remove brochure from ${p.name}?`)) return;
+
+        const { error } = await sb.from('products')
+          .update({ brochure_url: null, updated_at: new Date().toISOString() })
+          .eq('id', p.id);
+
+        if (error) alert(error.message);
+        else openBrochureManager();
+      };
+    });
+  } catch (error) {
+    $('drawerBody').textContent = 'Error: ' + error.message;
+  }
+}
+
+$('brochuresBtn').addEventListener('click', openBrochureManager);
+    // REVIEWS MANAGER
+// ==========================================
+// PROFESSIONAL REVIEWS MANAGEMENT
+// Search, Filters, Pagination, Edit Popup,
+// Bulk Approve, Bulk Delete
+// ==========================================
+
+let aonReviewData = [];
+let aonReviewPage = 1;
+let aonReviewFilter = 'all';
+let aonReviewSearch = '';
+let aonReviewSelected = new Set();
+const AON_REVIEW_PAGE_SIZE = 10;
+
+async function openReviewsManager() {
+  if (!isAuthenticated) return;
+
+  $('drawerTitle').textContent = 'Manage Reviews';
+  $('drawerBody').innerHTML = '<p class="p-6 text-center">Loading reviews...</p>';
+  showDrawer();
+
+  try {
+    const { data, error } = await sb
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    aonReviewData = data || [];
+    aonReviewSelected.clear();
+    aonReviewPage = 1;
+
+    renderAonReviews();
+  } catch (error) {
+    $('drawerBody').textContent = 'Error loading reviews: ' + error.message;
+  }
+}
+
+function renderAonReviews() {
+  const body = $('drawerBody');
+
+  const filtered = aonReviewData.filter(r => {
+    const text = [
+      r.name || '',
+      r.country || '',
+      r.message || r.review || ''
+    ].join(' ').toLowerCase();
+
+    const matchesSearch = text.includes(aonReviewSearch.toLowerCase());
+
+    const status = String(r.status || '').toLowerCase();
+    const active = r.active !== false;
+
+    let matchesFilter = true;
+
+    if (aonReviewFilter === 'pending') {
+      matchesFilter = status === 'pending' || (!active && status !== 'rejected');
+    } else if (aonReviewFilter === 'published') {
+      matchesFilter = active && (status === 'approved' || status === 'published' || status === '');
+    } else if (aonReviewFilter === 'inactive') {
+      matchesFilter = !active;
+    }
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / AON_REVIEW_PAGE_SIZE)
+  );
+
+  if (aonReviewPage > totalPages) aonReviewPage = totalPages;
+
+  const start = (aonReviewPage - 1) * AON_REVIEW_PAGE_SIZE;
+  const pageRows = filtered.slice(start, start + AON_REVIEW_PAGE_SIZE);
+
+  const escHtml = value => esc(String(value ?? ''));
+
+  body.innerHTML = `
+    <div class="space-y-4">
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Total Reviews</div>
+          <div class="text-2xl font-bold">${aonReviewData.length}</div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Pending</div>
+          <div class="text-2xl font-bold text-amber-600">
+            ${aonReviewData.filter(r =>
+              String(r.status || '').toLowerCase() === 'pending' ||
+              (r.active === false &&
+               String(r.status || '').toLowerCase() !== 'rejected')
+            ).length}
+          </div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Published</div>
+          <div class="text-2xl font-bold text-emerald-600">
+            ${aonReviewData.filter(r =>
+              r.active !== false &&
+              ['approved', 'published', ''].includes(
+                String(r.status || '').toLowerCase()
+              )
+            ).length}
+          </div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Inactive</div>
+          <div class="text-2xl font-bold text-gray-600">
+            ${aonReviewData.filter(r => r.active === false).length}
+          </div>
+        </div>
+      </div>
+
+      <form id="aonReviewSearchForm" class="flex flex-wrap gap-2">
+        <input
+          id="aonReviewSearch"
+          type="search"
+          value="${escHtml(aonReviewSearch)}"
+          placeholder="Search name, country or review..."
+          class="border rounded-lg p-3 flex-1 min-w-40"
+        >
+        <button type="submit"
+          class="bg-gray-900 text-white rounded-lg px-4 py-2 font-bold">
+          Search
+        </button>
+      </form>
+
+      <div class="flex flex-wrap gap-2 items-center">
+        <select id="aonReviewFilter" class="border rounded-lg p-2">
+          <option value="all" ${aonReviewFilter === 'all' ? 'selected' : ''}>All Reviews</option>
+          <option value="pending" ${aonReviewFilter === 'pending' ? 'selected' : ''}>Pending</option>
+          <option value="published" ${aonReviewFilter === 'published' ? 'selected' : ''}>Published</option>
+          <option value="inactive" ${aonReviewFilter === 'inactive' ? 'selected' : ''}>Inactive</option>
+        </select>
+
+        <button id="aonSelectPage"
+          class="border rounded-lg px-3 py-2 text-sm font-bold">
+          Select Page
+        </button>
+
+        <button id="aonBulkApprove"
+          class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
+          Approve Selected
+        </button>
+
+        <button id="aonBulkDelete"
+          class="bg-rose-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
+          Delete Selected
+        </button>
+      </div>
+
+      <div class="text-xs text-gray-500">
+        Selected: ${aonReviewSelected.size} · Showing ${
+          filtered.length ? start + 1 : 0
+        }–${Math.min(start + AON_REVIEW_PAGE_SIZE, filtered.length)}
+        of ${filtered.length}
+      </div>
+
+      <div class="space-y-3">
+        ${pageRows.map(r => {
+          const id = String(r.id);
+          const message = r.message || r.review || '';
+          const status = String(r.status || 'pending').toLowerCase();
+          const active = r.active !== false;
+          const approved = active &&
+            ['approved', 'published', ''].includes(status);
+
+          return `
+            <div class="border rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  data-aon-select="${escHtml(id)}"
+                  ${aonReviewSelected.has(id) ? 'checked' : ''}
+                  class="mt-1 w-4 h-4"
+                >
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap justify-between gap-2">
+                    <div>
+                      <div class="font-bold">${escHtml(r.name || 'Customer')}</div>
+                      <div class="text-xs text-gray-500">
+                        ${escHtml(r.country || 'Country not provided')}
+                      </div>
+                    </div>
+
+                    <span class="text-xs font-bold rounded-full px-3 py-1 ${
+                      approved
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-amber-100 text-amber-700'
+                    }">
+                      ${approved ? 'Published' : escHtml(r.status || 'Pending')}
+                    </span>
+                  </div>
+
+                  <div class="text-amber-500 my-2">
+                    ${'★'.repeat(Math.max(0, Math.min(5, Number(r.stars || r.rating || 0))))}
+                    <span class="text-gray-400 text-xs">
+                      (${Number(r.stars || r.rating || 0)}/5)
+                    </span>
+                  </div>
+
+                  <p class="text-sm text-gray-700 whitespace-pre-wrap break-words">${escHtml(message)}</p>
+
+                  <div class="flex flex-wrap gap-2 mt-3">
+                    <button data-aon-edit="${escHtml(id)}"
+                      class="border rounded-lg px-3 py-2 text-xs font-bold">
+                      Edit
+                    </button>
+
+                    <button data-aon-approve="${escHtml(id)}"
+                      class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-xs font-bold">
+                      ${approved ? 'Unpublish' : 'Approve'}
+                    </button>
+
+                    <button data-aon-delete="${escHtml(id)}"
+                      class="bg-rose-100 text-rose-700 rounded-lg px-3 py-2 text-xs font-bold">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('') || `
+          <div class="border rounded-xl p-8 text-center text-gray-500">
+            No reviews found.
+          </div>
+        `}
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <button id="aonReviewPrev"
+          ${aonReviewPage <= 1 ? 'disabled' : ''}
+          class="border rounded-lg px-3 py-2 disabled:opacity-40">
+          Previous
+        </button>
+
+        <span class="text-sm">Page ${aonReviewPage} of ${totalPages}</span>
+
+        <button id="aonReviewNext"
+          ${aonReviewPage >= totalPages ? 'disabled' : ''}
+          class="border rounded-lg px-3 py-2 disabled:opacity-40">
+          Next
+        </button>
+      </div>
+
+      <div id="aonReviewEditModal"
+        class="hidden fixed inset-0 z-50 bg-black/50 p-4 items-center justify-center">
+        <form id="aonReviewEditForm"
+          class="bg-white rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold">Edit Review</h3>
+            <button type="button" id="aonReviewEditClose"
+              class="text-2xl px-2" aria-label="Close">&times;</button>
+          </div>
+
+          <input type="hidden" id="aonEditReviewId">
+
+          <label class="block text-sm font-bold">Customer Name
+            <input id="aonEditReviewName" required
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Country
+            <input id="aonEditReviewCountry"
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Stars (1–5)
+            <input id="aonEditReviewStars" type="number" min="1" max="5" required
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Review
+            <textarea id="aonEditReviewMessage" rows="4" required
+              class="w-full border rounded-lg p-3 mt-1"></textarea>
+          </label>
+
+          <label class="block text-sm font-bold">Status
+            <select id="aonEditReviewStatus"
+              class="w-full border rounded-lg p-3 mt-1">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+
+          <label class="flex items-center gap-2 text-sm font-bold">
+            <input id="aonEditReviewActive" type="checkbox">
+            Published / Active
+          </label>
+
+          <div class="flex gap-2 justify-end pt-2">
+            <button type="button" id="aonReviewEditCancel"
+              class="border rounded-lg px-4 py-2">Cancel</button>
+            <button type="submit"
+              class="bg-gray-900 text-white rounded-lg px-5 py-2 font-bold">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  `;
+
+  // Search
+  $('aonReviewSearchForm').onsubmit = event => {
+    event.preventDefault();
+    aonReviewSearch = $('aonReviewSearch').value.trim();
+    aonReviewPage = 1;
+    renderAonReviews();
+  };
+
+  // Filter
+  $('aonReviewFilter').onchange = event => {
+    aonReviewFilter = event.target.value;
+    aonReviewPage = 1;
+    renderAonReviews();
+  };
+
+  // Select individual review
+  body.querySelectorAll('[data-aon-select]').forEach(input => {
+    input.onchange = () => {
+      const id = input.dataset.aonSelect;
+      if (input.checked) aonReviewSelected.add(id);
+      else aonReviewSelected.delete(id);
+      renderAonReviews();
+    };
+  });
+
+  // Select all reviews on this page
+  $('aonSelectPage').onclick = () => {
+    const visibleIds = body.querySelectorAll('[data-aon-select]');
+    const allSelected = [...visibleIds].every(el =>
+      aonReviewSelected.has(el.dataset.aonSelect)
+    );
+
+    visibleIds.forEach(el => {
+      if (allSelected) aonReviewSelected.delete(el.dataset.aonSelect);
+      else aonReviewSelected.add(el.dataset.aonSelect);
+    });
+
+    renderAonReviews();
+  };
+
+  // Pagination
+  $('aonReviewPrev').onclick = () => {
+    if (aonReviewPage > 1) {
+      aonReviewPage--;
+      renderAonReviews();
+    }
+  };
+
+  $('aonReviewNext').onclick = () => {
+    aonReviewPage++;
+    renderAonReviews();
+  };
+
+  // Edit popup
+  body.querySelectorAll('[data-aon-edit]').forEach(button => {
+    button.onclick = () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonEdit
+      );
+      if (!r) return;
+
+      $('aonEditReviewId').value = r.id;
+      $('aonEditReviewName').value = r.name || '';
+      $('aonEditReviewCountry').value = r.country || '';
+      $('aonEditReviewStars').value = Number(r.stars || r.rating || 5);
+      $('aonEditReviewMessage').value = r.message || r.review || '';
+
+      const status = String(r.status || 'pending').toLowerCase();
+      $('aonEditReviewStatus').value =
+        ['pending', 'approved', 'rejected'].includes(status)
+          ? status
+          : (r.active === false ? 'pending' : 'approved');
+
+      $('aonEditReviewActive').checked = r.active !== false;
+
+      const modal = $('aonReviewEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+  });
+
+  const closeEditModal = () => {
+    $('aonReviewEditModal').classList.add('hidden');
+    $('aonReviewEditModal').classList.remove('flex');
+  };
+
+  $('aonReviewEditClose').onclick = closeEditModal;
+  $('aonReviewEditCancel').onclick = closeEditModal;
+
+  // Save edited review
+  $('aonReviewEditForm').onsubmit = async event => {
+    event.preventDefault();
+
+    const id = $('aonEditReviewId').value;
+    const stars = Math.max(
+      1,
+      Math.min(5, Number($('aonEditReviewStars').value) || 5)
+    );
+    const message = $('aonEditReviewMessage').value.trim();
+    const status = $('aonEditReviewStatus').value;
+    const active = $('aonEditReviewActive').checked;
+
+    const payload = {
+      name: $('aonEditReviewName').value.trim(),
+      country: $('aonEditReviewCountry').value.trim() || null,
+      stars,
+      rating: stars,
+      message,
+      review: message,
+      status,
+      active,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await sb
+      .from('reviews')
+      .update(payload)
+      .eq('id', id);
+
+    if (error) {
+      alert('Save failed: ' + error.message);
+      return;
+    }
+
+    closeEditModal();
+    alert('Review updated successfully.');
+    await openReviewsManager();
+  };
+
+  // Approve / unpublish one review
+  body.querySelectorAll('[data-aon-approve]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonApprove
+      );
+      if (!r) return;
+
+      const currentlyPublished =
+        r.active !== false &&
+        ['approved', 'published', ''].includes(
+          String(r.status || '').toLowerCase()
+        );
+
+      const payload = currentlyPublished
+        ? { active: false, status: 'pending', updated_at: new Date().toISOString() }
+        : { active: true, status: 'approved', updated_at: new Date().toISOString() };
+
+      const { error } = await sb
+        .from('reviews')
+        .update(payload)
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Update failed: ' + error.message);
+        return;
+      }
+
+      await openReviewsManager();
+    };
+  });
+
+  // Delete one review
+  body.querySelectorAll('[data-aon-delete]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonDelete
+      );
+      if (!r || !confirm('Permanently delete this review?')) return;
+
+      const { error } = await sb
+        .from('reviews')
+        .delete()
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Delete failed: ' + error.message);
+        return;
+      }
+
+      aonReviewSelected.delete(String(r.id));
+      await openReviewsManager();
+    };
+  });
+
+  // Bulk approve selected reviews
+  $('aonBulkApprove').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Approve and publish ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .update({
+        active: true,
+        status: 'approved',
+        updated_at: new Date().toISOString()
+      })
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk approve failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+
+  // Bulk delete selected reviews
+  $('aonBulkDelete').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Permanently delete ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .delete()
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk delete failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+}
+
+$('reviewsBtn').addEventListener('click', openReviewsManager);
+// REFRESH WEBSITE
+$('refreshSite').addEventListener('click', () => {
+  if (!isAuthenticated) return;
+  frame.src = '../index.html?admin=1&sync=' + Date.now();
+});
+
+$('drawerClose').addEventListener('click', hideDrawer);
+
+// FORGOT PASSWORD
+$('forgotBtn').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  const message = $('resetMsg');
+  message.textContent = '';
+
+  if (!email) {
+    message.className = 'text-xs mt-3 font-bold text-rose-600';
+    message.textContent = 'Enter your admin email first.';
+    $('email').focus();
+    return;
+  }
+
+  const button = $('forgotBtn');
+  button.disabled = true;
+  button.textContent = 'Sending reset email...';
+
+  try {
+    const resetUrl = new URL('reset-password.html', location.href).href;
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: resetUrl
+    });
+
+    if (error) throw error;
+
+    message.className = 'text-xs mt-3 font-bold text-emerald-700';
+    message.textContent = 'If this email is registered, check your inbox and spam folder.';
+  } catch (error) {
+    message.className = 'text-xs mt-3 font-bold text-rose-600';
+    message.textContent = error.message || 'Could not send reset email.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Forgot Password?';
+  }
+});
+
+// LOGIN
+$('loginForm').addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  const button = $('loginBtn');
+
+  button.disabled = true;
+  button.textContent = 'Signing in...';
+  $('loginMsg').textContent = '';
+
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    $('password').value = '';
+    showApp();
+  } catch (error) {
+    showLogin(error.message || 'Login failed.');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Login to Admin';
+  }
+});
+
+// LOGOUT
+$('logout').addEventListener('click', async () => {
+  const { error } = await sb.auth.signOut();
+
+  if (error) {
+    alert('Logout error: ' + error.message);
+    return;
+  }
+
+  showLogin('You have been logged out.');
+  location.reload();
+});
+
+// AUTH SESSION
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') {
+    showLogin();
+  } else if (session && ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+    showApp();
+  }
+});
+
+(async () => {
+  try {
+    const { data, error } = await sb.auth.getSession();
+    if (error) throw error;
+
+    if (data.session) showApp();
+    else showLogin();
+  } catch (error) {
+    showLogin('Could not verify session. Please sign in again.');
+  }
 })();
 </script>
 </body>
