@@ -1,1339 +1,1157 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>DEVI GROUPS — Admin Panel</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../cms-config.js"></script>
-  <style>
-    html,body { height:100%; margin:0; }
-    #siteFrame { width:100%; height:100%; border:0; }
-    .glass { backdrop-filter:blur(10px); }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>DEVI GROUPS — Admin Panel</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../cms-config.js"></script>
+
+    <style>
+        html,body { height:100%; margin:0; }
+        #siteFrame { width:100%; height:100%; border:0; }
+        .glass { backdrop-filter:blur(10px); }
+        button:disabled { opacity:.6; cursor:not-allowed; }
+    </style>
 </head>
+
 <body class="bg-slate-100 text-slate-900">
 
-<!-- LOGIN -->
+<!-- ================= LOGIN ================= -->
 <div id="login" class="min-h-screen grid place-items-center p-4">
-  <form id="loginForm" class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
-    <h1 class="text-3xl font-black text-slate-900">DEVI GROUPS</h1>
-    <p class="text-slate-500 mb-6 text-sm">Secure Visual Admin Panel</p>
-    <label for="email" class="block text-xs font-bold mb-1">Admin Email</label>
-    <input id="email" type="email" autocomplete="username" required placeholder="Admin email"
-      class="w-full border border-slate-300 rounded-xl p-3 mb-4 text-sm">
-    <label for="password" class="block text-xs font-bold mb-1">Password</label>
-    <input id="password" type="password" autocomplete="current-password" required placeholder="Password"
-      class="w-full border border-slate-300 rounded-xl p-3 mb-3 text-sm">
-    <button id="loginBtn" type="submit" class="w-full bg-slate-900 text-white rounded-xl p-3 font-bold">
-      Login to Admin
-    </button>
-    <button id="forgotBtn" type="button" class="w-full mt-3 text-sm font-bold text-blue-600">
-      Forgot Password?
-    </button>
-    <div id="loginMsg" role="status" class="text-xs text-rose-600 mt-3 font-bold" aria-live="polite"></div>
-    <div id="resetMsg" role="status" class="text-xs mt-3 font-bold" aria-live="polite"></div>
-  </form>
+    <form id="loginForm"
+          class="bg-white rounded-3xl shadow-2xl p-8 w-[min(420px,92vw)]">
+
+        <h1 class="text-3xl font-black text-slate-900">DEVI GROUPS</h1>
+        <p class="text-slate-500 mb-6 text-sm">Secure Visual Admin Panel</p>
+
+        <label for="email" class="block text-xs font-bold mb-1">Admin Email</label>
+        <input id="email" type="email" autocomplete="username" required
+               placeholder="Admin email"
+               class="w-full border border-slate-300 rounded-xl p-3 mb-4 text-sm focus:outline-none focus:border-emerald-500">
+
+        <label for="password" class="block text-xs font-bold mb-1">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required
+               placeholder="Password"
+               class="w-full border border-slate-300 rounded-xl p-3 mb-3 text-sm focus:outline-none focus:border-emerald-500">
+
+        <button id="loginBtn" type="submit"
+                class="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl p-3 font-bold transition">
+            Login to Admin
+        </button>
+
+        <button id="forgotBtn" type="button"
+                class="w-full mt-3 text-sm font-bold text-blue-600 hover:underline">
+            Forgot Password?
+        </button>
+
+        <div id="loginMsg" role="status"
+             class="text-xs text-rose-600 mt-3 font-bold"
+             aria-live="polite"></div>
+
+        <div id="resetMsg" role="status"
+             class="text-xs mt-3 font-bold"
+             aria-live="polite"></div>
+    </form>
 </div>
 
-<!-- MAIN ADMIN APP -->
+
+<!-- ================= MAIN ADMIN APP ================= -->
 <div id="app" class="hidden h-screen flex flex-col">
-  <header class="min-h-16 bg-slate-950 text-white flex items-center justify-between gap-3 px-5 py-3 shrink-0 shadow-md">
-    <div>
-      <b class="text-xl tracking-wide">DEVI GROUPS</b>
-      <span class="text-xs text-slate-400 ml-2 hidden sm:inline">Ultimate CMS &amp; Visual Editor</span>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <button id="refreshSite" class="px-3 py-2 rounded-xl bg-white/10 text-xs font-bold">
-        <i class="fa-solid fa-rotate mr-1"></i> Refresh
-      </button>
-      <a href="../index.html" target="_blank" rel="noopener noreferrer"
-        class="px-3 py-2 rounded-xl bg-white/10 text-xs font-bold">
-        <i class="fa-solid fa-globe mr-1"></i> Website ↗
-      </a>
-      <button id="logout" class="px-3 py-2 rounded-xl bg-rose-600/80 text-xs font-bold">
-        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
-      </button>
-    </div>
-  </header>
 
-  <div class="flex-1 min-h-0 flex">
-    <!-- SIDEBAR -->
-    <aside class="w-72 max-w-[45vw] bg-white border-r border-slate-200 p-4 overflow-y-auto space-y-3 shrink-0">
-      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Website Pages</div>
-      <div id="pages" class="space-y-1"></div>
-      <hr class="border-slate-200 my-4">
-      <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Database Managers</div>
-      <button id="reviewsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
-        <i class="fa-solid fa-star text-amber-500 w-4"></i> Manage Reviews
-      </button>
-      <button id="productsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
-        <i class="fa-solid fa-box text-blue-500 w-4"></i> View All Products
-      </button>
-      <button id="unitsBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
-        <i class="fa-solid fa-building text-emerald-500 w-4"></i> Business Units
-      </button>
-      <button id="brochuresBtn" class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700">
-        <i class="fa-solid fa-file-pdf text-rose-500 w-4"></i> View Brochures
-      </button>
-    </aside>
+    <header class="min-h-16 bg-slate-950 text-white flex items-center justify-between gap-3 px-5 py-3 shrink-0 shadow-md">
+        <div>
+            <b class="text-xl tracking-wide">DEVI GROUPS</b>
+            <span class="text-xs text-slate-400 ml-2 hidden sm:inline">
+                Ultimate CMS &amp; Visual Editor
+            </span>
+        </div>
 
-    <!-- WEBSITE FRAME AND EDITOR -->
-    <main class="flex-1 min-w-0 relative bg-slate-200">
-      <iframe id="siteFrame" title="Website Visual Editor" src="../index.html?admin=1"></iframe>
-      <div id="editor" class="hidden absolute top-0 right-0 w-[420px] max-w-[95%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+        <div class="flex flex-wrap gap-2">
+            <button id="refreshSite"
+                    class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition">
+                <i class="fa-solid fa-rotate mr-1"></i> Refresh
+            </button>
+
+            <a href="../index.html" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold transition">
+                <i class="fa-solid fa-globe mr-1"></i> Website ↗
+            </a>
+
+            <button id="logout"
+                    class="px-3 py-2 rounded-xl bg-rose-600/80 hover:bg-rose-600 text-xs font-bold transition">
+                <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="flex-1 min-h-0 flex">
+
+        <!-- SIDEBAR -->
+        <aside class="w-72 max-w-[45vw] bg-white border-r border-slate-200 p-4 overflow-y-auto space-y-3 shrink-0">
+
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                Website Pages
+            </div>
+
+            <div id="pages" class="space-y-1"></div>
+
+            <hr class="border-slate-200 my-4">
+
+            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                Database Managers
+            </div>
+
+            <button id="reviewsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-star text-amber-500 w-4"></i> Manage Reviews
+            </button>
+
+            <button id="productsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-box text-blue-500 w-4"></i> View All Products
+            </button>
+
+            <button type="button" onclick="newProduct()"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition">
+                <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
+
+            <button id="unitsBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-building text-emerald-500 w-4"></i> Business Units
+            </button>
+
+            <button id="brochuresBtn"
+                    class="w-full text-left p-3 rounded-xl hover:bg-slate-100 font-semibold text-xs flex items-center gap-2 text-slate-700 transition">
+                <i class="fa-solid fa-file-pdf text-rose-500 w-4"></i> View Brochures
+            </button>
+
+            <button type="button" onclick="openBrochureUploadModal()"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 rounded-xl font-black text-xs shadow transition">
+                <i class="fa-solid fa-upload"></i> Upload New Brochure
+            </button>
+        </aside>
+
+
+        <!-- WEBSITE FRAME AND EDITOR -->
+        <main class="flex-1 min-w-0 relative bg-slate-200">
+
+            <iframe id="siteFrame" title="Website Visual Editor"
+                    src="../index.html?admin=1"></iframe>
+
+            <div id="editor"
+                 class="hidden absolute top-0 right-0 w-[420px] max-w-[95%] h-full bg-white shadow-2xl overflow-y-auto border-l border-slate-200 z-50">
+
+                <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800">Edit Element</h2>
+                        <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-1"></p>
+                    </div>
+
+                    <button id="closeEditor" type="button"
+                            class="text-xl text-slate-400 hover:text-rose-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-4 text-xs">
+
+                    <div id="textBox">
+                        <label for="textValue" class="font-bold text-slate-700 block mb-1">
+                            Display Text
+                        </label>
+                        <textarea id="textValue" rows="6"
+                                  class="w-full border border-slate-300 rounded-xl p-3 text-xs focus:outline-none focus:border-emerald-500 shadow-sm"></textarea>
+                    </div>
+
+                    <div id="srcBox">
+                        <label for="fileValue" class="font-bold text-slate-700 block mb-1">
+                            Upload Photo / File
+                        </label>
+                        <input id="fileValue" type="file"
+                               class="w-full border border-slate-300 rounded-xl p-2 mb-2 bg-slate-50">
+
+                        <input id="srcValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500"
+                               placeholder="Existing URL / path">
+                    </div>
+
+                    <div id="hrefBox">
+                        <label for="hrefValue" class="font-bold text-slate-700 block mb-1">
+                            Link / Button URL
+                        </label>
+                        <input id="hrefValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div id="altBox">
+                        <label for="altValue" class="font-bold text-slate-700 block mb-1">
+                            Alt / Title Text
+                        </label>
+                        <input id="altValue"
+                               class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div id="actionBox"
+                         class="hidden space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="font-bold text-slate-800">
+                            <i class="fa-solid fa-wrench text-amber-500"></i> Advanced Details
+                        </label>
+                        <input id="action1" class="w-full border rounded-xl p-2" placeholder="Title / Product Name">
+                        <input id="action2" class="w-full border rounded-xl p-2" placeholder="Specification / PDF Link">
+                        <input id="action3" class="w-full border rounded-xl p-2" placeholder="Standard / Extra">
+                        <input id="action4" class="w-full border rounded-xl p-2" placeholder="Packing">
+                    </div>
+
+                    <button id="saveElement" type="button"
+                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-black text-sm shadow-md transition">
+                        SAVE CHANGES
+                    </button>
+
+                    <div id="saveMsg" role="status" class="font-bold text-center"></div>
+                    <div id="syncMsg" class="text-slate-400 text-center">
+                        Changes sync live to website when the site supports CMS messages.
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+<!-- ================= DATABASE DRAWER ================= -->
+<div id="drawer"
+     class="hidden fixed inset-0 bg-black/50 z-[100] glass items-center justify-end">
+
+    <div class="h-full w-[600px] max-w-[95vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
+
         <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
-          <div>
-            <h2 class="text-xl font-black text-slate-800">Edit Element</h2>
-            <p id="selectedInfo" class="text-xs text-slate-500 font-mono mt-1"></p>
-          </div>
-          <button id="closeEditor" type="button" class="text-xl text-slate-400">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+            <h2 id="drawerTitle" class="text-lg font-black text-slate-800 tracking-wide uppercase"></h2>
+            <button id="drawerClose" type="button"
+                    class="text-xl text-slate-400 hover:text-rose-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <div class="p-5 space-y-4 text-xs">
-          <div id="textBox">
-            <label for="textValue" class="font-bold text-slate-700 block mb-1">Display Text</label>
-            <textarea id="textValue" rows="6" class="w-full border border-slate-300 rounded-xl p-3 text-xs"></textarea>
-          </div>
-          <div id="srcBox">
-            <label for="fileValue" class="font-bold text-slate-700 block mb-1">Upload Photo / File</label>
-            <input id="fileValue" type="file" class="w-full border border-slate-300 rounded-xl p-2 mb-2 bg-slate-50">
-            <input id="srcValue" class="w-full border border-slate-300 rounded-xl p-2.5" placeholder="Existing URL / path">
-          </div>
-          <div id="hrefBox">
-            <label for="hrefValue" class="font-bold text-slate-700 block mb-1">Link / Button URL</label>
-            <input id="hrefValue" class="w-full border border-slate-300 rounded-xl p-2.5">
-          </div>
-          <div id="altBox">
-            <label for="altValue" class="font-bold text-slate-700 block mb-1">Alt / Title Text</label>
-            <input id="altValue" class="w-full border border-slate-300 rounded-xl p-2.5">
-          </div>
-          <div id="actionBox" class="hidden space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
-            <label class="font-bold text-slate-800">Advanced Details</label>
-            <input id="action1" class="w-full border rounded-xl p-2" placeholder="Title / Product Name">
-            <input id="action2" class="w-full border rounded-xl p-2" placeholder="Specification / PDF Link">
-            <input id="action3" class="w-full border rounded-xl p-2" placeholder="Standard / Extra">
-            <input id="action4" class="w-full border rounded-xl p-2" placeholder="Packing">
-          </div>
-          <button id="saveElement" type="button" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black text-sm">
-            SAVE CHANGES
-          </button>
-          <div id="saveMsg" role="status" class="font-bold text-center"></div>
-          <div id="syncMsg" class="text-slate-400 text-center">Changes sync live to website when the site supports CMS messages.</div>
-        </div>
-      </div>
-    </main>
-  </div>
+
+        <div id="drawerBody" class="p-6 flex-grow"></div>
+    </div>
 </div>
 
-<!-- DATABASE DRAWER -->
-<div id="drawer" class="hidden fixed inset-0 bg-black/50 z-[100] glass items-center justify-end">
-  <div class="h-full w-[600px] max-w-[95vw] bg-white shadow-2xl overflow-y-auto flex flex-col">
-    <div class="p-5 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
-      <h2 id="drawerTitle" class="text-lg font-black text-slate-800 tracking-wide uppercase"></h2>
-      <button id="drawerClose" type="button" class="text-xl text-slate-400 hover:text-rose-600">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-    <div id="drawerBody" class="p-6 flex-grow"></div>
-  </div>
-</div>
 
 <script>
 'use strict';
 
 const cfg = window.DEVI_CMS_CONFIG;
+
 if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey) {
-  document.getElementById('loginMsg').textContent =
-    'Configuration error: check the ../cms-config.js file and Supabase settings.';
-  throw new Error('DEVI_CMS_CONFIG is missing or incomplete.');
+    document.getElementById('loginMsg').textContent =
+        'Configuration error: check the ../cms-config.js file and Supabase settings.';
+    throw new Error('DEVI_CMS_CONFIG is missing or incomplete.');
 }
 
-const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+const sb = window.supabase.createClient(
+    cfg.supabaseUrl,
+    cfg.supabaseKey
+);
+
 const frame = document.getElementById('siteFrame');
 let selected = null;
 let isAuthenticated = false;
+
 const $ = id => document.getElementById(id);
 
 function showDrawer() {
-  $('drawer').classList.remove('hidden');
-  $('drawer').classList.add('flex');
+    $('drawer').classList.remove('hidden');
+    $('drawer').classList.add('flex');
 }
+
 function hideDrawer() {
-  $('drawer').classList.add('hidden');
-  $('drawer').classList.remove('flex');
+    $('drawer').classList.add('hidden');
+    $('drawer').classList.remove('flex');
 }
+
 function esc(value) {
-  return String(value ?? '').replace(/[&<>"']/g, ch => ({
-    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-  })[ch]);
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[ch]);
 }
+
 function showApp() {
-  isAuthenticated = true;
-  $('login').classList.add('hidden');
-  $('app').classList.remove('hidden');
+    isAuthenticated = true;
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
 }
+
 function showLogin(message = '') {
-  isAuthenticated = false;
-  $('app').classList.add('hidden');
-  $('login').classList.remove('hidden');
-  $('loginMsg').textContent = message;
+    isAuthenticated = false;
+    $('app').classList.add('hidden');
+    $('login').classList.remove('hidden');
+    $('loginMsg').textContent = message;
 }
+
 function nav(page) {
-  if (!isAuthenticated) return;
-  if (!frame || !frame.contentWindow) {
-    alert('Website frame load થયો નથી. પેજ રિફ્રેશ કરો.');
-    return;
-  }
-  frame.contentWindow.postMessage({
-    source:'devi-visual-cms', type:'NAVIGATE', page
-  }, window.location.origin);
+    if (!isAuthenticated) return;
+
+    const frame = document.getElementById('siteFrame');
+
+    if (!frame || !frame.contentWindow) {
+        alert('Website frame load થયો નથી. પેજ રિફ્રેશ કરો.');
+        return;
+    }
+
+    frame.contentWindow.postMessage({
+        source: 'devi-visual-cms',
+        type: 'NAVIGATE',
+        page: page
+    }, window.location.origin);
 }
+
+// ================= WEBSITE PAGES =================
 
 const pages = [
-  ['home','HOME'],
-  ['about','ABOUT US'],
-  ['company','COMPANY'],
-  ['products','PRODUCTS'],
-  ['sister-brand','OUR SISTER BRAND'],
-  ['contact','CONTACT US']
+    ['home', 'HOME'],
+    ['about', 'ABOUT US'],
+    ['company', 'COMPANY'],
+    ['products', 'PRODUCTS'],
+    ['sister-brand', 'OUR SISTER BRAND'],
+    ['contact', 'CONTACT US']
 ];
-pages.forEach(([id,name]) => {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
-  const icon = document.createElement('i');
-  icon.className = 'fa-solid fa-angle-right text-slate-300';
-  button.append(icon, document.createTextNode(' ' + name));
-  button.addEventListener('click', () => nav(id));
-  $('pages').appendChild(button);
+
+pages.forEach(([id, name]) => {
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.className =
+        'w-full text-left p-2.5 px-3 rounded-xl hover:bg-slate-100 font-semibold text-slate-700 text-xs transition flex items-center gap-2';
+
+    const icon = document.createElement('i');
+    icon.className = 'fa-solid fa-angle-right text-slate-300';
+
+    button.append(icon, document.createTextNode(' ' + name));
+    button.addEventListener('click', () => nav(id));
+
+    $('pages').appendChild(button);
 });
 
-// FILE UPLOAD
+
+// ================= FILE UPLOAD =================
+
 async function upload(file, folder = 'visual') {
-  if (!file) return '';
-  if (!isAuthenticated) throw new Error('Please log in first.');
-  const extension = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}${extension ? '.' + extension : ''}`;
-  const { error } = await sb.storage.from('devi-media').upload(path, file, { upsert:false });
-  if (error) throw error;
-  return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
+    if (!file) return '';
+
+    if (!isAuthenticated) {
+        throw new Error('Please log in first.');
+    }
+
+    const extension = file.name.includes('.')
+        ? file.name.split('.').pop().toLowerCase()
+        : '';
+
+    const path =
+        `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}` +
+        `${extension ? '.' + extension : ''}`;
+
+    const { error } = await sb.storage
+        .from('devi-media')
+        .upload(path, file, { upsert: false });
+
+    if (error) throw error;
+
+    return `${cfg.supabaseUrl}/storage/v1/object/public/devi-media/${path}`;
 }
 
-// VISUAL EDITOR MESSAGES
+
+// ================= VISUAL EDITOR MESSAGES =================
+
 window.addEventListener('message', event => {
-  if (event.origin !== window.location.origin) return;
-  const data = event.data;
-  if (!data || data.source !== 'devi-visual-cms') return;
-  if (data.type === 'EDIT_ELEMENT') {
-    selected = data.element || data.payload || null;
-    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
-    $('textValue').value = selected?.text || selected?.textContent || '';
-    $('srcValue').value = selected?.src \vert{}\vert{} selected?.image \vert{}\vert{} '';$('hrefValue').value = selected?.href || '';
-    $('altValue').value = selected?.alt \vert{}\vert{} selected?.title \vert{}\vert{} '';$('editor').classList.remove('hidden');
-  }
-  if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
+    if (!isAuthenticated) return;
+    if (event.origin !== new URL(frame.src, location.href).origin) return;
+    if (event.data?.source !== 'devi-visual-cms') return;
+
+    if (event.data.type === 'SELECT' && event.data.element) {
+        selected = event.data.element;
+        openEditor(selected);
+    }
+
+    if (event.data.type === 'BROCHURES') {
+        openBrochureManager(event.data.items || []);
+    }
 });
 
-$('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));$('saveElement').addEventListener('click', async () => {
-  if (!isAuthenticated || !selected) return;
-  $('saveMsg').textContent = 'Saving...';
-  try {
-    let src = $('srcValue').value.trim();
-    const file = $('fileValue').files[0];
-    if (file) src = await upload(file, 'visual');
-    frame.contentWindow.postMessage({
-      source:'devi-visual-cms',
-      type:'SAVE_ELEMENT',
-      payload:{
-        ...selected,
-        text:$('textValue').value,
-        src,
-        href:$('hrefValue').value,
-        alt:$('altValue').value,
-        action1:$('action1').value,
-        action2:$('action2').value,
-        action3:$('action3').value,
-        action4:$('action4').value
-      }
-    }, window.location.origin);
-    $('saveMsg').textContent = 'Save request sent to website.';
-  } catch (error) {
-    $('saveMsg').textContent = 'Error: ' + error.message;
-  }
+function openEditor(item) {
+    $('editor').classList.remove('hidden');
+
+    $('selectedInfo').textContent =
+        `${item.page || 'page'} • ${item.tag || 'element'}`;
+
+    $('textValue').value = item.text || '';
+    $('srcValue').value = item.src || '';
+    $('hrefValue').value = item.href || '';
+    $('altValue').value = [item.alt || '', item.title || '']
+        .filter(Boolean).join(' ');
+
+    $('fileValue').value = '';
+
+    $('textBox').style.display =
+        ['img', 'video', 'source', 'input', 'textarea'].includes(item.tag)
+            ? 'none' : 'block';
+
+    $('srcBox').style.display =
+        ['img', 'video', 'source'].includes(item.tag)
+            ? 'block' : 'none';
+
+    $('hrefBox').style.display =
+        ['a', 'button'].includes(item.tag) ? 'block' : 'none';
+
+    $('actionBox').classList.add('hidden');
+
+    const match = String(item.onclick || '').match(
+        /openTechSpecs\('([^']*)',\s*'([^']*)',\s*'([^']*)',\s*'([^']*)'\)/
+    );
+
+    if (match) {
+        $('actionBox').classList.remove('hidden');
+        ['action1', 'action2', 'action3', 'action4'].forEach((id, index) => {
+            $(id).value = match[index + 1] || '';
+        });
+    }
+
+    $('saveMsg').textContent = '';
+}
+
+$('closeEditor').addEventListener('click', () => {
+    $('editor').classList.add('hidden');
 });
-    // PRODUCTS MANAGER
-async function openProductsManager() {
-  if (!isAuthenticated) return;
 
-  $('drawerTitle').textContent = 'All Products';$('drawerBody').innerHTML = '<p class="text-slate-500">Loading products...</p>';
-  showDrawer();
+$('saveElement').addEventListener('click', async () => {
+    if (!isAuthenticated || !selected) return;
 
-  try {
-    const { data, error } = await sb.from('products')
-      .select('*').order('sort_order', { ascending: true });
-
-    if (error) throw error;
-
-    $('drawerBody').innerHTML = `
-      <button id="addProductBtn"
-        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-bold mb-4">
-        + Add New Product
-      </button>
-      ${(data || []).map((p, i) => `
-        <div class="border rounded-xl p-3 mb-3 flex gap-3 items-center">
-          ${p.photo_url || p.image_url
-            ? `<img src="${esc(p.photo_url || p.image_url)}" class="w-16 h-16 object-cover rounded-lg" alt="">`
-            : '<div class="w-16 h-16 bg-slate-100 rounded-lg grid place-items-center">No photo</div>'}
-          <div class="flex-1 min-w-0">
-            <b class="block text-sm">${esc(p.name || 'Unnamed Product')}</b>
-            <span class="text-xs text-slate-500">${esc(p.product_code || '')}</span>
-            <span class="block text-xs ${p.active === false ? 'text-rose-600' : 'text-emerald-600'}">
-              ${p.active === false ? 'Inactive' : 'Active'}
-            </span>
-          </div>
-          <button data-edit-product="${i}" class="bg-slate-900 text-white rounded-lg px-3 py-2 text-xs">Edit</button>
-          <button data-delete-product="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs">Delete</button>
-        </div>
-      `).join('') || '<p>No products found.</p>'}
-    `;
-
-    $('addProductBtn').onclick = () => editProduct({}, true);
-
-    $('drawerBody').querySelectorAll('[data-edit-product]').forEach(btn => {
-      btn.onclick = () => editProduct(data[Number(btn.dataset.editProduct)]);
-    });
-
-    $('drawerBody').querySelectorAll('[data-delete-product]').forEach(btn => {
-      btn.onclick = async () => {
-        const product = data[Number(btn.dataset.deleteProduct)];
-        if (!product || !confirm(`Delete ${product.name}?`)) return;
-
-        const { error } = await sb.from('products').delete().eq('id', product.id);
-        if (error) alert('Delete error: ' + error.message);
-        else openProductsManager();
-      };
-    });
-  } catch (error) {
-    $('drawerBody').textContent = 'Error: ' + error.message;
-  }
-}
-
-$('productsBtn').addEventListener('click', openProductsManager);
-
-window.editProduct = (product = {}, isNew = false) => {
-  if (!isAuthenticated) return;
-
-  $('drawerTitle').textContent = isNew ? 'Add Product' : 'Edit Product';
-
-  $('drawerBody').innerHTML = `
-    <form id="productForm" class="space-y-3 text-sm">
-      <label class="block font-bold">Product Name *
-        <input id="p_name" required class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.name || '')}">
-      </label>
-
-      <label class="block font-bold">Product Code
-        <input id="p_code" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.product_code || '')}">
-      </label>
-
-      <label class="block font-bold">Business Unit
-        <input id="p_unit" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.business_unit || '')}">
-      </label>
-
-      <label class="block font-bold">Category
-        <input id="p_category" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.category || '')}">
-      </label>
-
-      <label class="block font-bold">Description / Features
-        <textarea id="p_description" rows="4" class="w-full border rounded-xl p-2.5 mt-1">${esc(product.description || '')}</textarea>
-      </label>
-
-      <label class="block font-bold">Packing
-        <input id="p_packing" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.packing || '')}">
-      </label>
-
-      <label class="block font-bold">Unit
-        <input id="p_unit_name" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.unit || '')}">
-      </label>
-
-      <label class="block font-bold">Sort Order
-        <input id="p_sort" type="number" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${Number(product.sort_order) || 0}">
-      </label>
-
-      <label class="block font-bold">Product Photo
-        <input id="p_photo_file" type="file" accept="image/*"
-          class="w-full border rounded-xl p-2 mt-1">
-      </label>
-
-      <label class="block font-bold">Or Photo URL
-        <input id="p_photo_url" class="w-full border rounded-xl p-2.5 mt-1"
-          value="${esc(product.photo_url || product.image_url || '')}">
-      </label>
-
-      <label class="block font-bold">Additional Product Files
-        <input id="p_files" type="file" multiple
-          class="w-full border rounded-xl p-2 mt-1">
-      </label>
-
-      <label class="block font-bold">Brochure PDF / File
-        <input id="p_brochure" type="file" accept=".pdf,.doc,.docx"
-          class="w-full border rounded-xl p-2 mt-1">
-      </label>
-
-      ${product.brochure_url
-        ? `<a href="${esc(product.brochure_url)}" target="_blank" rel="noopener" class="text-blue-600 underline block">Open current brochure</a>`
-        : ''}
-
-      <label class="flex gap-2 items-center font-bold">
-        <input id="p_active" type="checkbox" ${product.active !== false ? 'checked' : ''}>
-        Active on website
-      </label>
-
-      <button id="saveProductBtn" class="w-full bg-emerald-600 text-white rounded-xl p-3 font-bold">
-        ${isNew ? 'Add Product' : 'Save Product'}
-      </button>
-      <p id="productStatus" class="text-sm font-bold"></p>
-    </form>
-  `;
-
-  $('productForm').addEventListener('submit', async event => {
-    event.preventDefault();
-
-    const btn = $('saveProductBtn');
-    const status = $('productStatus');
-    btn.disabled = true;
-    status.textContent = 'Saving product...';
+    const button = $('saveElement');
+    button.disabled = true;
+    button.textContent = 'SAVING...';
 
     try {
-      const payload = {
-        name: $('p_name').value.trim(),
-        product_code: $('p_code').value.trim() || null,
-        business_unit: $('p_unit').value.trim() || null,
-        category: $('p_category').value.trim() || null,
-        description: $('p_description').value.trim() || null,
-        packing: $('p_packing').value.trim() || null,
-        unit: $('p_unit_name').value.trim() || null,
-        sort_order: Number($('p_sort').value) || 0,
-        active: $('p_active').checked,
-        updated_at: new Date().toISOString()
-      };
+        const record = { ...selected };
 
-      const photo = $('p_photo_file').files[0];
-      let photoUrl = $('p_photo_url').value.trim();
+        if ($('textBox').style.display !== 'none') {
+            record.text = $('textValue').value;
+        }
 
-      if (photo) photoUrl = await upload(photo, 'products');
+        record.href = $('hrefValue').value;
+        record.src = $('srcValue').value;
+        record.alt = $('altValue').value.trim();
 
-      if (photoUrl) {
-        payload.photo_url = photoUrl;
-        payload.image_url = photoUrl;
-      }
+        const file = $('fileValue').files[0];
+        if (file) record.src = await upload(file, 'visual');
 
-      const files = Array.from($('p_files').files);
-      if (files.length) {
-        const urls = [];
-        for (const file of files) urls.push(await upload(file, 'product-files'));
-        payload.files_url = JSON.stringify(urls);
-      }
+        const key = String(record.id || '').trim();
+        if (!key) throw new Error('Missing element ID.');
 
-      const brochure = $('p_brochure').files[0];
-      if (brochure) payload.brochure_url = await upload(brochure, 'brochures');
+        const content = JSON.stringify(record);
 
-      const result = isNew
-        ? await sb.from('products').insert([payload])
-        : await sb.from('products').update(payload).eq('id', product.id);
-
-      if (result.error) throw result.error;
-
-      status.className = 'text-emerald-700 font-bold';
-      status.textContent = 'Product saved successfully.';
-      openProductsManager();
-    } catch (error) {
-      status.className = 'text-rose-600 font-bold';
-      status.textContent = 'Error: ' + error.message;
-      btn.disabled = false;
-    }
-  });
-
-  showDrawer();
-};
-
-// BUSINESS UNITS MANAGER
-async function openUnitsManager() {
-  if (!isAuthenticated) return;
-
-  $('drawerTitle').textContent = 'Business Units';$('drawerBody').textContent = 'Loading business units...';
-  showDrawer();
-
-  try {
-    const { data, error } = await sb.from('business_units')
-      .select('*').order('sort_order', { ascending: true });
-
-    if (error) throw error;
-
-    $('drawerBody').innerHTML = `
-      <button id="addUnitBtn" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold mb-4">
-        + Add Business Unit
-      </button>
-      ${(data || []).map((u, i) => `
-        <div class="border rounded-xl p-3 mb-3 flex gap-3 items-center">
-          ${u.image_url ? `<img src="${esc(u.image_url)}" class="w-14 h-14 object-cover rounded-lg" alt="">` : ''}
-          <div class="flex-1">
-            <b>${esc(u.name || 'Business Unit')}</b>
-            <div class="text-xs text-slate-500">${esc(u.website || u.website_url || '')}</div>
-          </div>
-          <button data-edit-unit="${i}" class="bg-slate-900 text-white rounded-lg px-3 py-2 text-xs">Edit</button>
-          <button data-delete-unit="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs">Remove</button>
-        </div>
-      `).join('') || '<p>No business units found.</p>'}
-    `;
-
-    $('addUnitBtn').onclick = () => editUnit({}, true);
-
-    $('drawerBody').querySelectorAll('[data-edit-unit]').forEach(btn => {
-      btn.onclick = () => editUnit(data[Number(btn.dataset.editUnit)]);
-    });
-
-    $('drawerBody').querySelectorAll('[data-delete-unit]').forEach(btn => {
-      btn.onclick = async () => {
-        const unit = data[Number(btn.dataset.deleteUnit)];
-        if (!unit || !confirm(`Remove ${unit.name}?`)) return;
-
-        const { error } = await sb.from('business_units').delete().eq('id', unit.id);
-        if (error) alert(error.message);
-        else openUnitsManager();
-      };
-    });
-  } catch (error) {
-    $('drawerBody').textContent = 'Error: ' + error.message;
-  }
-}
-
-$('unitsBtn').addEventListener('click', openUnitsManager);
-
-window.editUnit = (unit = {}, isNew = false) => {
-  if (!isAuthenticated) return;
-
-  $('drawerTitle').textContent = isNew ? 'Add Business Unit' : 'Edit Business Unit';
-
-  $('drawerBody').innerHTML = `
-    <form id="unitForm" class="space-y-3 text-sm">
-      <label class="block font-bold">Name *
-        <input id="u_name" required class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.name || '')}">
-      </label>
-
-      <label class="block font-bold">Description
-        <textarea id="u_desc" rows="3" class="w-full border rounded-xl p-2.5 mt-1">${esc(unit.description || '')}</textarea>
-      </label>
-
-      <label class="block font-bold">Upload Photo
-        <input id="u_photo_file" type="file" accept="image/*" class="w-full border rounded-xl p-2 mt-1">
-      </label>
-
-      <label class="block font-bold">Image URL
-        <input id="u_img" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.image_url || '')}">
-      </label>
-
-      <label class="block font-bold">Website URL
-        <input id="u_website" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.website_url || unit.website || '')}">
-      </label>
-
-      <label class="block font-bold">Address
-        <textarea id="u_address" class="w-full border rounded-xl p-2.5 mt-1">${esc(unit.address || '')}</textarea>
-      </label>
-
-      <label class="block font-bold">Location URL
-        <input id="u_location" class="w-full border rounded-xl p-2.5 mt-1" value="${esc(unit.location_url || '')}">
-      </label>
-
-      <label class="block font-bold">Sort Order
-        <input id="u_sort" type="number" class="w-full border rounded-xl p-2.5 mt-1" value="${Number(unit.sort_order) || 0}">
-      </label>
-
-      <label class="flex gap-2 items-center font-bold">
-        <input id="u_active" type="checkbox" ${unit.active !== false ? 'checked' : ''}>
-        Active on website
-      </label>
-
-      <button id="saveUnitBtn" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">
-        ${isNew ? 'Add Business Unit' : 'Save Changes'}
-      </button>
-      <p id="unitStatus" class="font-bold"></p>
-    </form>
-  `;
-
-  $('unitForm').addEventListener('submit', async event => {
-    event.preventDefault();
-    const btn = $('saveUnitBtn');
-    btn.disabled = true;
-
-    try {
-      const website = $('u_website').value.trim() || null;
-      const payload = {
-        name: $('u_name').value.trim(),
-        description: $('u_desc').value.trim() || null,
-        image_url: $('u_img').value.trim() || null,
-        website_url: website,
-        website,
-        address: $('u_address').value.trim() || null,
-        location_url: $('u_location').value.trim() || null,
-        sort_order: Number($('u_sort').value) || 0,
-        active: $('u_active').checked,
-        updated_at: new Date().toISOString()
-      };
-
-      const photo = $('u_photo_file').files[0];
-      if (photo) payload.image_url = await upload(photo, 'business-units');
-
-      const result = isNew
-        ? await sb.from('business_units').insert([payload])
-        : await sb.from('business_units').update(payload).eq('id', unit.id);
-
-      if (result.error) throw result.error;
-
-      alert('Business Unit saved successfully.');
-      openUnitsManager();
-    } catch (error) {
-      $('unitStatus').textContent = 'Error: ' + error.message;
-      btn.disabled = false;
-    }
-  });
-
-  showDrawer();
-};
-
-// BROCHURES MANAGER
-async function openBrochureManager() {
-  if (!isAuthenticated) return;
-
-  $('drawerTitle').textContent = 'View Brochures';$('drawerBody').textContent = 'Loading brochures...';
-  showDrawer();
-
-  try {
-    const { data, error } = await sb.from('products')
-      .select('id,name,product_code,description,brochure_url')
-      .not('brochure_url', 'is', null)
-      .order('name', { ascending: true });
-
-    if (error) throw error;
-
-    $('drawerBody').innerHTML = (data || []).map((p, i) => `
-      <div class="border rounded-xl p-4 mb-3">
-        <b class="block">${esc(p.name || 'Unnamed Product')}</b>
-        <p class="text-xs text-slate-500 mt-1">Product Code: ${esc(p.product_code || 'N/A')}</p>
-        <p class="text-xs text-slate-600 mt-1">${esc(p.description || '')}</p>
-        <div class="flex flex-wrap gap-2 mt-3">
-          <a class="bg-blue-100 text-blue-700 rounded-lg px-3 py-2 text-xs font-bold"
-             href="${esc(p.brochure_url)}" target="_blank" rel="noopener">Open Brochure ↗</a>
-          <button data-update-brochure="${i}" class="bg-emerald-100 text-emerald-700 rounded-lg px-3 py-2 text-xs font-bold">Replace File</button>
-          <button data-remove-brochure="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-3 py-2 text-xs font-bold">Remove Brochure</button>
-          <input id="brochure-file-${i}" type="file" accept=".pdf,.doc,.docx" class="hidden">
-        </div>
-      </div>
-    `).join('') || '<p>No brochures found. Add a brochure from the Add/Edit Product form.</p>';
-
-    $('drawerBody').querySelectorAll('[data-update-brochure]').forEach(btn => {
-      btn.onclick = () => {
-        const i = Number(btn.dataset.updateBrochure);
-        const input = $(`brochure-file-${i}`);
-        input.click();
-
-        input.onchange = async () => {
-          const file = input.files[0];
-          if (!file) return;
-
-          try {
-            const url = await upload(file, 'brochures');
-            const { error } = await sb.from('products')
-              .update({ brochure_url: url, updated_at: new Date().toISOString() })
-              .eq('id', data[i].id);
-
-            if (error) throw error;
-            alert('Brochure updated.');
-            openBrochureManager();
-          } catch (error) {
-            alert('Update failed: ' + error.message);
-          }
+        const sectionMap = {
+            home: 'home',
+            about: 'about',
+            company: 'company',
+            products: 'products',
+            'sister-brand': 'sister-brand',
+            contact: 'contact'
         };
-      };
-    });
 
-    $('drawerBody').querySelectorAll('[data-remove-brochure]').forEach(btn => {
-      btn.onclick = async () => {
-        const p = data[Number(btn.dataset.removeBrochure)];
-        if (!confirm(`Remove brochure from ${p.name}?`)) return;
+        const sectionKey =
+            sectionMap[String(record.page || 'home').toLowerCase().trim()] || 'home';
 
-        const { error } = await sb.from('products')
-          .update({ brochure_url: null, updated_at: new Date().toISOString() })
-          .eq('id', p.id);
+        const { data: old, error: lookupError } = await sb
+            .from('site_content')
+            .select('id')
+            .eq('key', key)
+            .maybeSingle();
 
-        if (error) alert(error.message);
-        else openBrochureManager();
-      };
-    });
-  } catch (error) {
-    $('drawerBody').textContent = 'Error: ' + error.message;
-  }
-}
+        if (lookupError) throw lookupError;
 
-$('brochuresBtn').addEventListener('click', openBrochureManager);
-    // REVIEWS MANAGER
-// ==========================================
-// PROFESSIONAL REVIEWS MANAGEMENT
-// Search, Filters, Pagination, Edit Popup,
-// Bulk Approve, Bulk Delete
-// ==========================================
+        let result;
 
-let aonReviewData = [];
-let aonReviewPage = 1;
-let aonReviewFilter = 'all';
-let aonReviewSearch = '';
-let aonReviewSelected = new Set();
-const AON_REVIEW_PAGE_SIZE = 10;
+        if (old?.id) {
+            result = await sb
+                .from('site_content')
+                .update({ section_key: sectionKey, content, active: true })
+                .eq('id', old.id);
+        } else {
+            result = await sb
+                .from('site_content')
+                .insert({
+                    section_key: sectionKey,
+                    key,
+                    content,
+                    active: true,
+                    title: String(record.page || 'home')
+                });
+        }
 
-async function openReviewsManager() {
-  if (!isAuthenticated) return;
+        if (result.error) throw result.error;
 
-  $('drawerTitle').textContent = 'Manage Reviews';$('drawerBody').innerHTML = '<p class="p-6 text-center">Loading reviews...</p>';
-  showDrawer();
+        frame.contentWindow.postMessage({
+            source: 'devi-visual-cms',
+            type: 'APPLY',
+            element: record
+        }, '*');
 
-  try {
-    const { data, error } = await sb
-      .from('reviews')
-      .select('*')
-      .order('created_at', { ascending: false });
+        $('saveMsg').textContent = 'Saved successfully ✓';
+        $('saveMsg').className = 'font-bold text-center text-emerald-600';
 
-    if (error) throw error;
+        setTimeout(() => {
+            $('editor').classList.add('hidden');
+            $('saveMsg').textContent = '';
+        }, 900);
 
-    aonReviewData = data || [];
-    aonReviewSelected.clear();
-    aonReviewPage = 1;
-
-    renderAonReviews();
-  } catch (error) {
-    $('drawerBody').textContent = 'Error loading reviews: ' + error.message;
-  }
-}
-
-function renderAonReviews() {
-  const body = $('drawerBody');
-
-  const filtered = aonReviewData.filter(r => {
-    const text = [
-      r.name || '',
-      r.country || '',
-      r.message || r.review || ''
-    ].join(' ').toLowerCase();
-
-    const matchesSearch = text.includes(aonReviewSearch.toLowerCase());
-
-    const status = String(r.status || '').toLowerCase();
-    const active = r.active !== false;
-
-    let matchesFilter = true;
-
-    if (aonReviewFilter === 'pending') {
-      matchesFilter = status === 'pending' || (!active && status !== 'rejected');
-    } else if (aonReviewFilter === 'published') {
-      matchesFilter = active && (status === 'approved' || status === 'published' || status === '');
-    } else if (aonReviewFilter === 'inactive') {
-      matchesFilter = !active;
+    } catch (error) {
+        $('saveMsg').textContent = error.message || 'Could not save changes.';
+        $('saveMsg').className = 'font-bold text-center text-rose-600';
+    } finally {
+        button.disabled = false;
+        button.textContent = 'SAVE CHANGES';
     }
+});
 
-    return matchesSearch && matchesFilter;
-  });
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filtered.length / AON_REVIEW_PAGE_SIZE)
-  );
+// ================= BROCHURES =================
 
-  if (aonReviewPage > totalPages) aonReviewPage = totalPages;
+$('brochuresBtn').addEventListener('click', () => {
+    if (!isAuthenticated) return;
 
-  const start = (aonReviewPage - 1) * AON_REVIEW_PAGE_SIZE;
-  const pageRows = filtered.slice(start, start + AON_REVIEW_PAGE_SIZE);
+    frame.contentWindow.postMessage({
+        source: 'devi-visual-cms',
+        type: 'LIST_BROCHURES'
+    }, '*');
+});
 
-  const escHtml = value => esc(String(value ?? ''));
+window.openBrochureUploadModal = () => {
+    if (!isAuthenticated) return;
 
-  body.innerHTML = `
-    <div class="space-y-4">
+    $('drawerTitle').innerHTML =
+        '<i class="fa-solid fa-file-pdf text-rose-500"></i> Upload Brochure';
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="border rounded-xl p-3">
-          <div class="text-xs text-gray-500">Total Reviews</div>
-          <div class="text-2xl font-bold">${aonReviewData.length}</div>
-        </div>
-        <div class="border rounded-xl p-3">
-          <div class="text-xs text-gray-500">Pending</div>
-          <div class="text-2xl font-bold text-amber-600">
-            ${aonReviewData.filter(r =>
-              String(r.status || '').toLowerCase() === 'pending' ||
-              (r.active === false &&
-               String(r.status || '').toLowerCase() !== 'rejected')
-            ).length}
-          </div>
-        </div>
-        <div class="border rounded-xl p-3">
-          <div class="text-xs text-gray-500">Published</div>
-          <div class="text-2xl font-bold text-emerald-600">
-            ${aonReviewData.filter(r =>
-              r.active !== false &&
-              ['approved', 'published', ''].includes(
-                String(r.status || '').toLowerCase()
-              )
-            ).length}
-          </div>
-        </div>
-        <div class="border rounded-xl p-3">
-          <div class="text-xs text-gray-500">Inactive</div>
-          <div class="text-2xl font-bold text-gray-600">
-            ${aonReviewData.filter(r => r.active === false).length}
-          </div>
-        </div>
-      </div>
-
-      <form id="aonReviewSearchForm" class="flex flex-wrap gap-2">
-        <input
-          id="aonReviewSearch"
-          type="search"
-          value="${escHtml(aonReviewSearch)}"
-          placeholder="Search name, country or review..."
-          class="border rounded-lg p-3 flex-1 min-w-40"
-        >
-        <button type="submit"
-          class="bg-gray-900 text-white rounded-lg px-4 py-2 font-bold">
-          Search
-        </button>
-      </form>
-
-      <div class="flex flex-wrap gap-2 items-center">
-        <select id="aonReviewFilter" class="border rounded-lg p-2">
-          <option value="all" ${aonReviewFilter === 'all' ? 'selected' : ''}>All Reviews</option>
-          <option value="pending" ${aonReviewFilter === 'pending' ? 'selected' : ''}>Pending</option>
-          <option value="published" ${aonReviewFilter === 'published' ? 'selected' : ''}>Published</option>
-          <option value="inactive" ${aonReviewFilter === 'inactive' ? 'selected' : ''}>Inactive</option>
-        </select>
-
-        <button id="aonSelectPage"
-          class="border rounded-lg px-3 py-2 text-sm font-bold">
-          Select Page
-        </button>
-
-        <button id="aonBulkApprove"
-          class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
-          Approve Selected
-        </button>
-
-        <button id="aonBulkDelete"
-          class="bg-rose-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
-          Delete Selected
-        </button>
-      </div>
-
-      <div class="text-xs text-gray-500">
-        Selected: ${aonReviewSelected.size} · Showing ${
-          filtered.length ? start + 1 : 0
-        }–${Math.min(start + AON_REVIEW_PAGE_SIZE, filtered.length)}
-        of ${filtered.length}
-      </div>
-
-      <div class="space-y-3">
-        ${pageRows.map(r => {
-          const id = String(r.id);
-          const message = r.message || r.review || '';
-          const status = String(r.status || 'pending').toLowerCase();
-          const active = r.active !== false;
-          const approved = active &&
-            ['approved', 'published', ''].includes(status);
-
-          return `
-            <div class="border rounded-xl p-4">
-              <div class="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  data-aon-select="${escHtml(id)}"
-                  ${aonReviewSelected.has(id) ? 'checked' : ''}
-                  class="mt-1 w-4 h-4"
-                >
-
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap justify-between gap-2">
-                    <div>
-                      <div class="font-bold">${escHtml(r.name || 'Customer')}</div>
-                      <div class="text-xs text-gray-500">
-                        ${escHtml(r.country || 'Country not provided')}
-                      </div>
-                    </div>
-
-                    <span class="text-xs font-bold rounded-full px-3 py-1 ${
-                      approved
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-amber-100 text-amber-700'
-                    }">
-                      ${approved ? 'Published' : escHtml(r.status || 'Pending')}
-                    </span>
-                  </div>
-
-                  <div class="text-amber-500 my-2">
-                    ${'★'.repeat(Math.max(0, Math.min(5, Number(r.stars || r.rating || 0))))}
-                    <span class="text-gray-400 text-xs">
-                      (${Number(r.stars || r.rating || 0)}/5)
-                    </span>
-                  </div>
-
-                  <p class="text-sm text-gray-700 whitespace-pre-wrap break-words">${escHtml(message)}</p>
-
-                  <div class="flex flex-wrap gap-2 mt-3">
-                    <button data-aon-edit="${escHtml(id)}"
-                      class="border rounded-lg px-3 py-2 text-xs font-bold">
-                      Edit
-                    </button>
-
-                    <button data-aon-approve="${escHtml(id)}"
-                      class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-xs font-bold">
-                      ${approved ? 'Unpublish' : 'Approve'}
-                    </button>
-
-                    <button data-aon-delete="${escHtml(id)}"
-                      class="bg-rose-100 text-rose-700 rounded-lg px-3 py-2 text-xs font-bold">
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('') || `
-          <div class="border rounded-xl p-8 text-center text-gray-500">
-            No reviews found.
-          </div>
-        `}
-      </div>
-
-      <div class="flex items-center justify-between gap-3">
-        <button id="aonReviewPrev"
-          ${aonReviewPage <= 1 ? 'disabled' : ''}
-          class="border rounded-lg px-3 py-2 disabled:opacity-40">
-          Previous
-        </button>
-
-        <span class="text-sm">Page ${aonReviewPage} of ${totalPages}</span>
-
-        <button id="aonReviewNext"
-          ${aonReviewPage >= totalPages ? 'disabled' : ''}
-          class="border rounded-lg px-3 py-2 disabled:opacity-40">
-          Next
-        </button>
-      </div>
-
-      <div id="aonReviewEditModal"
-        class="hidden fixed inset-0 z-50 bg-black/50 p-4 items-center justify-center">
-        <form id="aonReviewEditForm"
-          class="bg-white rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-3">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-bold">Edit Review</h3>
-            <button type="button" id="aonReviewEditClose"
-              class="text-2xl px-2" aria-label="Close">&times;</button>
-          </div>
-
-          <input type="hidden" id="aonEditReviewId">
-
-          <label class="block text-sm font-bold">Customer Name
-            <input id="aonEditReviewName" required
-              class="w-full border rounded-lg p-3 mt-1">
-          </label>
-
-          <label class="block text-sm font-bold">Country
-            <input id="aonEditReviewCountry"
-              class="w-full border rounded-lg p-3 mt-1">
-          </label>
-
-          <label class="block text-sm font-bold">Stars (1–5)
-            <input id="aonEditReviewStars" type="number" min="1" max="5" required
-              class="w-full border rounded-lg p-3 mt-1">
-          </label>
-
-          <label class="block text-sm font-bold">Review
-            <textarea id="aonEditReviewMessage" rows="4" required
-              class="w-full border rounded-lg p-3 mt-1"></textarea>
-          </label>
-
-          <label class="block text-sm font-bold">Status
-            <select id="aonEditReviewStatus"
-              class="w-full border rounded-lg p-3 mt-1">
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </label>
-
-          <label class="flex items-center gap-2 text-sm font-bold">
-            <input id="aonEditReviewActive" type="checkbox">
-            Published / Active
-          </label>
-
-          <div class="flex gap-2 justify-end pt-2">
-            <button type="button" id="aonReviewEditCancel"
-              class="border rounded-lg px-4 py-2">Cancel</button>
-            <button type="submit"
-              class="bg-gray-900 text-white rounded-lg px-5 py-2 font-bold">
-              Save Changes
+    $('drawerBody').innerHTML = `
+        <div class="space-y-4">
+            <label for="uploadBrochureFile"
+                   class="block font-bold text-slate-700 text-xs">
+                Select PDF / Document File
+            </label>
+            <input type="file" id="uploadBrochureFile"
+                   accept=".pdf,.doc,.docx"
+                   class="w-full border p-3 rounded-xl bg-slate-50 text-xs">
+            <button type="button" id="submitBrochureBtn"
+                    class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">
+                Upload &amp; Generate Link
             </button>
-          </div>
-        </form>
-      </div>
+            <div id="brochureUploadStatus"
+                 class="hidden p-3 rounded-xl text-xs font-bold"></div>
+        </div>`;
 
-    </div>
-  `;
+    $('submitBrochureBtn').addEventListener('click', window.submitNewBrochure);
+    showDrawer();
+};
 
-  // Search
-  $('aonReviewSearchForm').onsubmit = event => {
-    event.preventDefault();
-    aonReviewSearch = $('aonReviewSearch').value.trim();
-    aonReviewPage = 1;
-    renderAonReviews();
-  };
+window.submitNewBrochure = async () => {
+    if (!isAuthenticated) return;
 
-  // Filter
-  $('aonReviewFilter').onchange = event => {
-    aonReviewFilter = event.target.value;
-    aonReviewPage = 1;
-    renderAonReviews();
-  };
+    const file = $('uploadBrochureFile').files[0];
+    const status = $('brochureUploadStatus');
 
-  // Select individual review
-  body.querySelectorAll('[data-aon-select]').forEach(input => {
-    input.onchange = () => {
-      const id = input.dataset.aonSelect;
-      if (input.checked) aonReviewSelected.add(id);
-      else aonReviewSelected.delete(id);
-      renderAonReviews();
-    };
-  });
+    if (!file) {
+        alert('Please choose a file first.');
+        return;
+    }
 
-  // Select all reviews on this page
-  $('aonSelectPage').onclick = () => {
-    const visibleIds = body.querySelectorAll('[data-aon-select]');
-    const allSelected = [...visibleIds].every(el =>
-      aonReviewSelected.has(el.dataset.aonSelect)
-    );
+    status.classList.remove('hidden');
+    status.className =
+        'p-3 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold';
+    status.textContent = 'Uploading to cloud...';
 
-    visibleIds.forEach(el => {
-      if (allSelected) aonReviewSelected.delete(el.dataset.aonSelect);
-      else aonReviewSelected.add(el.dataset.aonSelect);
+    try {
+        const url = await upload(file, 'brochures');
+
+        status.className =
+            'p-4 rounded-xl bg-emerald-50 text-emerald-700 text-xs';
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'underline text-blue-600 break-all';
+        link.textContent = url;
+
+        status.replaceChildren();
+        const heading = document.createElement('b');
+        heading.textContent = 'Uploaded successfully! ';
+        status.append(heading, document.createElement('br'), link);
+
+    } catch (error) {
+        status.className =
+            'p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold';
+        status.textContent = 'Error: ' + error.message;
+    }
+};
+
+function openBrochureManager(items) {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').innerHTML =
+        '<i class="fa-solid fa-file-pdf text-rose-500"></i> Brochure Manager';
+
+    $('drawerBody').innerHTML = (items || []).map((item, index) => `
+        <div class="border rounded-2xl p-4 mb-3 bg-slate-50 flex justify-between items-center gap-3">
+            <div class="min-w-0">
+                <div class="font-black text-slate-800 text-sm">
+                    ${index + 1}. ${esc(item.title || 'Brochure')}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 break-all">
+                    ${esc(item.file || '')}
+                </div>
+            </div>
+            <button type="button" data-bid="${index}"
+                    class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                Edit
+            </button>
+        </div>
+    `).join('') || '<p class="text-slate-500 text-center py-10">No brochures found.</p>';
+
+    $('drawerBody').querySelectorAll('[data-bid]').forEach(button => {
+        button.addEventListener('click', () => {
+            const item = items[Number(button.dataset.bid)];
+            if (item) {
+                selected = item;
+                hideDrawer();
+                openEditor(item);
+            }
+        });
     });
 
-    renderAonReviews();
-  };
-
-  // Pagination
-  $('aonReviewPrev').onclick = () => {
-    if (aonReviewPage > 1) {
-      aonReviewPage--;
-      renderAonReviews();
-    }
-  };
-
-  $('aonReviewNext').onclick = () => {
-    aonReviewPage++;
-    renderAonReviews();
-  };
-
-  // Edit popup
-  body.querySelectorAll('[data-aon-edit]').forEach(button => {
-    button.onclick = () => {
-      const r = aonReviewData.find(x =>
-        String(x.id) === button.dataset.aonEdit
-      );
-      if (!r) return;
-
-      $('aonEditReviewId').value = r.id;
-      $('aonEditReviewName').value = r.name \vert{}\vert{} '';$('aonEditReviewCountry').value = r.country || '';
-      $('aonEditReviewStars').value = Number(r.stars \vert{}\vert{} r.rating \vert{}\vert{} 5);$('aonEditReviewMessage').value = r.message || r.review || '';
-
-      const status = String(r.status || 'pending').toLowerCase();
-      $('aonEditReviewStatus').value =
-        ['pending', 'approved', 'rejected'].includes(status)
-          ? status
-          : (r.active === false ? 'pending' : 'approved');
-
-      $('aonEditReviewActive').checked = r.active !== false;
-
-      const modal = $('aonReviewEditModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    };
-  });
-
-  const closeEditModal = () => {
-    $('aonReviewEditModal').classList.add('hidden');$('aonReviewEditModal').classList.remove('flex');
-  };
-
-  $('aonReviewEditClose').onclick = closeEditModal;
-  $('aonReviewEditCancel').onclick = closeEditModal;
-
-  // Save edited review
-  $('aonReviewEditForm').onsubmit = async event => {
-    event.preventDefault();
-
-    const id = $('aonEditReviewId').value;
-    const stars = Math.max(
-      1,
-      Math.min(5, Number($('aonEditReviewStars').value) || 5)
-    );
-    const message = $('aonEditReviewMessage').value.trim();
-    const status = $('aonEditReviewStatus').value;
-    const active = $('aonEditReviewActive').checked;
-
-    const payload = {
-      name: $('aonEditReviewName').value.trim(),
-      country: $('aonEditReviewCountry').value.trim() || null,
-      stars,
-      rating: stars,
-      message,
-      review: message,
-      status,
-      active,
-      updated_at: new Date().toISOString()
-    };
-
-    const { error } = await sb
-      .from('reviews')
-      .update(payload)
-      .eq('id', id);
-
-    if (error) {
-      alert('Save failed: ' + error.message);
-      return;
-    }
-
-    closeEditModal();
-    alert('Review updated successfully.');
-    await openReviewsManager();
-  };
-
-  // Approve / unpublish one review
-  body.querySelectorAll('[data-aon-approve]').forEach(button => {
-    button.onclick = async () => {
-      const r = aonReviewData.find(x =>
-        String(x.id) === button.dataset.aonApprove
-      );
-      if (!r) return;
-
-      const currentlyPublished =
-        r.active !== false &&
-        ['approved', 'published', ''].includes(
-          String(r.status || '').toLowerCase()
-        );
-
-      const payload = currentlyPublished
-        ? { active: false, status: 'pending', updated_at: new Date().toISOString() }
-        : { active: true, status: 'approved', updated_at: new Date().toISOString() };
-
-      const { error } = await sb
-        .from('reviews')
-        .update(payload)
-        .eq('id', r.id);
-
-      if (error) {
-        alert('Update failed: ' + error.message);
-        return;
-      }
-
-      await openReviewsManager();
-    };
-  });
-
-  // Delete one review
-  body.querySelectorAll('[data-aon-delete]').forEach(button => {
-    button.onclick = async () => {
-      const r = aonReviewData.find(x =>
-        String(x.id) === button.dataset.aonDelete
-      );
-      if (!r || !confirm('Permanently delete this review?')) return;
-
-      const { error } = await sb
-        .from('reviews')
-        .delete()
-        .eq('id', r.id);
-
-      if (error) {
-        alert('Delete failed: ' + error.message);
-        return;
-      }
-
-      aonReviewSelected.delete(String(r.id));
-      await openReviewsManager();
-    };
-  });
-
-  // Bulk approve selected reviews
-  $('aonBulkApprove').onclick = async () => {
-    const ids = [...aonReviewSelected];
-    if (!ids.length) {
-      alert('Please select at least one review.');
-      return;
-    }
-
-    if (!confirm(`Approve and publish ${ids.length} selected review(s)?`)) return;
-
-    const { error } = await sb
-      .from('reviews')
-      .update({
-        active: true,
-        status: 'approved',
-        updated_at: new Date().toISOString()
-      })
-      .in('id', ids);
-
-    if (error) {
-      alert('Bulk approve failed: ' + error.message);
-      return;
-    }
-
-    aonReviewSelected.clear();
-    await openReviewsManager();
-  };
-
-  // Bulk delete selected reviews
-  $('aonBulkDelete').onclick = async () => {
-    const ids = [...aonReviewSelected];
-    if (!ids.length) {
-      alert('Please select at least one review.');
-      return;
-    }
-
-    if (!confirm(`Permanently delete ${ids.length} selected review(s)?`)) return;
-
-    const { error } = await sb
-      .from('reviews')
-      .delete()
-      .in('id', ids);
-
-    if (error) {
-      alert('Bulk delete failed: ' + error.message);
-      return;
-    }
-
-    aonReviewSelected.clear();
-    await openReviewsManager();
-  };
+    showDrawer();
 }
 
-$('reviewsBtn').addEventListener('click', openReviewsManager);
-// REFRESH WEBSITE
+
+// ================= PRODUCTS =================
+
+$('productsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Products Manager';
+    $('drawerBody').textContent = 'Loading products...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('products')
+            .select('*')
+            .order('name');
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = `
+            <button type="button" id="addProductBtn"
+                    class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-black text-xs mb-4 shadow">
+                + Add New Product
+            </button>
+            ${(data || []).map((item, index) => `
+                <div class="border rounded-2xl p-4 mb-3 bg-white shadow-sm flex justify-between items-center gap-3">
+                    <button type="button" data-edit-product="${index}"
+                            class="text-left flex-1 min-w-0">
+                        <div class="font-black text-slate-800 text-sm">
+                            ${index + 1}. ${esc(item.name || 'Product')}
+                        </div>
+                        <div class="text-xs text-slate-500">Click to edit details</div>
+                    </button>
+                    <button type="button" data-delete-product="${index}"
+                            class="bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-bold">
+                        Delete
+                    </button>
+                </div>
+            `).join('') || '<p class="text-slate-500 text-center py-10">No products found.</p>'}
+        `;
+
+        $('addProductBtn').addEventListener('click', () => window.newProduct());
+
+        $('drawerBody').querySelectorAll('[data-edit-product]').forEach(button => {
+            button.addEventListener('click', () => {
+                window.editProduct(data[Number(button.dataset.editProduct)]);
+            });
+        });
+
+        $('drawerBody').querySelectorAll('[data-delete-product]').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = data[Number(button.dataset.deleteProduct)];
+                if (item) window.deleteProduct(item.id);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.newProduct = () => window.editProduct({
+    name: '',
+    description: '',
+    category: '',
+    standard_packaging: '',
+    purity: '',
+    image_url: ''
+}, true);
+
+window.editProduct = (record, isNew = false) => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = isNew ? 'Add New Product' : 'Edit Product';
+
+    const fields = Object.keys(record)
+        .filter(key => !['id', 'created_at', 'updated_at'].includes(key));
+
+    $('drawerBody').innerHTML = `
+        <div id="productFields">
+            ${fields.map(key => `
+                <label class="block mb-3">
+                    <span class="text-[10px] font-black uppercase text-slate-400">
+                        ${esc(key)}
+                    </span>
+                    <textarea data-product-key="${esc(key)}" rows="2"
+                              class="w-full border rounded-xl p-2.5 mt-1 text-xs focus:outline-none focus:border-emerald-500">${esc(
+                                  record[key] != null && typeof record[key] === 'object'
+                                      ? JSON.stringify(record[key])
+                                      : record[key] ?? ''
+                              )}</textarea>
+                </label>
+            `).join('')}
+        </div>
+
+        <div class="flex gap-2 mt-5">
+            <button type="button" id="saveProductBtn"
+                    class="flex-1 bg-emerald-600 text-white p-3 rounded-xl font-black text-xs shadow">
+                Save Product
+            </button>
+            <button type="button" id="cancelProductBtn"
+                    class="px-4 bg-slate-200 rounded-xl font-bold text-xs">
+                Cancel
+            </button>
+        </div>
+    `;
+
+    $('saveProductBtn').addEventListener('click', () => {
+        window.saveProduct(record.id || '');
+    });
+
+    $('cancelProductBtn').addEventListener('click', () => {
+        $('productsBtn').click();
+    });
+
+    showDrawer();
+};
+
+window.saveProduct = async id => {
+    if (!isAuthenticated) return;
+
+    const payload = {};
+
+    $('drawerBody').querySelectorAll('[data-product-key]').forEach(field => {
+        payload[field.dataset.productKey] = field.value;
+    });
+
+    const button = $('saveProductBtn');
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Saving...';
+    }
+
+    try {
+        const query = id
+            ? sb.from('products').update(payload).eq('id', id)
+            : sb.from('products').insert([payload]);
+
+        const { error } = await query;
+        if (error) throw error;
+
+        alert('Product saved successfully.');
+        $('productsBtn').click();
+
+    } catch (error) {
+        alert('Error saving product: ' + error.message);
+        if (button) {
+            button.disabled = false;
+            button.textContent = 'Save Product';
+        }
+    }
+};
+
+window.deleteProduct = async id => {
+    if (!isAuthenticated || !confirm('Delete this product?')) return;
+
+    const { error } = await sb.from('products').delete().eq('id', id);
+
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        $('productsBtn').click();
+    }
+};
+
+
+// ================= REVIEWS =================
+
+$('reviewsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Reviews Manager';
+    $('drawerBody').textContent = 'Loading reviews...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = (data || []).map((review, index) => `
+            <div class="border rounded-2xl p-4 mb-4 bg-slate-50 text-xs">
+                <div class="font-black mb-2 text-sm">#${index + 1}. Review</div>
+
+                <label class="font-bold block mb-2">
+                    Name
+                    <input data-review-field="name" data-review-id="${index}"
+                           value="${esc(review.name || '')}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-2">
+                    Country
+                    <input data-review-field="country" data-review-id="${index}"
+                           value="${esc(review.country || '')}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-2">
+                    Stars
+                    <input data-review-field="stars" data-review-id="${index}"
+                           type="number" min="1" max="5"
+                           value="${Number(review.stars) || 5}"
+                           class="w-full border rounded-lg p-2 mt-1 bg-white">
+                </label>
+
+                <label class="font-bold block mb-3">
+                    Message
+                    <textarea data-review-field="message" data-review-id="${index}"
+                              rows="3"
+                              class="w-full border rounded-lg p-2 mt-1 bg-white">${esc(review.message || review.review || '')}</textarea>
+                </label>
+
+                <div class="flex gap-2">
+                    <button type="button" data-save-review="${index}"
+                            class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-lg">
+                        Save
+                    </button>
+                    <button type="button" data-delete-review="${index}"
+                            class="bg-rose-100 text-rose-600 font-bold px-4 py-2 rounded-lg">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `).join('') || '<p class="text-slate-500 text-center py-10">No reviews found.</p>';
+
+        $('drawerBody').querySelectorAll('[data-save-review]').forEach(button => {
+            button.addEventListener('click', () => {
+                const index = Number(button.dataset.saveReview);
+                const review = data[index];
+                if (review) window.saveReview(review.id, index);
+            });
+        });
+
+        $('drawerBody').querySelectorAll('[data-delete-review]').forEach(button => {
+            button.addEventListener('click', () => {
+                const review = data[Number(button.dataset.deleteReview)];
+                if (review) window.deleteReview(review.id);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.saveReview = async (id, index) => {
+    if (!isAuthenticated) return;
+
+    const getValue = field =>
+        $('drawerBody').querySelector(
+            `[data-review-field="${field}"][data-review-id="${index}"]`
+        ).value;
+
+    const message = getValue('message');
+    const payload = {
+        name: getValue('name'),
+        country: getValue('country'),
+        stars: Math.max(1, Math.min(5, Number(getValue('stars')) || 5)),
+        message,
+        review: message
+    };
+
+    const { error } = await sb.from('reviews').update(payload).eq('id', id);
+
+    if (error) alert('Error: ' + error.message);
+    else alert('Review saved successfully.');
+};
+
+window.deleteReview = async id => {
+    if (!isAuthenticated || !confirm('Delete this review?')) return;
+
+    const { error } = await sb.from('reviews').delete().eq('id', id);
+
+    if (error) alert('Error: ' + error.message);
+    else $('reviewsBtn').click();
+};
+
+
+// ================= BUSINESS UNITS =================
+
+$('unitsBtn').addEventListener('click', async () => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Business Units';
+    $('drawerBody').textContent = 'Loading business units...';
+    showDrawer();
+
+    try {
+        const { data, error } = await sb
+            .from('business_units')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        $('drawerBody').innerHTML = (data || []).map((unit, index) => `
+            <div class="border rounded-2xl p-4 mb-3 bg-white flex justify-between items-center gap-3">
+                <div class="font-black text-sm text-slate-800">
+                    ${esc(unit.name || unit.title || 'Unit')}
+                </div>
+                <button type="button" data-edit-unit="${index}"
+                        class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                    Edit
+                </button>
+            </div>
+        `).join('') || '<p class="text-slate-500 text-center py-10">No units found.</p>';
+
+        $('drawerBody').querySelectorAll('[data-edit-unit]').forEach(button => {
+            button.addEventListener('click', () => {
+                window.editUnit(data[Number(button.dataset.editUnit)]);
+            });
+        });
+
+    } catch (error) {
+        $('drawerBody').textContent = 'Error: ' + error.message;
+    }
+});
+
+window.editUnit = unit => {
+    if (!isAuthenticated) return;
+
+    $('drawerTitle').textContent = 'Edit Business Unit';
+
+    $('drawerBody').innerHTML = `
+        <div class="space-y-3 text-xs">
+            <label class="font-bold block">
+                Name
+                <input id="u_name"
+                       class="w-full border p-2.5 rounded-xl mt-1"
+                       value="${esc(unit.name || unit.title || '')}">
+            </label>
+
+            <label class="font-bold block">
+                Description
+                <textarea id="u_desc" rows="5"
+                          class="w-full border p-2.5 rounded-xl mt-1">${esc(unit.description || '')}</textarea>
+            </label>
+
+            <label class="font-bold block">
+                Image URL
+                <input id="u_img"
+                       class="w-full border p-2.5 rounded-xl mt-1"
+                       value="${esc(unit.image_url || '')}">
+            </label>
+
+            <button type="button" id="saveUnitBtn"
+                    class="w-full bg-emerald-600 text-white p-3 rounded-xl font-black mt-2 shadow">
+                Save Unit
+            </button>
+        </div>
+    `;
+
+    $('saveUnitBtn').addEventListener('click', () => window.saveUnit(unit.id));
+};
+
+window.saveUnit = async id => {
+    if (!isAuthenticated) return;
+
+    // Fixed the original JavaScript syntax error in u_name.
+    const payload = {
+        name: $('u_name').value.trim(),
+        description: $('u_desc').value.trim(),
+        image_url: $('u_img').value.trim()
+    };
+
+    const button = $('saveUnitBtn');
+    button.disabled = true;
+    button.textContent = 'Saving...';
+
+    const { error } = await sb
+        .from('business_units')
+        .update(payload)
+        .eq('id', id);
+
+    if (error) {
+        alert('Error saving unit: ' + error.message);
+        button.disabled = false;
+        button.textContent = 'Save Unit';
+    } else {
+        alert('Business unit saved successfully.');
+        $('unitsBtn').click();
+    }
+};
+
+
+// ================= REFRESH / DRAWER =================
+
 $('refreshSite').addEventListener('click', () => {
-  if (!isAuthenticated) return;
-  frame.src = '../index.html?admin=1&sync=' + Date.now();
+    if (!isAuthenticated) return;
+    frame.src = '../index.html?admin=1&sync=' + Date.now();
 });
 
 $('drawerClose').addEventListener('click', hideDrawer);
 
-// FORGOT PASSWORD
+
+// ================= FORGOT PASSWORD =================
+
 $('forgotBtn').addEventListener('click', async () => {
-  const email = $('email').value.trim();
-  const message = $('resetMsg');
-  message.textContent = '';
+    const email = $('email').value.trim();
+    const message = $('resetMsg');
 
-  if (!email) {
-    message.className = 'text-xs mt-3 font-bold text-rose-600';
-    message.textContent = 'Enter your admin email first.';
-    $('email').focus();
-    return;
-  }
+    message.textContent = '';
 
-  const button = $('forgotBtn');
-  button.disabled = true;
-  button.textContent = 'Sending reset email...';
+    if (!email) {
+        message.className = 'text-xs mt-3 font-bold text-rose-600';
+        message.textContent = 'Enter your admin email first.';
+        $('email').focus();
+        return;
+    }
 
-  try {
-    const resetUrl = new URL('reset-password.html', location.href).href;
-    const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: resetUrl
-    });
+    const button = $('forgotBtn');
+    button.disabled = true;
+    button.textContent = 'Sending reset email...';
 
-    if (error) throw error;
+    try {
+        const resetUrl = new URL('reset-password.html', location.href).href;
 
-    message.className = 'text-xs mt-3 font-bold text-emerald-700';
-    message.textContent = 'If this email is registered, check your inbox and spam folder.';
-  } catch (error) {
-    message.className = 'text-xs mt-3 font-bold text-rose-600';
-    message.textContent = error.message || 'Could not send reset email.';
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Forgot Password?';
-  }
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: resetUrl
+        });
+
+        if (error) throw error;
+
+        message.className = 'text-xs mt-3 font-bold text-emerald-700';
+        message.textContent =
+            'If this email is registered, a reset email will be sent. Check your inbox and spam folder.';
+
+    } catch (error) {
+        message.className = 'text-xs mt-3 font-bold text-rose-600';
+        message.textContent = error.message || 'Could not send reset email.';
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Forgot Password?';
+    }
 });
 
-// LOGIN
+
+// ================= LOGIN =================
+
 $('loginForm').addEventListener('submit', async event => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const email = $('email').value.trim();
-  const password = $('password').value;
-  const button = $('loginBtn');
+    const email = $('email').value.trim();
+    const password = $('password').value;
+    const button = $('loginBtn');
 
-  button.disabled = true;
-  button.textContent = 'Signing in...';
-  $('loginMsg').textContent = '';
+    button.disabled = true;
+    button.textContent = 'Signing in...';
+    $('loginMsg').textContent = '';
 
-  try {
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    try {
+        const { error } = await sb.auth.signInWithPassword({
+            email,
+            password
+        });
 
-    $('password').value = '';
-    showApp();
-  } catch (error) {
-    showLogin(error.message || 'Login failed.');
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Login to Admin';
-  }
+        if (error) throw error;
+
+        $('password').value = '';
+        showApp();
+
+    } catch (error) {
+        showLogin(error.message || 'Login failed.');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Login to Admin';
+    }
 });
 
-// LOGOUT
+
+// ================= LOGOUT / SESSION =================
+
 $('logout').addEventListener('click', async () => {
-  const { error } = await sb.auth.signOut();
+    $('logout').disabled = true;
 
-  if (error) {
-    alert('Logout error: ' + error.message);
-    return;
-  }
+    try {
+        const { error } = await sb.auth.signOut();
+        if (error) throw error;
 
-  showLogin('You have been logged out.');
-  location.reload();
+        showLogin('You have been logged out.');
+        location.reload();
+
+    } catch (error) {
+        alert('Logout error: ' + error.message);
+        $('logout').disabled = false;
+    }
 });
 
-// AUTH SESSION
 sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') {
-    showLogin();
-  } else if (session && ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
-    showApp();
-  }
+    if (event === 'SIGNED_OUT') {
+        showLogin();
+    } else if (session && ['SIGNED_IN', 'INITIAL_SESSION', 'TOKEN_REFRESHED'].includes(event)) {
+        showApp();
+    }
 });
 
 (async () => {
-  try {
-    const { data, error } = await sb.auth.getSession();
-    if (error) throw error;
+    try {
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
 
-    if (data.session) showApp();
-    else showLogin();
-  } catch (error) {
-    showLogin('Could not verify session. Please sign in again.');
-  }
+        if (data.session) {
+            showApp();
+        } else {
+            showLogin();
+        }
+    } catch (error) {
+        showLogin('Could not verify session. Please sign in again.');
+    }
 })();
 </script>
+
 </body>
 </html>
