@@ -2421,6 +2421,8 @@
             }, 500);
         }
 
+              // Page Navigation
+        function showPage(pageId) {
         // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS & CMS SYNC ====================
         
         let isAdmin = window.location.search.includes('admin=1');
@@ -2576,9 +2578,7 @@
         }
         setInterval(updateClocks, 1000);
 
-        // Page Navigation
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+      document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
             const target = document.getElementById('page-' + pageId);
             if (target) target.classList.add('active-page');
 
@@ -2803,109 +2803,389 @@
             }
         };
 
-        function changeMap(key) {
-            const mapFrame = document.getElementById('location-map-frame');
-            const label = document.getElementById('active-location-name');
-            if (locationData[key]) {
-                mapFrame.src = locationData[key].url;
-                label.innerHTML = '📍 Live Selected: ' + locationData[key].name;
-            }
-            
-            document.querySelectorAll('.loc-btn').forEach(btn => {
-                btn.className = 'loc-btn p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 border-2 border-slate-300 dark:border-slate-700 shadow-sm font-black text-[11px] text-center transition duration-300 flex flex-col items-center justify-center gap-1.5';
-            });
-            
-            const activeBtn = document.getElementById('btn-loc-' + key);
-            if (activeBtn) {
-                activeBtn.className = 'loc-btn p-3.5 rounded-2xl bg-gradient-to-r from-primary to-slate-900 text-amber-300 border-2 border-amber-400 shadow-lg font-black text-[11px] text-center transition duration-300 flex flex-col items-center justify-center gap-1.5 scale-[1.02]';
-            }
-        }
-    </script>
-    <!-- ========================================== -->
-    <!-- MASTER SCRIPT WITH SUPABASE CMS LOGIC      -->
-    <!-- ========================================== -->
-    <script>
-        let sb = null;
-        if (window.DEVI_CMS_CONFIG && window.DEVI_CMS_CONFIG.supabaseUrl) {
-            sb = supabase.createClient(window.DEVI_CMS_CONFIG.supabaseUrl, window.DEVI_CMS_CONFIG.supabaseKey);
-        }
-
-        async function loadLiveContent() {
-            if (!sb) return;
-            try {
-                const { data: contentData } = await sb.from('site_content').select('*').eq('active', true);
-                if (contentData) {
-                    contentData.forEach(item => {
-                        const el = document.getElementById(item.key);
-                        if (el) {
-                            try {
-                                const parsed = JSON.parse(item.content);
-                                if (parsed.text !== undefined && !['IMG','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = parsed.text;
-                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = parsed.src;
-                                if (parsed.href && el.tagName === 'A') el.href = parsed.href;
-                                if (parsed.onclick !== undefined) {
-                                    if(parsed.onclick === '') el.removeAttribute('onclick');
-                                    else el.setAttribute('onclick', parsed.onclick);
-                                }
-                                if (parsed.hidden) el.style.display = 'none'; else el.style.display = '';
-                            } catch(e) {}
-                        }
-                    });
-                }
-            } catch (err) { console.error("CMS Sync Error: ", err); }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            // Auto-generate IDs for CMS targeting
-            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
-                if (!el.id) el.id = 'cms_auto_' + index;
-            });
-
-            loadLiveContent();
-
-            // Enable Admin Element Clicking
-            if (window.location.search.includes('admin=1')) {
-                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
-                    el.classList.add('admin-editable');
-                    el.onclick = (e) => {
-                        e.stopPropagation(); e.preventDefault();
-                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
-                        window.parent.postMessage({
-                            source: 'devi-visual-cms',
-                            type: 'SELECT',
-                            element: { id: el.id, page: page, tag: el.tagName.toLowerCase(), text: el.innerHTML || el.textContent, src: el.src || '', href: el.href || '', onclick: el.getAttribute('onclick') || '' }
-                        }, '*');
-                    };
-                });
-            }
-        
-});
-
-</script>
-
-<script>
-   <script>
-    // ========== ADMIN PANEL NAVIGATION & LIVE SAVE SYNC ==========
-    window.addEventListener('message', function(e) {
-        if (!e.data || e.data.source !== 'devi-visual-cms') return;
-
-        if (e.data.type === 'NAVIGATE' && typeof showPage === 'function') {
-            showPage(e.data.page);
-        }
-
-        if (e.data.type === 'SAVE_ELEMENT' && e.data.payload) {
-            const p = e.data.payload;
-            const el = document.getElementById(p.id);
-            if (el) {
-                if (p.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = p.text;
-                if (p.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = p.src;
-                if (p.href && el.tagName === 'A') el.href = p.href;
-                if (p.alt && el.tagName === 'IMG') el.alt = p.alt;
+        // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS & CMS SYNC ====================
+        
+        // Dark / Light Mode Toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                icon.className = "fa-solid fa-sun text-sm text-amber-300";
+                localStorage.setItem('devi_theme', 'dark');
+            } else {
+                icon.className = "fa-solid fa-moon text-sm text-amber-300";
+                localStorage.setItem('devi_theme', 'light');
             }
         }
-    });
-</script>
 
+        if (localStorage.getItem('devi_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = "fa-solid fa-sun text-sm text-amber-300";
+        }
 
+        // Live Currency Estimator Converter
+        function convertCurrency() {
+            const usd = parseFloat(document.getElementById('calc-usd').value) || 0;
+            document.getElementById('res-eur').innerText = '€' + Math.round(usd * 0.92).toLocaleString();
+            document.getElementById('res-inr').innerText = '₹' + Math.round(usd * 83.5).toLocaleString();
+            document.getElementById('res-kes').innerText = 'KSh ' + Math.round(usd * 130).toLocaleString();
+        }
+
+        // Live International World Clocks
+        function updateClocks() {
+            const now = new Date();
+            const format = (tz) => new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(now);
+            document.getElementById('clock-india').innerText = format('Asia/Kolkata');
+            document.getElementById('clock-germany').innerText = format('Europe/Berlin');
+            document.getElementById('clock-kenya').innerText = format('Africa/Nairobi');
+            document.getElementById('clock-indonesia').innerText = format('Asia/Jakarta');
+        }
+        setInterval(updateClocks, 1000);
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active-page'));
+            const target = document.getElementById('page-' + pageId);
+            if (target) target.classList.add('active-page');
+
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active-tab'));
+            const activeTab = document.getElementById('tab-' + pageId);
+            if (activeTab && pageId !== 'contact') {
+                activeTab.classList.add('active-tab');
+            }
+
+            const homeBanner = document.getElementById('home-video-banner');
+            if (pageId === 'home') {
+                if (homeBanner) homeBanner.style.display = 'block';
+            } else {
+                if (homeBanner) homeBanner.style.display = 'none';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Universal Brochure Viewer
+        function openBrochureViewer(title, filePath) {
+            document.getElementById('modal-brochure-title').innerHTML = `<i class="fa-solid fa-book-open text-accent"></i> ${title}`;
+            document.getElementById('modal-brochure-name').innerText = title;
+            
+            let viewUrl = filePath;
+            let downloadUrl = filePath;
+
+            if (filePath.includes('drive.google.com')) {
+                const match = filePath.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    viewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                    downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+            }
+
+            document.getElementById('modal-brochure-download-btn').href = downloadUrl;
+            document.getElementById('modal-brochure-view-btn').href = viewUrl;
+            document.getElementById('brochure-modal').classList.remove('hidden');
+        }
+
+        function closeBrochureViewer() {
+            document.getElementById('brochure-modal').classList.add('hidden');
+        }
+
+        let quoteCart = [];
+
+        function toggleProductInQuote(btn, productName) {
+            const index = quoteCart.indexOf(productName);
+            if (index > -1) {
+                quoteCart.splice(index, 1);
+                btn.classList.remove('btn-quote-added');
+                btn.innerHTML = '+ Quote';
+            } else {
+                quoteCart.push(productName);
+                btn.classList.add('btn-quote-added');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+            }
+            updateQuoteCartUI();
+        }
+
+        function removeFromQuote(productName) {
+            const index = quoteCart.indexOf(productName);
+            if (index > -1) {
+                quoteCart.splice(index, 1);
+            }
+            document.querySelectorAll('.quote-btn').forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(productName)) {
+                    btn.classList.remove('btn-quote-added');
+                    btn.innerHTML = '+ Quote';
+                }
+            });
+            updateQuoteCartUI();
+        }
+
+        function updateQuoteCartUI() {
+            document.getElementById('quote-count-badge').innerText = quoteCart.length;
+            const modalCount = document.getElementById('modal-quote-count');
+            if (modalCount) modalCount.innerText = quoteCart.length;
+
+            const container = document.getElementById('quote-items-list');
+            if (quoteCart.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No products selected yet. Click "+ Quote" on any products to add.</p>';
+                return;
+            }
+            container.innerHTML = quoteCart.map((item, idx) => `
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                    <span class="font-bold text-slate-800 dark:text-slate-100"><i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> ${idx+1}. ${item}</span>
+                    <button onclick="removeFromQuote('${item}')" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-0.5"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function toggleQuoteModal(forceOpen) {
+            const modal = document.getElementById('quote-modal');
+            if (forceOpen === true) modal.classList.remove('hidden');
+            else modal.classList.toggle('hidden');
+        }
+
+        function submitMultiQuote(channel) {
+            if (quoteCart.length === 0) return alert('Please select at least one product using the "+ Quote" button.');
+            
+            const listStrWhatsapp = quoteCart.map((p, i) => `${i+1}. ${p}`).join('%0D%0A');
+            const listStrEmail = quoteCart.map((p, i) => `${i+1}. ${p}`).join('\n');
+            
+            if (channel === 'whatsapp') {
+                const text = `Hello DEVI GROUPS, I would like to request an official quotation for the following ${quoteCart.length} product(s):%0D%0A%0D%0A${listStrWhatsapp}%0D%0A%0D%0APlease provide FOB/CIF prices, MOQ, and technical datasheets.`;
+                window.open(`https://wa.me/919727726216?text=${text}`, '_blank');
+            } else {
+                const recipient = "devigroup1989@gmail.com";
+                const subject = encodeURIComponent(`Multi-Product Quotation Request (${quoteCart.length} Items) - DEVI GROUPS`);
+                const body = encodeURIComponent(`Hello DEVI GROUPS,\n\nI would like to request an official quotation for the following product(s):\n\n${listStrEmail}\n\nPlease share FOB/CIF rates, minimum order quantity (MOQ), and commercial terms.\n\nThank you.`);
+                window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+            }
+        }
+
+        function openTechSpecs(title, grade, purity, pack) {
+            document.getElementById('ts-title').innerHTML = `<i class="fa-solid fa-flask text-secondary"></i> ${title} Specifications`;
+            document.getElementById('ts-grade').innerText = grade;
+            document.getElementById('ts-purity').innerText = purity;
+            document.getElementById('ts-pack').innerText = pack;
+            document.getElementById('techspecs-modal').classList.remove('hidden');
+        }
+        function closeTechSpecs() {
+            document.getElementById('techspecs-modal').classList.add('hidden');
+        }
+
+        function toggleLangDropdown(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('lang-dropdown-menu');
+            menu.classList.toggle('hidden');
+        }
+        function selectLanguage(langCode, flagImgUrl, langName) {
+            document.getElementById('current-flag-img').src = flagImgUrl;
+            document.getElementById('current-lang-text').innerText = langName;
+            document.getElementById('lang-dropdown-menu').classList.add('hidden');
+            
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
+                document.cookie = `googtrans=/en/${langCode}; path=/;`;
+                location.reload();
+            }
+        }
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('lang-dropdown-menu');
+            const picker = document.getElementById('lang-picker-container');
+            if (dropdown && picker && !picker.contains(e.target)) dropdown.classList.add('hidden');
+        });
+
+        function filterProducts() {
+            const input = document.getElementById('product-search-input').value.toLowerCase();
+            const items = document.querySelectorAll('.product-item');
+            items.forEach(item => {
+                const title = item.querySelector('.product-title').innerText.toLowerCase();
+                if (title.includes(input)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function openLightbox(src) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-image');
+            img.src = src;
+            modal.classList.remove('hidden');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            
+            const checkedBoxes = document.querySelectorAll('input[name="inquiry_product"]:checked');
+            const selectedItems = Array.from(checkedBoxes).map(cb => cb.value);
+
+            if (selectedItems.length === 0) {
+                alert('Please select at least one product using the checkbox options.');
+                return;
+            }
+
+            const msg = document.getElementById('form-message').value;
+
+            const recipient = "devigroup1989@gmail.com";
+            const subject = encodeURIComponent(`Inquiry from ${name} (${selectedItems.length} items selected) - DEVI GROUPS`);
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSelected Products/Brands:\n${selectedItems.map(i => ' - ' + i).join('\n')}\n\nMessage/Requirement:\n${msg}`);
+            window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+            const status = document.getElementById('form-status');
+            status.innerText = "Thank you! Opening your email client...";
+            status.classList.remove('hidden');
+        }
+
+        const locationData = {
+            'chemical': { 
+                name: 'DEVI CHEMICALS (C/3, Shiv Tenament, Ghodasar, Ahmedabad - 380050)', 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.645512702758!2d72.6012!3d22.9912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU5JzI4LjQiTiA3MsKwMzAnMDQuMyJF!5e0!3m2!1sen!2sin!4v1700000000000' 
+            },
+            'devigroup': {
+                name: 'DEVI GROUPS (Godown no.18, Pushkar Ind estate -2, Vatva, Ahmedabad 382445)',
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.5!2d72.64!3d22.95!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDU3JzAwLjAiTiA3MsKwMzgnMzAuMCJF!5e0!3m2!1sen!2sin!4v1700000000002'
+            },
+            'packaging': { 
+                name: 'DEVI PACKAGING (Godown no.18, Pushkar Ind estate -2, Opp.National Raifale, Phase - I , GIDC, VATVA, AHMEDABAD 382445)', 
+                url: 'https://maps.google.com/maps?q=Pushkar+Ind+estate+2+Vatva+Ahmedabad&t=&z=15&ie=UTF8&iwloc=&output=embed' 
+            },
+            'coffee': { 
+                name: 'DEVI COFFEE DAY (Rivera Arcade, Prahlad Nagar, Ahmedabad, Gujarat)', 
+                url: 'https://maps.google.com/maps?q=Devi+Coffee+Day+Rivera+Arcade+Prahladnagar+Ahmedabad&t=&z=16&ie=UTF8&iwloc=&output=embed' 
+            },
+            'creative': { 
+                name: 'CREATIVE INPEX SOLAR PRIVATE LIMITED (Ask Showground, Nakuru, Kenya)', 
+                url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.5!2d36.06!3d-0.28!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMKKwMTcnMTguMCJTIDM2wrAwMyczNi4wIkU!5e0!3m2!1sen!2sin!4v1700000000004' 
+            }
+        };
+
+        function changeMap(key) {
+            const mapFrame = document.getElementById('location-map-frame');
+            const label = document.getElementById('active-location-name');
+            if (locationData[key]) {
+                mapFrame.src = locationData[key].url;
+                label.innerHTML = '📍 Live Selected: ' + locationData[key].name;
+            }
+            
+            document.querySelectorAll('.loc-btn').forEach(btn => {
+                btn.className = 'loc-btn p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 border-2 border-slate-300 dark:border-slate-700 shadow-sm font-black text-[11px] text-center transition duration-300 flex flex-col items-center justify-center gap-1.5';
+            });
+            
+            const activeBtn = document.getElementById('btn-loc-' + key);
+            if (activeBtn) {
+                activeBtn.className = 'loc-btn p-3.5 rounded-2xl bg-gradient-to-r from-primary to-slate-900 text-amber-300 border-2 border-amber-400 shadow-lg font-black text-[11px] text-center transition duration-300 flex flex-col items-center justify-center gap-1.5 scale-[1.02]';
+            }
+        }
+
+        // ==================== SUPABASE CMS CONNECTION ====================
+        let sb = null;
+        if (window.DEVI_CMS_CONFIG && window.DEVI_CMS_CONFIG.supabaseUrl) {
+            sb = supabase.createClient(window.DEVI_CMS_CONFIG.supabaseUrl, window.DEVI_CMS_CONFIG.supabaseKey);
+        }
+
+        async function loadLiveContent() {
+            if (!sb) return;
+            try {
+                const { data: contentData } = await sb.from('site_content').select('*').eq('active', true);
+                if (contentData) {
+                    contentData.forEach(item => {
+                        const el = document.getElementById(item.key);
+                        if (el) {
+                            try {
+                                const parsed = JSON.parse(item.content);
+                                if (parsed.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) {
+                                    el.innerHTML = parsed.text;
+                                }
+                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
+                                    el.src = parsed.src;
+                                }
+                                if (parsed.href && el.tagName === 'A') {
+                                    el.href = parsed.href;
+                                }
+                                if (parsed.alt && el.tagName === 'IMG') {
+                                    el.alt = parsed.alt;
+                                }
+                                if (parsed.onclick !== undefined) {
+                                    if (parsed.onclick === '') el.removeAttribute('onclick');
+                                    else el.setAttribute('onclick', parsed.onclick);
+                                }
+                                if (parsed.hidden) el.style.display = 'none';
+                                else el.style.display = '';
+                            } catch(e) {}
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("CMS Sync Error: ", err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
+                if (!el.id) el.id = 'cms_auto_' + index;
+            });
+
+            loadLiveContent();
+            loadReviews();
+            updateClocks();
+
+            if (window.location.search.includes('admin=1')) {
+                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
+                    el.classList.add('admin-editable');
+                    el.onclick = (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
+                        window.parent.postMessage({
+                            source: 'devi-visual-cms',
+                            type: 'EDIT_ELEMENT',
+                            element: {
+                                id: el.id,
+                                selector: '#' + el.id,
+                                page: page,
+                                tag: el.tagName.toLowerCase(),
+                                text: el.innerHTML.trim(),
+                                src: el.src || '',
+                                href: el.href || '',
+                                alt: el.alt || '',
+                                onclick: el.getAttribute('onclick') || ''
+                            }
+                        }, '*');
+                    };
+                });
+            }
+        });
+
+        // ========== ADMIN PANEL NAVIGATION & LIVE SAVE SYNC ==========
+        window.addEventListener('message', function(e) {
+            if (!e.data || e.data.source !== 'devi-visual-cms') return;
+
+            if (e.data.type === 'NAVIGATE' && typeof showPage === 'function') {
+                showPage(e.data.page);
+            }
+
+            if (e.data.type === 'SAVE_ELEMENT' && e.data.payload) {
+                const p = e.data.payload;
+                const el = document.getElementById(p.id);
+                if (el) {
+                    if (p.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = p.text;
+                    if (p.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = p.src;
+                    if (p.href && el.tagName === 'A') el.href = p.href;
+                    if (p.alt && el.tagName === 'IMG') el.alt = p.alt;
+                }
+            }
+        });
+    </script>
 </body>
-                                </html>
+</html>
