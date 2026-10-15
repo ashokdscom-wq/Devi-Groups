@@ -2883,20 +2883,37 @@
 </script>
 
 <script>
-    // ========== ADMIN PANEL NAVIGATION SYNC ==========
+   <script>
+    // ========== ADMIN PANEL NAVIGATION & LIVE SAVE SYNC ==========
     window.addEventListener('message', function(e) {
-        if (
-            e.data &&
-            e.data.source === 'devi-visual-cms' &&
-            e.data.type === 'NAVIGATE'
-        ) {
-            if (typeof showPage === 'function') {
-                showPage(e.data.page);
+        if (!e.data || e.data.source !== 'devi-visual-cms') return;
+
+        // ૧. પેજ બદલવા માટે
+        if (e.data.type === 'NAVIGATE' && typeof showPage === 'function') {
+            showPage(e.data.page);
+        }
+
+        // ૨. એડમિન પેનલમાંથી સેવ થાય ત્યારે તરત જ સ્ક્રીન પર ફેરફાર બતાવવા માટે
+        if (e.data.type === 'SAVE_ELEMENT' && e.data.payload) {
+            const p = e.data.payload;
+            const el = document.getElementById(p.id);
+            if (el) {
+                if (p.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) {
+                    el.innerHTML = p.text;
+                }
+                if (p.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
+                    el.src = p.src;
+                }
+                if (p.href && el.tagName === 'A') {
+                    el.href = p.href;
+                }
+                if (p.alt && el.tagName === 'IMG') {
+                    el.alt = p.alt;
+                }
             }
         }
     });
 </script>
-
 </body>
 </html>
 
