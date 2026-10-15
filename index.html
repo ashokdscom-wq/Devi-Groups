@@ -196,42 +196,121 @@
         #lang-dropdown-menu::-webkit-scrollbar-thumb {
             background: #e67e22;
             border-radius: 4px;
-        }
+    <style>
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #092c4c; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e67e22; }
 
-        /* Quote button active state */
-        .btn-quote-added {
-            background-color: #10b981 !important;
-            color: #ffffff !important;
-        }
+        .page-content {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .active-page { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Floating WhatsApp & Call Animation */
-        @keyframes bounce-slow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        .floating-action {
-            animation: bounce-slow 3s ease-in-out infinite;
-        }
+        /* Active Menu Tab Styling */
+        .nav-link { position: relative; transition: all 0.25s ease; white-space: nowrap; }
+        .nav-link.active-tab {
+            color: #fbbf24;
+            background-color: rgba(255, 255, 255, 0.12);
+            font-weight: 800;
+        }
+        .nav-link.active-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            width: 70%;
+            height: 3px;
+            background-color: #fbbf24;
+            border-radius: 9999px;
+        }
 
-        /* Chat Message Bubbles */
-        .chat-msg-bot {
-            background: #ffffff;
-            color: #1e293b;
-            border-radius: 1rem 1rem 1rem 0.25rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-            align-self: flex-start;
-        }
-        .dark .chat-msg-bot {
-            background: #1e293b;
-            color: #f1f5f9;
-        }
-        .chat-msg-user {
-            background: #25D366;
-            color: #ffffff;
-            border-radius: 1rem 1rem 0.25rem 1rem;
-            align-self: flex-end;
-        }
-    </style>
+        /* Interactive Map Pins */
+        .map-pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .map-pin:hover { transform: translate(-50%, -50%) scale(1.15); z-index: 20; }
+        .ping-dot { position: relative; display: flex; height: 12px; width: 12px; }
+        .ping-dot span:first-child {
+            position: absolute;
+            display: inline-flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 9999px;
+            background-color: #f97316;
+            opacity: 0.75;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .ping-dot span:last-child {
+            position: relative;
+            display: inline-flex;
+            border-radius: 9999px;
+            height: 12px;
+            width: 12px;
+            background-color: #ea580c;
+        }
+        @keyframes ping {
+            75%, 100% { transform: scale(2.2); opacity: 0; }
+        }
+        
+        .card-lift { transition: all 0.25s ease; }
+        .card-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hide Google Translate Default Top Bar */
+        .goog-te-banner-frame.skiptranslate { display: none !important; }
+        body { top: 0px !important; }
+        #google_translate_element { display: none !important; }
+
+        /* Hide Horizontal Scrollbar in Navbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Custom Flag Dropdown Scrollbar */
+        #lang-dropdown-menu::-webkit-scrollbar { width: 5px; }
+        #lang-dropdown-menu::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 4px; }
+
+        /* Quote button active state */
+        .btn-quote-added { background-color: #10b981 !important; color: #ffffff !important; }
+
+        /* Floating WhatsApp & Call Animation */
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .floating-action { animation: bounce-slow 3s ease-in-out infinite; }
+
+        /* Chat Message Bubbles */
+        .chat-msg-bot {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 1rem 1rem 1rem 0.25rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            align-self: flex-start;
+        }
+        .dark .chat-msg-bot { background: #1e293b; color: #f1f5f9; }
+        .chat-msg-user {
+            background: #25D366;
+            color: #ffffff;
+            border-radius: 1rem 1rem 0.25rem 1rem;
+            align-self: flex-end;
+        }
+    </style>
+
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white transition-colors duration-300">
 
