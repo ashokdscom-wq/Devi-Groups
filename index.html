@@ -2862,10 +2862,53 @@
 
         const CMS_EDITABLE_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,button,img';
         const CMS_NON_TEXT_TAGS = ['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'];
+        const CMS_IGNORE_EDIT_SELECTOR = 'pre,code,script,style,textarea,svg';
 
         function cmsGetPage(el) {
             const section = el.closest('.page-content');
             return section ? section.id.replace(/^page-/, '') : 'home';
+        }
+
+        // Return only the text a visitor can read, never HTML markup.
+        function cmsVisibleText(el) {
+            return String(el.innerText ?? el.textContent ?? '').replace(/\u00a0/g, ' ').trim();
+        }
+
+        // Update text nodes while preserving icons and surrounding HTML structure.
+        function cmsSetVisibleText(el, value) {
+            const newText = String(value ?? '');
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+                    if (!parent || parent.closest('i,svg,script,style,[aria-hidden="true"]')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            });
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            const target = nodes.find(node => node.nodeValue.trim()) || nodes[0];
+            if (!target) {
+                el.appendChild(document.createTextNode(newText));
+                return;
+            }
+            target.nodeValue = newText;
+            nodes.forEach(node => {
+                if (node !== target && node.nodeValue.trim()) node.nodeValue = '';
+            });
+        }
+
+        // Older CMS records may contain HTML saved by the previous editor.
+        function cmsPlainTextFromLegacyHtml(value) {
+            if (typeof value !== 'string' || !/<\/?[a-z][^>]*>/i.test(value)) return value;
+            const template = document.createElement('template');
+            template.innerHTML = value;
+            return String(template.content.textContent || '').trim();
+        }
+
+        function cmsIsEditable(el) {
+            return !el.closest(CMS_IGNORE_EDIT_SELECTOR);
         }
 
         function cmsElementPayload(el) {
@@ -2873,7 +2916,7 @@
                 id: el.id,
                 page: cmsGetPage(el),
                 tag: el.tagName.toLowerCase(),
-                text: CMS_NON_TEXT_TAGS.includes(el.tagName) ? '' : (el.innerHTML ?? el.textContent ?? ''),
+                text: CMS_NON_TEXT_TAGS.includes(el.tagName) ? '' : cmsVisibleText(el),
                 src: el.getAttribute('src') || '',
                 href: el.getAttribute('href') || '',
                 alt: el.getAttribute('alt') || '',
@@ -2884,7 +2927,7 @@
 
         function cmsApplyElement(el, item) {
             if (item.text !== undefined && !CMS_NON_TEXT_TAGS.includes(el.tagName)) {
-                el.innerHTML = item.text;
+                cmsSetVisibleText(el, cmsPlainTextFromLegacyHtml(item.text));
             }
             if (item.src !== undefined && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
                 if (item.src) el.setAttribute('src', item.src);
@@ -2919,7 +2962,10 @@
                     if (!el) return;
                     try {
                         const parsed = typeof item.content === 'string' ? JSON.parse(item.content) : item.content;
-                        if (parsed && typeof parsed === 'object') cmsApplyElement(el, parsed);
+                        if (parsed && typeof parsed === 'object') {
+                            if (typeof parsed.text === 'string') parsed.text = cmsPlainTextFromLegacyHtml(parsed.text);
+                            cmsApplyElement(el, parsed);
+                        }
                     } catch (e) {
                         console.warn('Skipping invalid CMS content for', item.key, e);
                     }
@@ -2962,6 +3008,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             // Stable target IDs are needed so saved CMS records can be loaded again.
             document.querySelectorAll(CMS_EDITABLE_SELECTOR).forEach((el, index) => {
+                if (!cmsIsEditable(el)) return;
                 if (!el.id) el.id = 'cms_auto_' + index;
             });
 
@@ -2970,6 +3017,7 @@
             // The admin iframe uses ?admin=1. Clicks select an element for editing.
             if (new URLSearchParams(window.location.search).get('admin') === '1') {
                 document.querySelectorAll(CMS_EDITABLE_SELECTOR).forEach(el => {
+                    if (!cmsIsEditable(el)) return;
                     el.classList.add('admin-editable');
                     el.addEventListener('click', (event) => {
                         event.preventDefault();
