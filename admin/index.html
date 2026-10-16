@@ -228,17 +228,29 @@ async function upload(file, folder = 'visual') {
 // VISUAL EDITOR MESSAGES
 window.addEventListener('message', event => {
   const data = event.data;
-  if (!data || data.source !== 'devi-visual-cms') return;
-  if (data.type === 'EDIT_ELEMENT' || data.type === 'SELECT') {
-    selected = data.element || data.payload || null;
-    $('selectedInfo').textContent = selected ? `${selected.page || ''} #${selected.id || ''}` : '';
-    $('textValue').value = selected?.text || selected?.textContent || '';
-    $('srcValue').value = selected?.src \vert{}\vert{} selected?.image \vert{}\vert{} '';$('hrefValue').value = selected?.href || '';
-    $('altValue').value = selected?.alt \vert{}\vert{} selected?.title \vert{}\vert{} '';$('fileValue').value = '';
-    $('saveMsg').textContent = '';$('editor').classList.remove('hidden');
-  }
-  if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
-});
+  
+if (!data || data.source !== 'devi-visual-cms') return;
+
+if (data.type === 'EDIT_ELEMENT' || data.type === 'SELECT') {
+  selected = data.element || data.payload || null;
+
+  $('selectedInfo').textContent = selected
+    ? `${selected.page || ''} #${selected.id || ''}`
+    : '';
+
+  $('textValue').value = selected?.text || selected?.textContent || '';
+  $('srcValue').value = selected?.src || selected?.image || '';
+  $('hrefValue').value = selected?.href || '';
+  $('altValue').value = selected?.alt || selected?.title || '';
+  $('fileValue').value = '';
+
+  $('saveMsg').textContent = '';
+  $('editor').classList.remove('hidden');
+}
+
+if (data.type === 'OPEN_BROCHURES') {
+  $('brochuresBtn').click();
+}
 
 $('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));$('saveElement').addEventListener('click', async () => {
   if (!isAuthenticated || !selected || !selected.id) return;
