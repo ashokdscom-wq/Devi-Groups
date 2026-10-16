@@ -2852,82 +2852,169 @@
     <!-- ========================================== -->
     <script>
         let sb = null;
-        if (window.DEVI_CMS_CONFIG && window.DEVI_CMS_CONFIG.supabaseUrl) {
-            sb = supabase.createClient(window.DEVI_CMS_CONFIG.supabaseUrl, window.DEVI_CMS_CONFIG.supabaseKey);
+        if (window.DEVI_CMS_CONFIG && window.DEVI_CMS_CONFIG.supabaseUrl &&
+            window.DEVI_CMS_CONFIG.supabaseKey && window.supabase) {
+            sb = window.supabase.createClient(
+                window.DEVI_CMS_CONFIG.supabaseUrl,
+                window.DEVI_CMS_CONFIG.supabaseKey
+            );
+        }
+
+        const CMS_EDITABLE_SELECTOR = 'h1,h2,h3,h4,h5,h6,p,span,a,button,img';
+        const CMS_NON_TEXT_TAGS = ['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'];
+
+        function cmsGetPage(el) {
+            const section = el.closest('.page-content');
+            return section ? section.id.replace(/^page-/, '') : 'home';
+        }
+
+        function cmsElementPayload(el) {
+            return {
+                id: el.id,
+                page: cmsGetPage(el),
+                tag: el.tagName.toLowerCase(),
+                text: CMS_NON_TEXT_TAGS.includes(el.tagName) ? '' : (el.innerHTML ?? el.textContent ?? ''),
+                src: el.getAttribute('src') || '',
+                href: el.getAttribute('href') || '',
+                alt: el.getAttribute('alt') || '',
+                onclick: el.getAttribute('onclick') || '',
+                title: el.getAttribute('title') || ''
+            };
+        }
+
+        function cmsApplyElement(el, item) {
+            if (item.text !== undefined && !CMS_NON_TEXT_TAGS.includes(el.tagName)) {
+                el.innerHTML = item.text;
+            }
+            if (item.src !== undefined && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
+                if (item.src) el.setAttribute('src', item.src);
+                else el.removeAttribute('src');
+                if (el.tagName === 'IMG') el.removeAttribute('srcset');
+                if (el.tagName === 'VIDEO') el.load();
+            }
+            if (item.href !== undefined && el.tagName === 'A') {
+                if (item.href) el.setAttribute('href', item.href);
+                else el.removeAttribute('href');
+            }
+            if (item.alt !== undefined && ['IMG','INPUT'].includes(el.tagName)) {
+                el.setAttribute('alt', item.alt);
+            }
+            if (item.title !== undefined) {
+                if (item.title) el.setAttribute('title', item.title);
+                else el.removeAttribute('title');
+            }
+            if (item.onclick !== undefined) {
+                if (item.onclick) el.setAttribute('onclick', item.onclick);
+                else el.removeAttribute('onclick');
+            }
         }
 
         async function loadLiveContent() {
             if (!sb) return;
             try {
-                const { data: contentData } = await sb.from('site_content').select('*').eq('active', true);
-                if (contentData) {
-                    contentData.forEach(item => {
-                        const el = document.getElementById(item.key);
-                        if (el) {
-                            try {
-                                const parsed = JSON.parse(item.content);
-                                if (parsed.text !== undefined && !['IMG','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = parsed.text;
-                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = parsed.src;
-                                if (parsed.href && el.tagName === 'A') el.href = parsed.href;
-                                if (parsed.onclick !== undefined) {
-                                    if(parsed.onclick === '') el.removeAttribute('onclick');
-                                    else el.setAttribute('onclick', parsed.onclick);
-                                }
-                                if (parsed.hidden) el.style.display = 'none'; else el.style.display = '';
-                            } catch(e) {}
-                        }
-                    });
-                }
-            } catch (err) { console.error("CMS Sync Error: ", err); }
+                const { data, error } = await sb.from('site_content').select('*').eq('active', true);
+                if (error) throw error;
+                (data || []).forEach(item => {
+                    const el = document.getElementById(item.key);
+                    if (!el) return;
+                    try {
+                        const parsed = typeof item.content === 'string' ? JSON.parse(item.content) : item.content;
+                        if (parsed && typeof parsed === 'object') cmsApplyElement(el, parsed);
+                    } catch (e) {
+                        console.warn('Skipping invalid CMS content for', item.key, e);
+                    }
+                });
+            } catch (err) {
+                console.error('CMS Sync Error:', err);
+            }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            // Auto-generate IDs for CMS targeting
-            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
+        async function cmsSaveElement(item) {
+            const el = item && item.id ? document.getElementById(item.id) : null;
+            if (!el) throw new Error('Selected element was not found on the website. Please select it again.');
+            cmsApplyElement(el, item);
+
+            if (!sb) throw new Error('Supabase is not configured; the change is only visible in this preview.');
+            const content = {
+                text: item.text ?? '',
+                src: item.src ?? '',
+                href: item.href ?? '',
+                alt: item.alt ?? '',
+                title: item.title ?? '',
+                onclick: item.onclick ?? ''
+            };
+
+            const row = {
+                key: item.id,
+                content: JSON.stringify(content),
+                active: true
+            };
+
+            // Existing CMS schema uses key/content/active; upsert updates or creates the record.
+            const { error: saveError } = await sb
+                .from('site_content')
+                .upsert(row, { onConflict: 'key' });
+
+            if (saveError) throw saveError;
+            return true;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Stable target IDs are needed so saved CMS records can be loaded again.
+            document.querySelectorAll(CMS_EDITABLE_SELECTOR).forEach((el, index) => {
                 if (!el.id) el.id = 'cms_auto_' + index;
             });
 
-            loadLiveContent();
+            await loadLiveContent();
 
-            // Enable Admin Element Clicking
-            if (window.location.search.includes('admin=1')) {
-                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
+            // The admin iframe uses ?admin=1. Clicks select an element for editing.
+            if (new URLSearchParams(window.location.search).get('admin') === '1') {
+                document.querySelectorAll(CMS_EDITABLE_SELECTOR).forEach(el => {
                     el.classList.add('admin-editable');
-                    el.onclick = (e) => {
-                        e.stopPropagation(); e.preventDefault();
-                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
+                    el.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
                         window.parent.postMessage({
                             source: 'devi-visual-cms',
-                            type: 'SELECT',
-                            element: { id: el.id, page: page, tag: el.tagName.toLowerCase(), text: el.innerHTML || el.textContent, src: el.src || '', href: el.href || '', onclick: el.getAttribute('onclick') || '' }
-                        }, '*');
-                    };
+                            type: 'EDIT_ELEMENT',
+                            element: cmsElementPayload(el)
+                        }, window.location.origin);
+                    }, true);
                 });
             }
         });
     </script>
     <script>
-    // ========== ADMIN PANEL NAVIGATION SYNC ==========
-    window.addEventListener('message', e => {
-        if (!e.data || e.data.source !== 'devi-visual-cms') return;
-        if (e.data.type === 'NAVIGATE') {
-            showPage(e.data.page);
-            return;
-        }
-        if (e.data.type === 'APPLY' && e.data.element) {
-            const item = e.data.element;
-            const el = document.getElementById(item.id);
-            if (!el) return;
-            if (item.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) el.innerHTML = item.text;
-            if (item.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) el.src = item.src;
-            if (item.href && el.tagName === 'A') el.href = item.href;
-            if (item.alt !== undefined && ['IMG','INPUT'].includes(el.tagName)) el.alt = item.alt;
-            if (item.onclick !== undefined) {
-                if (item.onclick === '') el.removeAttribute('onclick');
-                else el.setAttribute('onclick', item.onclick);
+        // ========== ADMIN PANEL NAVIGATION + SAVE SYNC ==========
+        window.addEventListener('message', async event => {
+            if (event.origin !== window.location.origin) return;
+            const data = event.data;
+            if (!data || data.source !== 'devi-visual-cms') return;
+
+            if (data.type === 'NAVIGATE') {
+                if (typeof showPage === 'function') showPage(data.page);
+                return;
             }
-        }
-    });
-</script>
+
+            if (data.type === 'SAVE_ELEMENT') {
+                try {
+                    await cmsSaveElement(data.payload || {});
+                    window.parent.postMessage({
+                        source: 'devi-visual-cms',
+                        type: 'SAVE_RESULT',
+                        ok: true
+                    }, window.location.origin);
+                } catch (error) {
+                    console.error('CMS save failed:', error);
+                    window.parent.postMessage({
+                        source: 'devi-visual-cms',
+                        type: 'SAVE_RESULT',
+                        ok: false,
+                        error: error && error.message ? error.message : 'Could not save content'
+                    }, window.location.origin);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
