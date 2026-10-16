@@ -2232,48 +2232,57 @@
             }
         ];
 
-        async function handleReviewSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('rev-name').value.trim();
-            const country = document.getElementById('rev-country').value.trim();
-            const stars = parseInt(document.getElementById('rev-rating').value, 10);
-            const msg = document.getElementById('rev-msg').value.trim();
+      async function handleReviewSubmit(e) {
+    e.preventDefault();
 
-            if (!name || !country || !msg || !stars) {
-                alert('Please complete all review fields.');
-                return;
-            }
-            if (!sb) {
-                alert('Review database connection is not configured.');
-                return;
-            }
+    const name = document.getElementById('rev-name').value.trim();
+    const country = document.getElementById('rev-country').value.trim();
+    const stars = parseInt(document.getElementById('rev-rating').value, 10);
+    const msg = document.getElementById('rev-msg').value.trim();
 
-            const form = document.getElementById('review-form');
-            const submitButton = form.querySelector('button[type="submit"]');
-            if (submitButton) submitButton.disabled = true;
+    if (!name || !country || !msg || !stars) {
+        alert('Please complete all review fields.');
+        return;
+    }
 
-            try {
-                const { error } = await sb.from('reviews').insert([{
-                    name,
-                    country,
-                    stars,
-                    rating: stars,
-                    message: msg,
-                    review: msg,
-                    status: 'pending',
-                    active: false
-                }]);
-                if (error) throw error;
-                form.reset();
-                alert('Thank you! Your review was submitted and is waiting for admin approval.');
-            } catch (error) {
-                console.error('Review submission error:', error);
-                alert('Review save failed: ' + (error.message || 'Unknown error'));
-            } finally {
-                if (submitButton) submitButton.disabled = false;
-            }
-        }
+    if (!sb) {
+        alert('Database connection is missing. Please check cms-config.js.');
+        return;
+    }
 
+    const form = document.getElementById('review-form');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+        const { data, error } = await sb
+            .from('reviews')
+            .insert([{
+                name: name,
+                country: country,
+                stars: stars,
+                rating: stars,
+                message: msg,
+                review: msg,
+                status: 'pending',
+                active: false
+            }])
+            .select();
+
+        if (error) throw error;
+
+        form.reset();
+
+        alert('Thank you! Your review has been submitted for admin approval.');
+
+    } catch (error) {
+        console.error('Review submission error:', error);
+        alert('Review save failed: ' + error.message);
+    } finally {
+        if (submitButton) submitButton.disabled = false;
+    }
+}
         async function loadReviews() {
             let userReviews = JSON.parse(localStorage.getItem('devi_groups_client_reviews')) || [];
             let databaseReviews = [];
