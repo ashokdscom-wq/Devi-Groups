@@ -2447,121 +2447,12 @@
             }, 500);
         }
 
-        // ==================== 5. GENERAL WEBSITE INTERACTION SCRIPTS & CMS SYNC ====================
-        
-        let isAdmin = window.location.search.includes('admin=1');
-        let cmsData = {};
-
-        async function loadLiveContent() {
-            if (!window.DEVI_CMS_CONFIG) return; // જો config ફાઈલ ન હોય તો ડીફોલ્ટ ચાલશે
-            
-            try {
-                // Supabase API માંથી લાઈવ ડેટા મેળવવો
-                const response = await fetch(`${window.DEVI_CMS_CONFIG.supabaseUrl}/rest/v1/site_content?select=*&active=eq.true`, {
-                    headers: {
-                        'apikey': window.DEVI_CMS_CONFIG.supabaseKey,
-                        'Authorization': `Bearer ${window.DEVI_CMS_CONFIG.supabaseKey}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    data.forEach(item => {
-                        const el = document.getElementById(item.key);
-                        if (el) {
-                            try {
-                                const parsed = JSON.parse(item.content);
-                                
-                                // Text અપડેટ
-                                if (parsed.text !== undefined && !['IMG','VIDEO','SOURCE','INPUT','TEXTAREA'].includes(el.tagName)) {
-                                    el.innerHTML = parsed.text;
-                                }
-                                
-                                // Image / Video અપડેટ
-                                if (parsed.src && ['IMG','VIDEO','SOURCE'].includes(el.tagName)) {
-                                    el.src = parsed.src;
-                                }
-                                
-                                // Link અપડેટ
-                                if (parsed.href && el.tagName === 'A') {
-                                    el.href = parsed.href;
-                                }
-                                
-                                // Onclick Action અપડેટ
-                                if (parsed.onclick !== undefined) {
-                                    if (parsed.onclick === '') {
-                                        el.removeAttribute('onclick');
-                                    } else {
-                                        el.setAttribute('onclick', parsed.onclick);
-                                    }
-                                }
-                                
-                                // છુપાવવું (Hide)
-                                if (parsed.hidden) {
-                                    el.style.display = 'none';
-                                } else {
-                                    el.style.display = '';
-                                }
-                                
-                            } catch(e) {
-                                console.log('Error parsing CMS data for', item.key);
-                            }
-                        }
-                    });
-                }
-            } catch (err) {
-                console.log("CMS Sync Error:", err);
-            }
-        }
-
+        // ==================== WEBSITE INITIALIZATION ====================
+        // CMS loading and Visual Editor selection are handled by the single
+        // Supabase CMS script below. Keep general website initialization here.
         window.addEventListener('DOMContentLoaded', () => {
-            // ૧. સૌથી પહેલાં વેબસાઈટના તમામ લખાણ અને ફોટાને ID આપો (જેથી ડેટાબેઝ તેને ઓળખી શકે)
-            document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el, index) => {
-                if (!el.id) el.id = 'cms_auto_' + index;
-            });
-
-            // ૨. હવે ડેટાબેઝમાંથી લાઇવ ડેટા લોડ કરો 
-            loadLiveContent();
             loadReviews();
             updateClocks();
-
-            // ૩. જો એડમિન પેનલ હોય તો જ એડિટ કરવા માટેનું સિલેક્શન ચાલુ કરો
-            if (isAdmin) {
-                document.querySelectorAll('h1, h2, h3, h4, p, span, a, button, img').forEach((el) => {
-                    // Hover effect for admin
-                    el.addEventListener('mouseover', function(e) {
-                        e.stopPropagation();
-                        this.style.outline = '2px dashed #fbbf24';
-                        this.style.outlineOffset = '2px';
-                        this.style.cursor = 'pointer';
-                    });
-                    el.addEventListener('mouseout', function(e) {
-                        e.stopPropagation();
-                        this.style.outline = 'none';
-                    });
-
-                    // Click event to send data to parent Admin Panel
-                    el.onclick = (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        const page = el.closest('.page-content')?.id.replace('page-', '') || 'home';
-                      window.parent.postMessage({
-                            source: 'devi-visual-cms',
-                            type: 'SELECT',
-                            element: {
-                                id: el.id,
-                                page: page,
-                                tag: el.tagName.toLowerCase(),
-                                text: el.innerHTML.trim(), // આનાથી આઇકોન ભૂંસાશે નહીં
-                                src: el.src || '',
-                                href: el.href || '',
-                                onclick: el.getAttribute('onclick') || ''
-                            }
-                        }, '*');
-                    };
-                });
-            }
         });
 
         // Dark / Light Mode Toggle
@@ -2978,9 +2869,8 @@
         async function cmsSaveElement(item) {
             const el = item && item.id ? document.getElementById(item.id) : null;
             if (!el) throw new Error('Selected element was not found on the website. Please select it again.');
-            cmsApplyElement(el, item);
+            if (!sb) throw new Error('Supabase is not configured; no changes were saved.');
 
-            if (!sb) throw new Error('Supabase is not configured; the change is only visible in this preview.');
             const content = {
                 text: item.text ?? '',
                 src: item.src ?? '',
@@ -3002,6 +2892,9 @@
                 .upsert(row, { onConflict: 'key' });
 
             if (saveError) throw saveError;
+
+            // Only update the iframe preview after Supabase confirms the save.
+            cmsApplyElement(el, item);
             return true;
         }
 
