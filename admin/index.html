@@ -694,88 +694,553 @@ async function openBrochureManager() {
 
 $('brochuresBtn').addEventListener('click', openBrochureManager);
     // REVIEWS MANAGER
+// ==========================================
+// PROFESSIONAL REVIEWS MANAGEMENT
+// Search, Filters, Pagination, Edit Popup,
+// Bulk Approve, Bulk Delete
+// ==========================================
+
+let aonReviewData = [];
+let aonReviewPage = 1;
+let aonReviewFilter = 'all';
+let aonReviewSearch = '';
+let aonReviewSelected = new Set();
+const AON_REVIEW_PAGE_SIZE = 10;
+
 async function openReviewsManager() {
   if (!isAuthenticated) return;
 
   $('drawerTitle').textContent = 'Manage Reviews';
-  $('drawerBody').textContent = 'Loading reviews...';
+  $('drawerBody').innerHTML = '<p class="p-6 text-center">Loading reviews...</p>';
   showDrawer();
 
   try {
-    const { data, error } = await sb.from('reviews')
-      .select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    $('drawerBody').innerHTML = (data || []).map((r, i) => `
-      <div class="border rounded-xl p-4 mb-4">
-        <label class="block text-xs font-bold">Customer Name
-          <input data-r-name="${i}" class="w-full border rounded-lg p-2 mt-1" value="${esc(r.name || '')}">
-        </label>
-        <label class="block text-xs font-bold mt-3">Country
-          <input data-r-country="${i}" class="w-full border rounded-lg p-2 mt-1" value="${esc(r.country || '')}">
-        </label>
-        <label class="block text-xs font-bold mt-3">Stars (1–5)
-          <input data-r-stars="${i}" type="number" min="1" max="5" class="w-full border rounded-lg p-2 mt-1" value="${Number(r.stars || r.rating || 5)}">
-        </label>
-        <label class="block text-xs font-bold mt-3">Review
-          <textarea data-r-message="${i}" rows="3" class="w-full border rounded-lg p-2 mt-1">${esc(r.message || r.review || '')}</textarea>
-        </label>
-        <label class="block text-xs font-bold mt-3">Status
-          <input data-r-status="${i}" class="w-full border rounded-lg p-2 mt-1" value="${esc(r.status || '')}">
-        </label>
-        <label class="flex gap-2 items-center text-xs font-bold mt-3">
-          <input data-r-active="${i}" type="checkbox" ${r.active !== false ? 'checked' : ''}>
-          Active
-        </label>
-        <div class="flex gap-2 mt-3">
-          <button data-r-save="${i}" class="bg-emerald-600 text-white rounded-lg px-4 py-2 text-xs font-bold">Save</button>
-          <button data-r-delete="${i}" class="bg-rose-100 text-rose-600 rounded-lg px-4 py-2 text-xs font-bold">Delete</button>
-        </div>
-      </div>
-    `).join('') || '<p>No reviews found.</p>';
+    aonReviewData = data || [];
+    aonReviewSelected.clear();
+    aonReviewPage = 1;
 
-    $('drawerBody').querySelectorAll('[data-r-save]').forEach(btn => {
-      btn.onclick = async () => {
-        const i = Number(btn.dataset.rSave);
-        const r = data[i];
-        const message = $(`[data-r-message="${i}"]`).value.trim();
-
-        const payload = {
-          name: $(`[data-r-name="${i}"]`).value.trim(),
-          country: $(`[data-r-country="${i}"]`).value.trim() || null,
-          stars: Math.max(1, Math.min(5, Number($(`[data-r-stars="${i}"]`).value) || 5)),
-          rating: Math.max(1, Math.min(5, Number($(`[data-r-stars="${i}"]`).value) || 5)),
-          message,
-          review: message,
-          status: $(`[data-r-status="${i}"]`).value.trim() || null,
-          active: $(`[data-r-active="${i}"]`).checked,
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await sb.from('reviews').update(payload).eq('id', r.id);
-        if (error) alert('Save failed: ' + error.message);
-        else alert('Review saved.');
-      };
-    });
-
-    $('drawerBody').querySelectorAll('[data-r-delete]').forEach(btn => {
-      btn.onclick = async () => {
-        const r = data[Number(btn.dataset.rDelete)];
-        if (!confirm('Delete this review?')) return;
-
-        const { error } = await sb.from('reviews').delete().eq('id', r.id);
-        if (error) alert('Delete failed: ' + error.message);
-        else openReviewsManager();
-      };
-    });
+    renderAonReviews();
   } catch (error) {
-    $('drawerBody').textContent = 'Error: ' + error.message;
+    $('drawerBody').textContent = 'Error loading reviews: ' + error.message;
   }
 }
 
-$('reviewsBtn').addEventListener('click', openReviewsManager);
+function renderAonReviews() {
+  const body = $('drawerBody');
 
+  const filtered = aonReviewData.filter(r => {
+    const text = [
+      r.name || '',
+      r.country || '',
+      r.message || r.review || ''
+    ].join(' ').toLowerCase();
+
+    const matchesSearch = text.includes(aonReviewSearch.toLowerCase());
+
+    const status = String(r.status || '').toLowerCase();
+    const active = r.active !== false;
+
+    let matchesFilter = true;
+
+    if (aonReviewFilter === 'pending') {
+      matchesFilter = status === 'pending' || (!active && status !== 'rejected');
+    } else if (aonReviewFilter === 'published') {
+      matchesFilter = active && (status === 'approved' || status === 'published' || status === '');
+    } else if (aonReviewFilter === 'inactive') {
+      matchesFilter = !active;
+    }
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / AON_REVIEW_PAGE_SIZE)
+  );
+
+  if (aonReviewPage > totalPages) aonReviewPage = totalPages;
+
+  const start = (aonReviewPage - 1) * AON_REVIEW_PAGE_SIZE;
+  const pageRows = filtered.slice(start, start + AON_REVIEW_PAGE_SIZE);
+
+  const escHtml = value => esc(String(value ?? ''));
+
+  body.innerHTML = `
+    <div class="space-y-4">
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Total Reviews</div>
+          <div class="text-2xl font-bold">${aonReviewData.length}</div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Pending</div>
+          <div class="text-2xl font-bold text-amber-600">
+            ${aonReviewData.filter(r =>
+              String(r.status || '').toLowerCase() === 'pending' ||
+              (r.active === false &&
+               String(r.status || '').toLowerCase() !== 'rejected')
+            ).length}
+          </div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Published</div>
+          <div class="text-2xl font-bold text-emerald-600">
+            ${aonReviewData.filter(r =>
+              r.active !== false &&
+              ['approved', 'published', ''].includes(
+                String(r.status || '').toLowerCase()
+              )
+            ).length}
+          </div>
+        </div>
+        <div class="border rounded-xl p-3">
+          <div class="text-xs text-gray-500">Inactive</div>
+          <div class="text-2xl font-bold text-gray-600">
+            ${aonReviewData.filter(r => r.active === false).length}
+          </div>
+        </div>
+      </div>
+
+      <form id="aonReviewSearchForm" class="flex flex-wrap gap-2">
+        <input
+          id="aonReviewSearch"
+          type="search"
+          value="${escHtml(aonReviewSearch)}"
+          placeholder="Search name, country or review..."
+          class="border rounded-lg p-3 flex-1 min-w-40"
+        >
+        <button type="submit"
+          class="bg-gray-900 text-white rounded-lg px-4 py-2 font-bold">
+          Search
+        </button>
+      </form>
+
+      <div class="flex flex-wrap gap-2 items-center">
+        <select id="aonReviewFilter" class="border rounded-lg p-2">
+          <option value="all" ${aonReviewFilter === 'all' ? 'selected' : ''}>All Reviews</option>
+          <option value="pending" ${aonReviewFilter === 'pending' ? 'selected' : ''}>Pending</option>
+          <option value="published" ${aonReviewFilter === 'published' ? 'selected' : ''}>Published</option>
+          <option value="inactive" ${aonReviewFilter === 'inactive' ? 'selected' : ''}>Inactive</option>
+        </select>
+
+        <button id="aonSelectPage"
+          class="border rounded-lg px-3 py-2 text-sm font-bold">
+          Select Page
+        </button>
+
+        <button id="aonBulkApprove"
+          class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
+          Approve Selected
+        </button>
+
+        <button id="aonBulkDelete"
+          class="bg-rose-600 text-white rounded-lg px-3 py-2 text-sm font-bold">
+          Delete Selected
+        </button>
+      </div>
+
+      <div class="text-xs text-gray-500">
+        Selected: ${aonReviewSelected.size} · Showing ${
+          filtered.length ? start + 1 : 0
+        }–${Math.min(start + AON_REVIEW_PAGE_SIZE, filtered.length)}
+        of ${filtered.length}
+      </div>
+
+      <div class="space-y-3">
+        ${pageRows.map(r => {
+          const id = String(r.id);
+          const message = r.message || r.review || '';
+          const status = String(r.status || 'pending').toLowerCase();
+          const active = r.active !== false;
+          const approved = active &&
+            ['approved', 'published', ''].includes(status);
+
+          return `
+            <div class="border rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  data-aon-select="${escHtml(id)}"
+                  ${aonReviewSelected.has(id) ? 'checked' : ''}
+                  class="mt-1 w-4 h-4"
+                >
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap justify-between gap-2">
+                    <div>
+                      <div class="font-bold">${escHtml(r.name || 'Customer')}</div>
+                      <div class="text-xs text-gray-500">
+                        ${escHtml(r.country || 'Country not provided')}
+                      </div>
+                    </div>
+
+                    <span class="text-xs font-bold rounded-full px-3 py-1 ${
+                      approved
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-amber-100 text-amber-700'
+                    }">
+                      ${approved ? 'Published' : escHtml(r.status || 'Pending')}
+                    </span>
+                  </div>
+
+                  <div class="text-amber-500 my-2">
+                    ${'★'.repeat(Math.max(0, Math.min(5, Number(r.stars || r.rating || 0))))}
+                    <span class="text-gray-400 text-xs">
+                      (${Number(r.stars || r.rating || 0)}/5)
+                    </span>
+                  </div>
+
+                  <p class="text-sm text-gray-700 whitespace-pre-wrap break-words">${escHtml(message)}</p>
+
+                  <div class="flex flex-wrap gap-2 mt-3">
+                    <button data-aon-edit="${escHtml(id)}"
+                      class="border rounded-lg px-3 py-2 text-xs font-bold">
+                      Edit
+                    </button>
+
+                    <button data-aon-approve="${escHtml(id)}"
+                      class="bg-emerald-600 text-white rounded-lg px-3 py-2 text-xs font-bold">
+                      ${approved ? 'Unpublish' : 'Approve'}
+                    </button>
+
+                    <button data-aon-delete="${escHtml(id)}"
+                      class="bg-rose-100 text-rose-700 rounded-lg px-3 py-2 text-xs font-bold">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('') || `
+          <div class="border rounded-xl p-8 text-center text-gray-500">
+            No reviews found.
+          </div>
+        `}
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <button id="aonReviewPrev"
+          ${aonReviewPage <= 1 ? 'disabled' : ''}
+          class="border rounded-lg px-3 py-2 disabled:opacity-40">
+          Previous
+        </button>
+
+        <span class="text-sm">Page ${aonReviewPage} of ${totalPages}</span>
+
+        <button id="aonReviewNext"
+          ${aonReviewPage >= totalPages ? 'disabled' : ''}
+          class="border rounded-lg px-3 py-2 disabled:opacity-40">
+          Next
+        </button>
+      </div>
+
+      <div id="aonReviewEditModal"
+        class="hidden fixed inset-0 z-50 bg-black/50 p-4 items-center justify-center">
+        <form id="aonReviewEditForm"
+          class="bg-white rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold">Edit Review</h3>
+            <button type="button" id="aonReviewEditClose"
+              class="text-2xl px-2" aria-label="Close">&times;</button>
+          </div>
+
+          <input type="hidden" id="aonEditReviewId">
+
+          <label class="block text-sm font-bold">Customer Name
+            <input id="aonEditReviewName" required
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Country
+            <input id="aonEditReviewCountry"
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Stars (1–5)
+            <input id="aonEditReviewStars" type="number" min="1" max="5" required
+              class="w-full border rounded-lg p-3 mt-1">
+          </label>
+
+          <label class="block text-sm font-bold">Review
+            <textarea id="aonEditReviewMessage" rows="4" required
+              class="w-full border rounded-lg p-3 mt-1"></textarea>
+          </label>
+
+          <label class="block text-sm font-bold">Status
+            <select id="aonEditReviewStatus"
+              class="w-full border rounded-lg p-3 mt-1">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+
+          <label class="flex items-center gap-2 text-sm font-bold">
+            <input id="aonEditReviewActive" type="checkbox">
+            Published / Active
+          </label>
+
+          <div class="flex gap-2 justify-end pt-2">
+            <button type="button" id="aonReviewEditCancel"
+              class="border rounded-lg px-4 py-2">Cancel</button>
+            <button type="submit"
+              class="bg-gray-900 text-white rounded-lg px-5 py-2 font-bold">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  `;
+
+  // Search
+  $('aonReviewSearchForm').onsubmit = event => {
+    event.preventDefault();
+    aonReviewSearch = $('aonReviewSearch').value.trim();
+    aonReviewPage = 1;
+    renderAonReviews();
+  };
+
+  // Filter
+  $('aonReviewFilter').onchange = event => {
+    aonReviewFilter = event.target.value;
+    aonReviewPage = 1;
+    renderAonReviews();
+  };
+
+  // Select individual review
+  body.querySelectorAll('[data-aon-select]').forEach(input => {
+    input.onchange = () => {
+      const id = input.dataset.aonSelect;
+      if (input.checked) aonReviewSelected.add(id);
+      else aonReviewSelected.delete(id);
+      renderAonReviews();
+    };
+  });
+
+  // Select all reviews on this page
+  $('aonSelectPage').onclick = () => {
+    const visibleIds = body.querySelectorAll('[data-aon-select]');
+    const allSelected = [...visibleIds].every(el =>
+      aonReviewSelected.has(el.dataset.aonSelect)
+    );
+
+    visibleIds.forEach(el => {
+      if (allSelected) aonReviewSelected.delete(el.dataset.aonSelect);
+      else aonReviewSelected.add(el.dataset.aonSelect);
+    });
+
+    renderAonReviews();
+  };
+
+  // Pagination
+  $('aonReviewPrev').onclick = () => {
+    if (aonReviewPage > 1) {
+      aonReviewPage--;
+      renderAonReviews();
+    }
+  };
+
+  $('aonReviewNext').onclick = () => {
+    aonReviewPage++;
+    renderAonReviews();
+  };
+
+  // Edit popup
+  body.querySelectorAll('[data-aon-edit]').forEach(button => {
+    button.onclick = () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonEdit
+      );
+      if (!r) return;
+
+      $('aonEditReviewId').value = r.id;
+      $('aonEditReviewName').value = r.name || '';
+      $('aonEditReviewCountry').value = r.country || '';
+      $('aonEditReviewStars').value = Number(r.stars || r.rating || 5);
+      $('aonEditReviewMessage').value = r.message || r.review || '';
+
+      const status = String(r.status || 'pending').toLowerCase();
+      $('aonEditReviewStatus').value =
+        ['pending', 'approved', 'rejected'].includes(status)
+          ? status
+          : (r.active === false ? 'pending' : 'approved');
+
+      $('aonEditReviewActive').checked = r.active !== false;
+
+      const modal = $('aonReviewEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+  });
+
+  const closeEditModal = () => {
+    $('aonReviewEditModal').classList.add('hidden');
+    $('aonReviewEditModal').classList.remove('flex');
+  };
+
+  $('aonReviewEditClose').onclick = closeEditModal;
+  $('aonReviewEditCancel').onclick = closeEditModal;
+
+  // Save edited review
+  $('aonReviewEditForm').onsubmit = async event => {
+    event.preventDefault();
+
+    const id = $('aonEditReviewId').value;
+    const stars = Math.max(
+      1,
+      Math.min(5, Number($('aonEditReviewStars').value) || 5)
+    );
+    const message = $('aonEditReviewMessage').value.trim();
+    const status = $('aonEditReviewStatus').value;
+    const active = $('aonEditReviewActive').checked;
+
+    const payload = {
+      name: $('aonEditReviewName').value.trim(),
+      country: $('aonEditReviewCountry').value.trim() || null,
+      stars,
+      rating: stars,
+      message,
+      review: message,
+      status,
+      active,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await sb
+      .from('reviews')
+      .update(payload)
+      .eq('id', id);
+
+    if (error) {
+      alert('Save failed: ' + error.message);
+      return;
+    }
+
+    closeEditModal();
+    alert('Review updated successfully.');
+    await openReviewsManager();
+  };
+
+  // Approve / unpublish one review
+  body.querySelectorAll('[data-aon-approve]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonApprove
+      );
+      if (!r) return;
+
+      const currentlyPublished =
+        r.active !== false &&
+        ['approved', 'published', ''].includes(
+          String(r.status || '').toLowerCase()
+        );
+
+      const payload = currentlyPublished
+        ? { active: false, status: 'pending', updated_at: new Date().toISOString() }
+        : { active: true, status: 'approved', updated_at: new Date().toISOString() };
+
+      const { error } = await sb
+        .from('reviews')
+        .update(payload)
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Update failed: ' + error.message);
+        return;
+      }
+
+      await openReviewsManager();
+    };
+  });
+
+  // Delete one review
+  body.querySelectorAll('[data-aon-delete]').forEach(button => {
+    button.onclick = async () => {
+      const r = aonReviewData.find(x =>
+        String(x.id) === button.dataset.aonDelete
+      );
+      if (!r || !confirm('Permanently delete this review?')) return;
+
+      const { error } = await sb
+        .from('reviews')
+        .delete()
+        .eq('id', r.id);
+
+      if (error) {
+        alert('Delete failed: ' + error.message);
+        return;
+      }
+
+      aonReviewSelected.delete(String(r.id));
+      await openReviewsManager();
+    };
+  });
+
+  // Bulk approve selected reviews
+  $('aonBulkApprove').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Approve and publish ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .update({
+        active: true,
+        status: 'approved',
+        updated_at: new Date().toISOString()
+      })
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk approve failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+
+  // Bulk delete selected reviews
+  $('aonBulkDelete').onclick = async () => {
+    const ids = [...aonReviewSelected];
+    if (!ids.length) {
+      alert('Please select at least one review.');
+      return;
+    }
+
+    if (!confirm(`Permanently delete ${ids.length} selected review(s)?`)) return;
+
+    const { error } = await sb
+      .from('reviews')
+      .delete()
+      .in('id', ids);
+
+    if (error) {
+      alert('Bulk delete failed: ' + error.message);
+      return;
+    }
+
+    aonReviewSelected.clear();
+    await openReviewsManager();
+  };
+}
+
+$('reviewsBtn').addEventListener('click', openReviewsManager);
 // REFRESH WEBSITE
 $('refreshSite').addEventListener('click', () => {
   if (!isAuthenticated) return;
