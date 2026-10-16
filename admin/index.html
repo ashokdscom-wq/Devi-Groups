@@ -157,6 +157,7 @@ const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
 const frame = document.getElementById('siteFrame');
 let selected = null;
 let isAuthenticated = false;
+let saveTimeout = null;
 const $ = id => document.getElementById(id);
 
 function showDrawer() {
@@ -226,16 +227,35 @@ async function upload(file, folder = 'visual') {
 
 // VISUAL EDITOR MESSAGES
 window.addEventListener('message', event => {
+  // The website iframe and Admin panel must be served from the same origin.
   if (event.origin !== window.location.origin) return;
   const data = event.data;
   if (!data || data.source !== 'devi-visual-cms') return;
+
+  if (data.type === 'SAVE_RESULT') {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
+    $('saveElement').disabled = false;
+    if (data.ok) {
+      $('saveMsg').textContent = 'Saved successfully.';
+      $('saveMsg').className = 'font-bold text-center text-emerald-600';
+    } else {
+      $('saveMsg').textContent = 'Save failed: ' + (data.error || 'Please check Supabase settings and permissions.');
+      $('saveMsg').className = 'font-bold text-center text-rose-600';
+    }
+    return;
+  }
+
   if (data.type === 'EDIT_ELEMENT') {
     selected = data.element || data.payload || null;
-    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || 'Selected element') : '';
+    $('selectedInfo').textContent = selected ? (selected.selector || selected.tagName || selected.tag || 'Selected element') : '';
     $('textValue').value = selected?.text || selected?.textContent || '';
     $('srcValue').value = selected?.src || selected?.image || '';
     $('hrefValue').value = selected?.href || '';
     $('altValue').value = selected?.alt || selected?.title || '';
+    $('saveMsg').textContent = '';
     $('editor').classList.remove('hidden');
   }
   if (data.type === 'OPEN_BROCHURES') $('brochuresBtn').click();
@@ -244,11 +264,16 @@ window.addEventListener('message', event => {
 $('closeEditor').addEventListener('click', () => $('editor').classList.add('hidden'));
 $('saveElement').addEventListener('click', async () => {
   if (!isAuthenticated || !selected) return;
+  const saveButton = $('saveElement');
+  saveButton.disabled = true;
   $('saveMsg').textContent = 'Saving...';
+  $('saveMsg').className = 'font-bold text-center text-slate-600';
   try {
     let src = $('srcValue').value.trim();
     const file = $('fileValue').files[0];
     if (file) src = await upload(file, 'visual');
+    if (!frame || !frame.contentWindow) throw new Error('Website frame is not ready. Please refresh the page.');
+
     frame.contentWindow.postMessage({
       source:'devi-visual-cms',
       type:'SAVE_ELEMENT',
@@ -264,9 +289,23 @@ $('saveElement').addEventListener('click', async () => {
         action4:$('action4').value
       }
     }, window.location.origin);
-    $('saveMsg').textContent = 'Save request sent to website.';
+
+    // Do not show success until the website confirms the database save.
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      saveTimeout = null;
+      saveButton.disabled = false;
+      $('saveMsg').textContent = 'No save confirmation received. Refresh the website frame and try again.';
+      $('saveMsg').className = 'font-bold text-center text-rose-600';
+    }, 15000);
   } catch (error) {
-    $('saveMsg').textContent = 'Error: ' + error.message;
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
+    saveButton.disabled = false;
+    $('saveMsg').textContent = 'Error: ' + (error.message || 'Could not save changes.');
+    $('saveMsg').className = 'font-bold text-center text-rose-600';
   }
 });
     // PRODUCTS MANAGER
